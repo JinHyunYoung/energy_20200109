@@ -1,0 +1,75 @@
+@charset "utf-8";
+@import "nanumgothic.css";
+
+
+
+/* 용어사전 */
+.dictionary_search_area {overflow: hidden; padding: 38px 0 31px; border: 1px solid #dcdcdc; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+	.dictionary_search_input {overflow: hidden; width: 610px; margin: 0 auto 15px;}
+		.dictionary_search_input strong {display: inline-block; float: left; height: 35px; margin-right: 20px; font-size: 20px; color: #e86a02; line-height: 35px;}
+		.dictionary_search_input input {display: inline-block; float: left; width: 416px; height: 33px; font-size: 13px; color: #a0a0a0; text-indent: 15px;}
+		.dictionary_search_input button.btn.dic_sch {display: inline-block; float: left; width: 95px; height: 35px; font-size: 13px; font-weight: bold; color: #ffffff; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; background-color: #d89d00;}
+	.dictionary_recommend_list {overflow: hidden; width: 610px; margin: 0 auto;}
+		.dictionary_recommend_list li {float: left; padding-left: 10px; margin-left: 10px; list-style: none; background: url('/images/web/common/bg_dic_recommend.png') no-repeat 0 2px;}
+		.dictionary_recommend_list li:first-child {padding-left: 0; margin-left: 110px; background: none;}
+		.dictionary_recommend_list li a {font-size: 14px; color: #7d7d7d;}
+.dictionary_keyword_area {overflow: hidden; margin-bottom: 20px; padding: 21px 43px 19px; border-top: 1px solid #f8f5ef; border-left: 1px solid #dcdcdc; border-right: 1px solid #dcdcdc; border-bottom: 1px solid #dcdcdc; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; background-color: #e9e7e3;}
+	.dictionary_keyword_area > div {overflow: hidden;}
+	.dictionary_keyword_area > div + div {margin-top: 20px;}
+	.dictionary_keyword_area strong {display: inline-block; float: left; margin-right: 20px; font-size: 16px; color: #898989; line-height: 30px;}
+		.dictionary_keyword_area strong span {color: #333333;}
+	.dictionary_keyword_area ul {overflow: hidden;}
+		.dictionary_keyword_area ul li {float: left; margin: 1px; list-style: none;}
+		.dictionary_keyword_area ul li a {display: inline-block; width: 26px; height: 26px; border: 1px solid #ada595; font-size: 16px; font-weight: bold; color: #8f836c; text-align: center; line-height: 26px; background-color: #ffffff;
+			border-radius: 2px;
+			-webkit-border-radius: 2px;
+			-moz-border-radius: 2px;
+		}
+		.dictionary_keyword_area ul li.on a,
+		.dictionary_keyword_area ul li a:hover {border: 1px solid #e86a02; color: #ffffff; text-decoration: none; background-color: #f68121;}
+.dictionary_area_01 {overflow: hidden; height: 241px; padding: 0 15px; margin-bottom: 20px; border: 1px solid #dcdcdc; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; background: url('/images/web/sub/about/bg_dictionary.png') no-repeat center 70px;}
+	.dictionary_area_01 p {margin-top: 150px; font-size: 13px; color: #4d4d4d; text-align: center;}
+.dictionary_area_02 {overflow: hidden; margin-bottom: 20px; padding: 40px 19px 25px; border: 1px solid #dcdcdc; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+	.dictionary_area_02 .dic_sch_result {margin-bottom: 10px; padding-left: 8px; font-size: 13px; color: #585858;}
+		.dic_keyword {font-weight: bold;}
+		.dic_count {font-size: 15px; font-weight: bold; color: #f68121;}
+	.dictionary_area_02 ul {overflow: hidden; margin-bottom: 30px; border-top: 2px solid #7b736b; border-bottom: 1px solid #7b736b;}
+		.dictionary_area_02 ul li {padding: 15px 20px; border-top: 1px solid #dcdcdc; list-style: none;}
+		.dictionary_area_02 ul li:first-child {border-top: 0;}
+			.dictionary_area_02 ul li strong {display: block; margin-bottom: 12px; font-size: 14px; color: #4d4d4d;}
+			.dictionary_area_02 ul li p {font-size: 13px; color: #4d4d4d; line-height: 1.5em;}
+
+
+
+/* 화면 해상도 width 640px 이상 Design --------------------------------------*/
+@media screen and (min-width: 1025px){
+
+
+
+}
+
+
+/* 화면 해상도 width 640px 이상 960px 이하 Design --------------------------------------*/ 
+@media screen and (max-width: 1024px) and (min-width: 641px) {
+
+	/* 용어사전 */
+	.dictionary_search_input {width: 494px;}
+		.dictionary_search_input input {width: 300px;}
+		.dictionary_recommend_list {width: 494px;}
+
+}
+
+
+/* 화면 해상도 width 640px 이하 Design --------------------------------------*/
+@media screen and (max-width: 640px){
+
+	/* 용어사전 */
+	.dictionary_search_input {width: 247px;}
+		.dictionary_search_input input {width: 150px;}
+		.dictionary_search_input strong {display: block; float: none;}
+		.dictionary_recommend_list {width: 247px;}
+			.dictionary_recommend_list li:first-child {margin-left: 0;}
+			.dictionary_recommend_list li a {font-size: 13px; color: #7d7d7d;}
+	.dictionary_keyword_area {padding: 21px 20px 19px;}
+}
+

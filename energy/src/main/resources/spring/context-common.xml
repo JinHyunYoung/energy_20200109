@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation=
+		"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd ">
+
+	<context:component-scan base-package="kr.or.wabis">
+       	<context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+	
+	
+	<!-- ******************************************************************************************* -->
+    <!-- Properties Config -->
+    <!-- ******************************************************************************************* -->
+    <util:properties id="systemConfig" location="classpath:/properties/system-properties.xml" />
+    
+    <bean name="propertyService" class="kr.or.wabis.framework.property.PropertyService">
+        <property name="propFileName">
+            <set>
+                <map>
+                    <entry key="encoding" value="UTF-8" />
+                    <entry key="filename" value="classpath*:properties/system-properties.xml" />
+                </map>
+            </set>
+        </property>
+    </bean>
+    
+    <bean id="propertyUtil" class="kr.or.wabis.framework.util.PropertyUtil">
+        <property name="propertyService" ref="propertyService"/>
+    </bean>
+    
+    
+    <!-- ******************************************************************************************* -->
+    <!-- SpringUtil -->
+    <!-- ******************************************************************************************* -->
+	<bean id="springUtil" class="kr.or.wabis.framework.util.SpringUtil" />
+    
+    
+    <!-- ******************************************************************************************* -->
+    <!-- SystemUtil -->
+    <!-- ******************************************************************************************* -->
+    <bean id="systemUtil" class="kr.or.wabis.framework.util.SystemUtil"/>
+	
+	
+    <!-- ******************************************************************************************* -->
+    <!-- ProjectConfigUtil -->
+    <!-- ******************************************************************************************* -->
+    <bean id="configUtil" class="kr.or.wabis.framework.util.ProjectConfigUtil"/>
+    
+        
+</beans>

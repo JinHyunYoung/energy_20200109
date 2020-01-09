@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="InfoPageDao">
+ 
+	<resultMap id="infopageMap" type="HashMap">
+		<result property="info_type" column="info_type" />
+		<result property="version" column="version" />
+		<result property="revision_date" column="revision_date" />
+		<result property="title" column="title" />
+		<result property="contents" column="contents" javaType="java.lang.String" jdbcType="CLOB" typeHandler="org.apache.ibatis.type.ClobTypeHandler" /> 
+		<result property="reg_userno" column="reg_userno" />
+		<result property="reg_date" column="reg_date" />
+		<result property="upd_userno" column="upd_userno" />
+		<result property="upd_date" column="upd_date" />
+	</resultMap>
+	 
+	<select id="selectInfopagePageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		
+		SELECT 
+	   	    info_type
+			, version
+			, GET_DATEFORMAT(revision_date) as revision_date
+			, title
+			, reg_userno
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, GET_DATEFORMAT(reg_date) as reg_date
+		FROM T_INFOPAGE a
+		WHERE 
+			1 = 1  			
+			<if test='info_type != null and !info_type.equals("")' >
+			   AND info_type = #{info_type}
+			</if>
+				
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="selectInfopage" parameterType="Map" resultMap="infopageMap">
+		SELECT 
+	   	    info_type
+			, version
+			, GET_DATEFORMAT(revision_date) as revision_date
+			, title
+			, contents
+			, reg_userno
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, GET_DATEFORMAT(reg_date) as reg_date
+		FROM T_INFOPAGE a
+		WHERE 
+			1 = 1  		
+			<if test='info_type != null and !info_type.equals("")' >
+			   AND info_type = #{info_type}
+			</if>
+			<if test='version != null and !version.equals("")' >
+			   AND version = #{version}
+			</if>
+    	ORDER BY version
+	</select>
+	
+	<select id="selectInfopageShow" parameterType="Map" resultMap="infopageMap">
+	   SELECT * FROM (
+		   SELECT 
+			   	 info_type
+					, version
+					, GET_DATEFORMAT(revision_date) as revision_date
+					, title
+					, contents
+					, reg_userno
+					, (SELECT user_nm FROM T_USER WHERE user_no = reg_userno) AS reg_usernm
+					, GET_DATEFORMAT(reg_date) as reg_date
+				FROM T_INFOPAGE
+		    WHERE 1=1
+				<if test='info_type != null and !info_type.equals("")' >
+				   AND info_type = #{info_type}
+				</if>
+		    ORDER BY version DESC
+	    ) WHERE ROWNUM = 1
+	</select>
+	
+	<insert id="insertInfopage" parameterType="Map" >
+		INSERT INTO T_INFOPAGE (
+  			info_type
+			, version
+			, revision_date
+			, title
+			, contents
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			#{info_type}	
+			, (SELECT NVL(max(version),0)+1 FROM T_INFOPAGE WHERE info_type = #{info_type})
+			, REPLACE(#{revision_date},'-','')
+			, #{title}
+			, #{contents}
+			, #{s_user_no}
+			, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+			, #{s_user_no}
+			, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+		)
+	</insert>
+	
+	<update id="updateInfopage" parameterType="Map" >
+	    UPDATE T_INFOPAGE
+		SET
+			revision_date = REPLACE(#{revision_date},'-','')
+			, title = #{title}
+			, contents = #{contents}
+			, upd_userno = #{s_user_no}
+			, upd_date = TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')	
+		WHERE  
+			info_type = #{info_type}
+			AND version = #{version}
+	</update>
+	
+	<delete id="deleteInfopage" parameterType="Map" >
+	 	DELETE FROM T_INFOPAGE 
+		WHERE 
+			1 = 1  		
+			<if test='info_type != null and !info_type.equals("")' >
+			   AND info_type = #{info_type}
+			</if>
+			<if test='version != null and !version.equals("")' >
+			   AND version = #{version}
+			</if>
+	</delete>
+
+</mapper>

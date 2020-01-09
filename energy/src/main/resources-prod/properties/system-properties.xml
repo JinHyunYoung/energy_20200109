@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd" >
+
+<properties>
+    
+	<!-- LOCAL/DEV/PROD -->
+    <entry key="EXEC_ENVIRONMENT"><![CDATA[PROD]]></entry>
+     
+    <entry key="PROJECT_CONFIG_FILE"><![CDATA[project-properties.xml]]></entry>
+
+    <!-- Oracle
+    <entry key="DB_TYPE"><![CDATA[oracle]]></entry>
+    <entry key="DB_DRIVER"><![CDATA[oracle.jdbc.driver.OracleDriver]]></entry>
+    <entry key="DB_URL"><![CDATA[jdbc:oracle:thin:@hnskr.iptime.org:1821:HNSDB3]]></entry>
+    <entry key="DB_USERNM"><![CDATA[HNSCMS3]]></entry>
+    <entry key="DB_PASSWD"><![CDATA[hnscms1!]]></entry> 
+    <entry key="MAPPER_LOCATIONS"><![CDATA[classpath*:sqlmap/sql/oracle/**/*.xml]]></entry> 
+    -->
+
+    <!-- Mysql -->
+    <entry key="DB_TYPE"><![CDATA[mysql]]></entry>
+    <entry key="DB_DRIVER"><![CDATA[com.mysql.jdbc.Driver]]></entry>
+    <!-- <entry key="DB_URL"><![CDATA[jdbc:mysql://211.243.12.171:3306/wabisdb]]></entry> -->
+    <entry key="DB_URL"><![CDATA[jdbc:mysql://localhost:3306/wabisdb]]></entry>
+    <entry key="DB_USERNM"><![CDATA[wabis01]]></entry>
+    <!-- <entry key="DB_PASSWD"><![CDATA[wabis12]]></entry> --> 
+    <entry key="DB_PASSWD"><![CDATA[Wabis00@@]]></entry>
+    <entry key="MAPPER_LOCATIONS"><![CDATA[classpath*:sqlmap/sql/mysql/**/*.xml]]></entry> 
+
+</properties>

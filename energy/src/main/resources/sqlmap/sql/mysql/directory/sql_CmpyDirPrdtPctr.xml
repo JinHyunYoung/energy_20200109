@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+<PRE>
+Directory Product Picture information management
+!=
+T_기업디렉토리제품사진 정보를 관리
+=!
+</PRE>
+
+-->
+<mapper namespace="CmpyDirPrdtPctrDao">
+    
+        <!--
+    Search Directory Product Picture Detail information.
+    != 기업디렉토리 제품사진 정보를 상세조회한다. =!
+    -->
+    <select id="selectCmpyDirPrdtPctrList" parameterType="Map" resultType="caseMap">
+    	
+    	SELECT
+    	    dir_sn     
+    	    , prdt_pctr_sn    
+    	    , prdt_nm    
+    	    , prdt_nm_en    
+    	    , prdt_file_id    
+			, (SELECT file_nm FROM T_COMMONFILE WHERE file_id = a.prdt_file_id) AS prdt_file_id_nm
+    	    , reg_userno    
+    	    , reg_date    
+    	    , upd_userno    
+    	    , upd_date
+    	FROM T_CMPY_DIR_PRDT_PCTR a
+    	<trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	</trim>    	
+    	ORDER BY prdt_pctr_sn
+    	<if test="limit != null and limit != '' ">
+   	        limit ${limit}
+   	    </if>
+    	
+    </select>
+    
+    <!--
+	기업디렉토리 제품사진 정보를 등록한다. 
+    -->
+    <insert id="insertCmpyDirPrdtPctr" parameterType="Map">
+		<selectKey resultType="Integer" keyProperty="prdt_pctr_sn" order="BEFORE">
+        	( SELECT * FROM ( SELECT IFNULL(MAX(CAST(prdt_pctr_sn AS UNSIGNED)),0)+1 FROM T_CMPY_DIR_PRDT_PCTR WHERE dir_sn = #{dir_sn} ) AS t )
+		</selectKey>
+		
+    	INSERT INTO T_CMPY_DIR_PRDT_PCTR (
+    	    dir_sn      
+    	    , prdt_pctr_sn    
+    	    , prdt_nm    
+    	    , prdt_nm_en    
+    	    , prdt_file_id    
+    	    , reg_userno    
+    	    , reg_date    
+    	    , upd_userno    
+    	    , upd_date    
+    	) VALUES (
+    	    #{dir_sn}    
+    	    , #{prdt_pctr_sn}  
+    	    , #{prdt_nm}    
+    	    , #{prdt_nm_en}    
+    	    , #{prdt_file_id}    
+    	    , #{reg_userno}    
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    , #{reg_userno}    
+    	    , DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	)
+    	
+    </insert>
+    
+    <!--
+	기업디렉토리 제품사진 정보를 수정한다.
+    -->
+    <update id="updateCmpyDirPrdtPctr" parameterType="Map">
+    	UPDATE T_CMPY_DIR_PRDT_PCTR 
+    	    <trim prefix="SET" prefixOverrides=", ">
+    	    , prdt_nm = #{prdt_nm}
+    	    , prdt_nm_en = #{prdt_nm_en}    
+    	    <if test="prdt_file_id != null and prdt_file_id != '' ">, prdt_file_id = #{prdt_file_id} </if>
+    	    , upd_userno = #{reg_userno}        
+    	    , upd_date = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    </trim>
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	            <if test="dir_sn != null and dir_sn != '' ">
+    	                AND dir_sn = #{dir_sn}    
+    	            </if>
+		    	    <if test="prdt_pctr_sn != null and prdt_pctr_sn != '' ">
+		    	        AND prdt_pctr_sn = #{prdt_pctr_sn}    
+		    	    </if>
+    	    </trim>
+    	
+    </update>
+    
+    <!--
+	기업디렉토리 제품사진 정보를 삭제한다. 
+    -->
+    <delete id="deleteCmpyDirPrdtPctr" parameterType="Map">
+    	DELETE FROM T_CMPY_DIR_PRDT_PCTR
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	    <if test="prdt_pctr_sn != null and prdt_pctr_sn != '' ">
+    	        AND prdt_pctr_sn = #{prdt_pctr_sn}    
+    	    </if>
+    	    </trim>
+    	
+    </delete>
+    
+    </mapper>
+    

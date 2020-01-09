@@ -1,0 +1,27 @@
+@charset "utf-8";
+
+.parsely-single-error .filled ~ .filled {
+    display: none;
+}
+
+table.sectors tbody tr td {border : 0px;padding-right: 0px;padding-left: 5px;}
+table.sectors tbody tr td:first-child {border : 0px;padding-right: 0px;padding-left: 0px;}
+
+div.dtable_area table tbody tr td a:link {
+    color: #000000;
+}
+
+/* visited link */
+div.dtable_area table tbody tr td a:visited {
+    color: #000000;
+}
+
+/* mouse over link */
+div.dtable_area table tbody tr td a:hover {
+    color: #000000;
+}
+
+/* selected link */
+div.dtable_area table tbody tr td a:active {
+    color: #000000;
+}

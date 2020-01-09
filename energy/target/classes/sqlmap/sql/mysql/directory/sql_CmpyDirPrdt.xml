@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+<PRE>
+T_기업디렉토리제품 정보를 관리
+</PRE>
+
+-->
+<mapper namespace="CmpyDirPrdtDao">
+    
+    <!--
+	기업디렉토리 제품 정보를 상세조회한다.
+    -->
+    <select id="selectCmpyDirPrdtList" parameterType="Map" resultType="caseMap">
+   	
+    	SELECT
+    	    dir_sn     
+    	    , prdt_sn      
+    	    , inds_tp_cd    
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'INDS_TP_CD' AND code = a.inds_tp_cd) AS inds_tp_cd_nm
+    	    , wbiz_tp_l_cd    
+			, (SELECT wbiz_clsf_nm FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'L' AND wbiz_tp_l_cd = a.wbiz_tp_l_cd) AS wbiz_tp_l_cd_nm
+			, (SELECT wbiz_clsf_nm_en FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'L' AND wbiz_tp_l_cd = a.wbiz_tp_l_cd) AS wbiz_tp_l_cd_nm_en
+    	    , wbiz_tp_m_cd    
+			, (SELECT wbiz_clsf_nm FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'M' AND wbiz_tp_m_cd = a.wbiz_tp_m_cd) AS wbiz_tp_m_cd_nm
+			, (SELECT wbiz_clsf_nm_en FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'M' AND wbiz_tp_m_cd = a.wbiz_tp_m_cd) AS wbiz_tp_m_cd_nm_en
+    	    , wbiz_tp_s_cd  
+			, (SELECT wbiz_clsf_nm FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'S' AND wbiz_tp_s_cd = a.wbiz_tp_s_cd) AS wbiz_tp_s_cd_nm
+			, (SELECT wbiz_clsf_nm_en FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'S' AND wbiz_tp_s_cd = a.wbiz_tp_s_cd) AS wbiz_tp_s_cd_nm_en
+    	    , prdt_nm    
+    	    , prdt_nm_en    
+    	    , reg_userno    
+    	    , reg_date    
+    	    , upd_userno    
+    	    , upd_date
+    	FROM T_CMPY_DIR_PRDT a
+    	<trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	</trim>
+    	ORDER BY prdt_sn
+    	    	
+    </select>
+    
+    <!--
+	기업디렉토리 제품 정보를 등록한다.
+    -->
+    <insert id="insertCmpyDirPrdt" parameterType="Map">
+    	INSERT INTO T_CMPY_DIR_PRDT (
+    	    dir_sn     
+    	    , prdt_sn    
+    	    , inds_tp_cd    
+    	    , wbiz_tp_l_cd    
+    	    , wbiz_tp_m_cd    
+    	    , wbiz_tp_s_cd    
+    	    , prdt_nm    
+    	    , prdt_nm_en    
+    	    , reg_userno    
+    	    , reg_date    
+    	    , upd_userno    
+    	    , upd_date    
+    	) VALUES (
+    	    #{dir_sn}     
+    	    , ( SELECT * FROM ( SELECT IFNULL(MAX(CAST(prdt_sn AS UNSIGNED)),0)+1 FROM T_CMPY_DIR_PRDT WHERE dir_sn = #{dir_sn} ) AS t ) 
+    	    , #{inds_tp_cd}    
+    	    , #{wbiz_tp_l_cd}    
+    	    , #{wbiz_tp_m_cd}    
+    	    , #{wbiz_tp_s_cd}    
+    	    , #{prdt_nm}    
+    	    , #{prdt_nm_en}    
+    	    , #{reg_userno}    
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    , #{reg_userno}    
+    	    , DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	)
+    	
+    </insert>
+    
+    
+    <!--
+	기업디렉토리 제품 정보를 수정한다.
+    -->
+    <update id="updateCmpyDirPrdt" parameterType="Map">
+    	UPDATE T_CMPY_DIR_PRDT 
+    	    <trim prefix="SET" prefixOverrides=", ">
+    	    , inds_tp_cd = #{inds_tp_cd}
+    	    , wbiz_tp_l_cd = #{wbiz_tp_l_cd}    
+    	    , wbiz_tp_m_cd = #{wbiz_tp_m_cd}    
+    	    , wbiz_tp_s_cd = #{wbiz_tp_s_cd}    
+    	    , prdt_nm = #{prdt_nm}    
+    	    , prdt_nm_en = #{prdt_nm_en} 
+    	    , upd_userno = #{reg_userno}        
+    	    , upd_date = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    </trim>
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	            <if test="dir_sn != null and dir_sn != '' ">
+    	                AND dir_sn = #{dir_sn}    
+    	            </if>
+		    	    <if test="prdt_sn != null and prdt_sn != '' ">
+		    	        AND prdt_sn = #{prdt_sn}    
+		    	    </if>
+    	    </trim>
+    	
+    </update>
+    
+    <!--
+	기업디렉토리 제품 정보를 삭제한다.
+    -->
+    <delete id="deleteCmpyDirPrdt" parameterType="Map">
+    	DELETE FROM T_CMPY_DIR_PRDT
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	    </trim>
+    	
+    </delete>
+    
+    </mapper>
+    

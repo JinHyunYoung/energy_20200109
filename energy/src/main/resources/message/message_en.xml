@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd" >
+<properties>
+        
+    <entry key="upload.success"><![CDATA[성공적으로 업로드 되었습니다.]]></entry>
+    <entry key="upload.fail"><![CDATA[업로드 중 실패 되었습니다.]]></entry>
+    <entry key="upload.excelonly"><![CDATA[엑셀 파일만 업로드 가능합니다.]]></entry>
+    <entry key="upload.file.notselect"><![CDATA[파일을 선택해주세요.]]></entry>
+    <entry key="upload.confirm"><![CDATA[업로드 하시겠습니까?]]></entry>
+    <entry key="upload.file.label"><![CDATA[파일]]></entry>
+    <entry key="upload.excel.upload"><![CDATA[엑셀업로드]]></entry>
+    <entry key="common.register"><![CDATA[등록하기]]></entry>
+    
+    <entry key="msg.list.found"><![CDATA[조회가 완료되었습니다.]]></entry>
+    <entry key="msg.one.found"><![CDATA[조회가 완료되었습니다.]]></entry>
+    <entry key="msg.multi.update"><![CDATA[요청이 처리되었습니다.]]></entry>
+    <entry key="msg.not.found"><![CDATA[조회된 결과가 없습니다.]]></entry>
+    <entry key="msg.saved"><![CDATA[{0}건이 저장되었습니다.]]></entry>
+    <entry key="msg.updated"><![CDATA[{0}건이 수정되었습니다.]]></entry>
+    <entry key="msg.deleted"><![CDATA[{0}건이 삭제되었습니다.]]></entry>
+    <entry key="msg.inserted"><![CDATA[입력이 완료되었습니다.]]></entry>
+    <entry key="msg.inserted.not.found"><![CDATA[입력된 건이 없습니다.]]></entry>
+    <entry key="msg.updated.not.found"><![CDATA[수정된 건이 없습니다.]]></entry>
+    <entry key="msg.updated.not.count"><![CDATA[수정이 완료되었습니다.]]></entry>
+    <entry key="msg.deleted.not.found"><![CDATA[삭제된 건이 없습니다.]]></entry>
+    <entry key="msg.deleted.not.count"><![CDATA[삭제가 완료되없습니다.]]></entry>
+    <entry key="msg.error"><![CDATA[프로그램 수행중 오류가 발생했습니다.]]></entry>
+    <entry key="msg.processfail"><![CDATA[정상적으로 처리 하지 못했습니다.]]></entry>
+    <entry key="msg.obj.duplicate"><![CDATA[중복된 {0} 입니다.]]></entry>
+    <entry key="msg.obj.notexist"><![CDATA[존재하지 않는 {0} 입니다.]]></entry>
+    
+    <entry key="msg.00001"><![CDATA[아이디를 입력하십시오.]]></entry>
+    <entry key="msg.00002"><![CDATA[패스워드를 입력하십시오.]]></entry>
+    <entry key="msg.00003"><![CDATA[해당 사용자는 존재하지 않습니다.]]></entry>
+        
+    <entry key="system.00001"><![CDATA[존재하지 않는 코드 [{0}]]]></entry>
+    <entry key="system.00002"><![CDATA[숫자(소숫점) 자릿수 초과]]></entry>
+    <entry key="system.00003"><![CDATA[파일 용량 초과(5MB)]]></entry>
+    <entry key="system.00004"><![CDATA[입력 가능 문자수 초과]]></entry>
+    <entry key="system.00005"><![CDATA[Excel 코드 없음]]></entry>
+    <entry key="system.00006"><![CDATA[Excel 데이터 형식변환 오류]]></entry>
+    <entry key="system.00007"><![CDATA[Excel 데이터 없음]]></entry>
+    <entry key="system.00008"><![CDATA[Excel 숫자(소숫점) 자릿수 초과]]></entry>
+    <entry key="system.00009"><![CDATA[Excel 입력 가능 문자 수 초과]]></entry>
+    <entry key="system.00010"><![CDATA[Excel 데이터 중복 [{0}]]]></entry>
+    <entry key="system.00011"><![CDATA[Excel 필수 입력 항목]]></entry>
+    <entry key="system.00012"><![CDATA[Excel 항목 없음]]></entry>
+    <entry key="system.00013"><![CDATA[Excel Sheet 없음]]></entry>
+    <entry key="system.00014"><![CDATA[Excel 파일 없음]]></entry>
+    <entry key="system.00015"><![CDATA[필수 입력 항목]]></entry>
+    <entry key="system.00016"><![CDATA[항목 없음]]></entry>
+    <entry key="system.00018"><![CDATA[오류검증 정보]]></entry>
+    <entry key="system.00019"><![CDATA[첨부문서정보]]></entry>
+    <entry key="system.00020"><![CDATA[초기화]]></entry>
+    <entry key="system.00021"><![CDATA[전체]]></entry>
+    <entry key="system.00022"><![CDATA[선택]]></entry>
+    <entry key="system.00023"><![CDATA[총건수]]></entry>
+    <entry key="system.00024"><![CDATA[번호]]></entry>
+    <entry key="system.00025"><![CDATA[첨부문서명]]></entry>
+    <entry key="system.00026"><![CDATA[사용유형]]></entry>
+    <entry key="system.00027"><![CDATA[첨부]]></entry>
+    <entry key="system.00028"><![CDATA[필수]]></entry>
+    <entry key="system.00029"><![CDATA[옵션]]></entry>
+    <entry key="system.00030"><![CDATA[닫기]]></entry>
+    <entry key="system.00031"><![CDATA[잘못된 날짜형식]]></entry>
+    <entry key="system.00032"><![CDATA[신고번호]]></entry>
+    <entry key="system.00033"><![CDATA[물품정보]]></entry>
+    <entry key="system.00034"><![CDATA[항목명]]></entry>
+    <entry key="system.00035"><![CDATA[내용]]></entry>
+    <entry key="system.00036"><![CDATA[엑셀줄번호]]></entry>
+    <entry key="system.00037"><![CDATA[파일]]></entry>
+    <entry key="system.00038"><![CDATA[파일추가]]></entry>
+    <entry key="system.00039"><![CDATA[파일삭제]]></entry>
+    <entry key="system.00040"><![CDATA[확인]]></entry>
+    <entry key="system.00041"><![CDATA[미확인]]></entry>
+    <entry key="system.00042"><![CDATA[전송대상]]></entry>
+    <entry key="system.00043"><![CDATA[메시지ID]]></entry>
+    <entry key="system.00044"><![CDATA[코드]]></entry>
+    <entry key="system.00045"><![CDATA[이미지]]></entry>
+    
+    <entry key="system.10001"><![CDATA[데이터를 저장하시겠습니까?]]></entry>
+    <entry key="system.10002"><![CDATA[데이터를 삭제하시겠습니까?]]></entry>
+    <entry key="system.10003"><![CDATA[데이터를 전송하시겠습니까?]]></entry>
+    
+    <entry key="system.20001"><![CDATA[조회를 실시하십시오.]]></entry>
+    <entry key="system.20002"><![CDATA[조회결과가 없습니다.]]></entry>
+    <entry key="system.20003"><![CDATA[항목을 선택하십시오.]]></entry>
+    <entry key="system.20004"><![CDATA[전송이 실패하였습니다.]]></entry>
+    <entry key="system.20005"><![CDATA[오류검증을 통과했습니다]]></entry>
+    <entry key="system.20006"><![CDATA[처리된 데이터가 한 건도 없습니다.]]></entry>
+    <entry key="system.20007"><![CDATA[{0}는 1개 이상이어야 합니다.]]></entry>
+    <entry key="system.20008"><![CDATA[{0} 파일이 아닙니다.]]></entry>
+    <entry key="system.20009"><![CDATA[오류검증 메세지를 확인하십시오.]]></entry>
+    <entry key="system.20010"><![CDATA[정상적으로 완료하였습니다.]]></entry>
+    <entry key="system.20011"><![CDATA[로그인이 필요한 서비스입니다.\n로그인이 페이지로 이동하시겠습니까?]]></entry>
+    <entry key="system.20012"><![CDATA[해당 {0}는(은) 존재하지 않습니다]]></entry>
+    <entry key="system.20013"><![CDATA[언어변경을 위해 메인화면으로 이동합니다.]]></entry>
+    <entry key="system.20014"><![CDATA[메세지 저장 처리중 오류가 발생했습니다.]]></entry>
+    <entry key="system.20015"><![CDATA[메세지 변환 처리중 오류가 발생했습니다.]]></entry>
+    <entry key="system.20016"><![CDATA[웹서비스 전송서버 연결이 실패하였습니다.]]></entry>
+    <entry key="system.20017"><![CDATA[파일크기가 0입니다.]]></entry>
+    <entry key="system.20018"><![CDATA[최대파일사이즈를 초과했습니다. (Max:{0})]]></entry>
+    <entry key="system.20020"><![CDATA[시작일자는 종료일자보다 클수 없습니다.]]></entry>
+    <entry key="system.20021"><![CDATA[이미 존재하는 항목입니다.]]></entry>
+    
+</properties>
+    

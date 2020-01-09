@@ -1,0 +1,79 @@
+@charset "utf-8";
+@import "nanumgothic.css";
+
+
+/* 일정 */
+.schedule_area {overflow: hidden; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+.schedule_area .schedule_calendar {float: left; width: 590px; margin: 20px 30px 0 0;}
+	.schedule_calendar .calendar_top {position: relative; width: 288px; margin: 0 auto 20px; text-align: center;}
+	.schedule_calendar .calendar_top .btn.this_month {float: left; display: inline-block; width: 82px; height: 34px; margin-right: 10px; font-size: 14px; font-weight: bold; color: #ffffff; text-align: center; line-height: 34px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; background-color: #d89d00;}
+	.schedule_calendar .calendar_top > a {float: left; display: inline-block;}
+	.schedule_calendar .calendar_top a:hover {text-decoration: none;}
+	.schedule_calendar .calendar_top a.go_pop_calendar {float: left; display: inline-block; width: 88px; height: 34px; margin: 0 20px; font-size: 20px; font-weight: bold; color: #7b736b; line-height: 34px;}
+	.schedule_calendar .calendar_top:after {content:""; clear:both; display:block;}
+
+	.schedule_calendar .calendar_detail {overflow: hidden;}
+		table.tbl_calendar {width: 100%; border: 1px solid #c9c9c9; table-layout: fixed;}
+		table.tbl_calendar thead th {border-left: 1px solid #c9c9c9; padding: 15px 0; font-size: 14px; font-weight: bold; text-align: center; color: #ffffff; background-color: #e86a02;}
+		table.tbl_calendar tbody td {border-top: 1px solid #c9c9c9; border-left: 1px solid #c9c9c9;}
+		table.tbl_calendar tbody td div.day_area {overflow: hidden; min-height: 54px; padding-right: 1px;}
+		table.tbl_calendar tbody td div.day_info {margin: 11px 0 0 9px;}
+		table.tbl_calendar tbody td div.day_memo {overflow: hidden; margin-top: 10px; text-align: right;}
+		table.tbl_calendar tbody td div.day_memo a {display: inline-block; width: 23px; height: 23px; margin-left: 1px;}
+			table.tbl_calendar tbody td div.day_memo a.schedule_01 {background: url('/images/admin/calendar/icon_calendar_01.png') no-repeat center center;}
+			table.tbl_calendar tbody td div.day_memo a.schedule_02 {background: url('/images/admin/calendar/icon_calendar_02.png') no-repeat center center;}
+			table.tbl_calendar tbody td div.day_memo a.schedule_03 {background: url('/images/admin/calendar/icon_calendar_03.png') no-repeat center center;}
+			table.tbl_calendar tbody td div.day_memo a.schedule_04 {background: url('/images/admin/calendar/icon_calendar_04.png') no-repeat center center;}
+			table.tbl_calendar tbody td div.day_memo a.schedule_05 {background: url('/images/admin/calendar/icon_calendar_05.png') no-repeat center center;}
+			table.tbl_calendar tbody td div.day_memo a.schedule_06 {background: url('/images/admin/calendar/icon_calendar_06.png') no-repeat center center;}
+			table.tbl_calendar tbody td div.day_memo a.schedule_07 {background: url('/images/admin/calendar/icon_calendar_07.png') no-repeat center center;}
+		table.tbl_calendar tbody td div.day_memo a span {display: none;}
+
+		.choice_layear {position: absolute; overflow: hidden; top: 44px; left: 92px; width: 194px; border: 1px solid #c9c9c9; text-align: left; background-color: #ffffff;}
+	    .choice_titlearea {overflow: hidden; height: 28px; border-bottom: 1px solid #ffffff; background-color: #f9f9f9;}
+	    .choice_titlearea strong {float: left; height: 28px; margin-left: 5px; font-size: 13px; font-weight: bold; color: #878787; line-height: 28px;}
+	    .choice_titlearea a {float: right; margin: 5px 5px 0 0;}
+	    .choice_layear ul {float: left; overflow-y: scroll; width: 50%; height: 100px;}
+	    .choice_layear ul li {overflow: hidden; height: 20px; line-height: 20px;}
+	    .choice_layear ul li a {display: block; padding-left: 5px; font-size: 96%; letter-spacing: -0.04em; color: #4d4d4d;}
+	    .choice_layear ul li a:hover {display: block; text-decoration: none; background-color: #ececec;}
+	    .choice_layear ul li a.on {background-color: #d1f3fd;}
+	    .choice_layear ul li a.on:hover {background-color: #d1f3fd;}
+
+.schedule_area .schedule_detail {overflow: hidden; margin-top: 74px;}
+.schedule_area .schedule_detail > div + div {margin-top: 30px;}
+	.schedule_detail_box {overflow: hidden; border-top: 2px solid #7b736b; border-bottom: 1px solid #7b736b;}
+		.schedule_detail_box strong {display: block; padding: 16px 20px; border-bottom: 1px solid #dcdcdc; font-size: 14px; font-weight: bold; color: #333333; background-color: #f9f4f0;}
+		.schedule_detail_box dl.sch_dl {overflow: hidden; padding: 14px 20px; border-bottom: 1px solid #dcdcdc; color: #333333; line-height: 1.4em;}
+			.schedule_detail_box dl.sch_dl dt.sch_dt {float: left; margin-left: 8px; padding-left: 8px; font-size: 14px; font-weight: bold; background: url('/images/admin/common/bg_search_dt.png') no-repeat left 2px;}
+			.schedule_detail_box dl.sch_dl dt.sch_dt:first-child {padding-left: 0; margin-left: 0; background: none;}
+			.schedule_detail_box dl.sch_dl dd.sch_dd {float: left; padding-left: 10px; margin-left: 9px; font-size: 13px; background: url('/images/admin/common/bg_search_dd.png') no-repeat left 6px;}
+		.schedule_detail_box .detail_txt {overflow: hidden; padding: 17px 20px; font-size: 13px; color: #333333; line-height: 1.5em;}
+
+
+
+/* 화면 해상도 width 640px 이상 Design --------------------------------------*/
+@media screen and (min-width: 1025px){
+
+
+
+}
+
+
+/* 화면 해상도 width 640px 이상 960px 이하 Design --------------------------------------*/ 
+@media screen and (max-width: 1024px) and (min-width: 641px) {
+
+	.schedule_area .schedule_calendar {float: none; width: 100%; margin: 0 auto;}
+
+
+}
+
+
+/* 화면 해상도 width 640px 이하 Design --------------------------------------*/
+@media screen and (max-width: 640px){
+
+	.schedule_area .schedule_calendar {float: none; width: 100%; margin: 0 auto;}
+	.schedule_calendar .calendar_top a.go_pop_calendar {margin: 0 10px;}
+	.choice_layear {width: 174px;}
+}
+

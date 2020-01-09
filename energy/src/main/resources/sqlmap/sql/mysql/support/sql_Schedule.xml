@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ScheduleDao">
+
+	 <resultMap id="scheduleMap" type="Map">
+		<result property="evt_sn" column="evt_sn" />
+		<result property="domestic_yn" column="domestic_yn" />
+		<result property="evt_strt_dt" column="evt_strt_dt" />
+		<result property="evt_end_dt" column="evt_end_dt" />
+		<result property="evt_ttle" column="evt_ttle" />
+		<result property="evt_cn" column="evt_cn" javaType="java.lang.String" jdbcType="CLOB"/>	    
+		<result property="evt_tp_icon" column="evt_tp_icon" />
+		<result property="del_yn" column="del_yn" />
+		<result property="reg_userno" column="reg_userno" />
+		<result property="reg_date" column="reg_date" />
+		<result property="upd_userno" column="upd_userno" />
+		<result property="upd_date" column="upd_date" />
+	</resultMap>
+	
+	
+	<select id="selectScheduleListMain" parameterType="Map" resultMap="scheduleMap">
+		SELECT 
+	   		evt_sn
+			, domestic_yn
+			, DATE_FORMAT( evt_strt_dt , '%Y-%m-%d' ) AS evt_strt_dt
+			, DATE_FORMAT( evt_end_dt , '%Y-%m-%d' ) AS evt_end_dt
+			, evt_ttle
+		FROM 
+			T_EVT_SCHD
+		WHERE 
+			1 = 1 AND del_yn = 'N'
+			<if test='evt_sn != null and ! evt_sn.equals( "" )' >
+				AND evt_sn = #{evt_sn}
+			</if>
+			<if test='domestic_yn != null and ! domestic_yn.equals( "" )' >
+				AND domestic_yn = #{domestic_yn}
+			</if>
+			<if test='evt_ttle != null and ! evt_ttle.equals( "" )' >
+				AND evt_ttle LIKE CONCAT('%', #{evt_ttle}, '%')
+			</if>
+			<if test='evt_cn != null and ! evt_cn.equals( "" )' >
+				AND evt_cn LIKE CONCAT('%', #{evt_cn}, '%')
+			</if>
+			<if test='evt_strt_dt != null and ! evt_strt_dt.equals( "" )' >
+			<![CDATA[
+				AND evt_end_dt >= #{evt_strt_dt}
+			]]>	
+			</if>
+			<if test='evt_end_dt != null and ! evt_end_dt.equals( "" )' >
+			<![CDATA[
+				AND evt_strt_dt <= #{evt_end_dt}
+			]]>
+			</if>	
+			<if test='evt_tp_icon != null and ! evt_tp_icon.equals( "" )' >
+				AND evt_tp_icon = #{evt_tp_icon}
+			</if>
+			<if test='del_yn != null and !del_yn.equals( "" )' >
+				AND del_yn = #{del_yn}
+			</if>	
+			ORDER BY evt_strt_dt DESC LIMIT 0 , 2
+	</select>
+	
+	<select id="selectScheduleList" parameterType="Map" resultMap="scheduleMap">
+		SELECT 
+	   		evt_sn
+			, domestic_yn
+			, DATE_FORMAT( evt_strt_dt , '%Y-%m-%d' ) AS evt_strt_dt
+			, DATE_FORMAT( evt_end_dt , '%Y-%m-%d' ) AS evt_end_dt
+			, evt_ttle
+			, evt_cn
+			, evt_tp_icon
+			, group_id
+			, del_yn
+			, reg_userno
+			, GET_DATEFORMAT( reg_date ) AS reg_date
+			, upd_userno
+			, GET_DATEFORMAT( upd_date ) AS upd_date
+		FROM 
+			T_EVT_SCHD
+		WHERE 
+			1 = 1 AND del_yn = 'N'
+			<if test='evt_sn != null and ! evt_sn.equals( "" )' >
+				AND evt_sn = #{evt_sn}
+			</if>
+			<if test='domestic_yn != null and ! domestic_yn.equals( "" )' >
+				AND domestic_yn = #{domestic_yn}
+			</if>
+			<if test='evt_ttle != null and ! evt_ttle.equals( "" )' >
+				AND evt_ttle LIKE CONCAT('%', #{evt_ttle}, '%')
+			</if>
+			<if test='evt_cn != null and ! evt_cn.equals( "" )' >
+				AND evt_cn LIKE CONCAT('%', #{evt_cn}, '%')
+			</if>
+			<if test='evt_strt_dt != null and ! evt_strt_dt.equals( "" )' >
+			<![CDATA[
+				AND evt_end_dt >= #{evt_strt_dt}
+			]]>	
+			</if>
+			<if test='evt_end_dt != null and ! evt_end_dt.equals( "" )' >
+			<![CDATA[
+				AND evt_strt_dt <= #{evt_end_dt}
+			]]>
+			</if>	
+			<if test='evt_tp_icon != null and ! evt_tp_icon.equals( "" )' >
+				AND evt_tp_icon = #{evt_tp_icon}
+			</if>
+			<if test='del_yn != null and !del_yn.equals( "" )' >
+				AND del_yn = #{del_yn}
+			</if>	
+			ORDER BY evt_sn DESC				
+	</select>
+
+	
+	<select id="selectSchedule" parameterType="Map" resultMap="scheduleMap">
+		SELECT 
+	   		evt_sn
+			, domestic_yn
+			, DATE_FORMAT( evt_strt_dt , '%Y-%m-%d' ) AS evt_strt_dt
+			, DATE_FORMAT( evt_end_dt , '%Y-%m-%d' ) AS evt_end_dt
+			, evt_ttle
+			, evt_cn
+			, evt_tp_icon
+			, group_id
+			, del_yn
+			, reg_userno
+			, GET_DATEFORMAT( reg_date ) AS reg_date
+			, upd_userno
+			, GET_DATEFORMAT( upd_date ) AS upd_date
+		FROM 
+			T_EVT_SCHD
+		WHERE 
+			evt_sn = #{evt_sn}						
+	</select>
+	
+	
+	<insert id="insertSchedule" parameterType="Map" >
+		<selectKey resultType="String" keyProperty="evt_sn" order="BEFORE">
+    	    ( SELECT * FROM ( SELECT IFNULL(MAX(CAST(evt_sn AS UNSIGNED)),0)+1 FROM T_EVT_SCHD) AS t ) 
+		</selectKey>
+
+		INSERT INTO T_EVT_SCHD (
+			evt_sn
+			, domestic_yn
+			, evt_strt_dt
+			, evt_end_dt
+			, evt_ttle
+			, evt_cn
+			, evt_tp_icon
+			, group_id
+			, del_yn
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			#{evt_sn}
+			, #{domestic_yn}
+			, DATE_FORMAT( CONCAT(#{evt_strt_dt}, ' 00:00:00') , '%Y-%m-%d %T' )
+			, DATE_FORMAT( CONCAT(#{evt_end_dt}, ' 23:59:59' ), '%Y-%m-%d %T' )
+			, #{evt_ttle}
+			, #{contents}
+			, #{evt_tp_icon}
+			, #{group_id}
+			, 'N'
+			, #{s_user_no}
+			, DATE_FORMAT( now() , '%Y%m%d%H%i%S' )			
+			, #{s_user_no}
+			, DATE_FORMAT( now() , '%Y%m%d%H%i%S' )
+		)
+	</insert>
+	
+	<update id="updateSchedule" parameterType="Map" >
+	    UPDATE T_EVT_SCHD
+		SET
+			domestic_yn = #{domestic_yn}
+			, evt_strt_dt =  DATE_FORMAT(CONCAT( #{evt_strt_dt}, ' 00:00:00') , '%Y-%m-%d %T' )
+			, evt_end_dt =  DATE_FORMAT(CONCAT( #{evt_end_dt}, ' 23:59:59' ), '%Y-%m-%d %T' )
+			, evt_ttle = #{evt_ttle}
+			, evt_cn = #{contents}
+			, evt_tp_icon = #{evt_tp_icon}
+			, group_id = #{group_id}
+			, upd_userno = #{s_user_no}
+			, upd_date = DATE_FORMAT( now() ,'%Y%m%d%H%i%S')
+		WHERE 
+			evt_sn = #{evt_sn}
+	</update>
+	
+	<update id="updateScheduleGroupId" parameterType="Map" >
+	    UPDATE T_EVT_SCHD
+		SET
+			group_id = #{group_id}
+		WHERE 
+			evt_sn = #{evt_sn}
+	</update>
+	
+	<update id="deleteSchedule" parameterType="Map" >
+	 	UPDATE T_EVT_SCHD
+	 	SET del_yn = 'Y' 
+	 		, upd_userno = #{s_user_no}
+			, upd_date = DATE_FORMAT( now() ,'%Y%m%d%H%i%S')
+		WHERE 	
+			evt_sn = #{evt_sn}
+	</update>	
+	
+	<update id="updateGroupId" parameterType="Map" >
+	    UPDATE T_EVT_SCHD
+		SET
+			group_id = #{group_id}
+		WHERE  
+			evt_sn = #{evt_sn}
+	</update>
+</mapper>

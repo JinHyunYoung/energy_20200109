@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DictionaryDao">
+
+	 <resultMap id="dictionaryMap" type="Map">
+		<result property="term_sn" column="term_sn" />
+		<result property="kr_idx" column="kr_idx" />
+		<result property="en_idx" column="en_idx" />
+		<result property="term_kr_nm" column="term_kr_nm" />
+		<result property="term_en_nm" column="term_en_nm" />
+		<result property="term_dfn" column="term_dfn" />	
+		<result property="del_yn" column="use_yn" />
+		<result property="reg_usernm" column="reg_usernm" />
+		<result property="reg_userno" column="reg_userno" />
+		<result property="reg_date" column="reg_date" />
+		<result property="upd_userno" column="upd_userno" />
+		<result property="upd_date" column="upd_date" />
+	</resultMap>
+	
+	<resultMap id="searchTermMap" type="Map">
+		<result property="term_sn" column="term_sn" />
+		<result property="sch_term" column="sch_term" />
+		<result property="sch_dt" column="sch_dt" />		
+		<result property="cnt" column="cnt" />
+	</resultMap>
+		
+	<select id="selectDictionaryPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		SELECT 
+	   		term_sn		
+			, kr_idx		
+			, en_idx		
+			, term_kr_nm	
+			, term_en_nm	
+			, del_yn		
+			, ( SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno ) AS reg_usernm
+			, reg_userno
+			, GET_DATEFORMAT( reg_date ) AS reg_date
+			, upd_userno
+			, GET_DATEFORMAT( upd_date ) AS upd_date
+		FROM 
+			T_TERM_DICT a
+		WHERE 
+			1 = 1 
+			AND del_yn = 'N'
+			<if test='kr_idx != null and ! kr_idx.equals( "" )' >
+				AND kr_idx = #{kr_idx}
+			</if>
+			<if test='en_idx != null and ! en_idx.equals( "" )' >
+				AND en_idx = #{en_idx}
+			</if>
+			<if test='term_kr_nm != null and ! term_kr_nm.equals( "" )' >
+				AND term_kr_nm LIKE CONCAT('%',  #{term_kr_nm}, '%')
+			</if>
+			<if test='term_en_nm != null and ! term_en_nm.equals( "" )' >
+				AND term_en_nm LIKE CONCAT('%',  #{term_en_nm}, '%')
+			</if>				
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="selectPortalDictionaryPageList" parameterType="Map" resultMap="dictionaryMap">
+		<include refid="CommonSql.pageingTop"/>
+		SELECT 
+	   		term_sn		
+			, kr_idx		
+			, en_idx		
+			, term_kr_nm	
+			, term_en_nm	
+			, term_dfn
+			, del_yn		
+			, ( SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno ) AS reg_usernm
+			, reg_userno
+			, GET_DATEFORMAT( reg_date ) AS reg_date
+			, upd_userno
+			, GET_DATEFORMAT( upd_date ) AS upd_date
+		FROM 
+			T_TERM_DICT a
+		WHERE 
+			1 = 1 
+			AND del_yn = 'N'
+			<if test='kr_idx != null and ! kr_idx.equals( "" )' >
+				AND kr_idx = #{kr_idx}
+			</if>
+			<if test='en_idx != null and ! en_idx.equals( "" )' >
+				AND en_idx = #{en_idx}
+			</if>
+			<if test='dic_keyword != null and ! dic_keyword.equals( "" )' >
+				AND ( term_kr_nm LIKE CONCAT('%',  #{dic_keyword}, '%' ) OR term_en_nm LIKE CONCAT('%',  #{dic_keyword}, '%')  )
+			</if>							
+		<include refid="CommonSql.pageingBottom"/>			
+	</select>
+
+	
+	<select id="selectDictionary" parameterType="Map" resultMap="dictionaryMap">
+		SELECT 
+	   		term_sn		
+			, kr_idx		
+			, en_idx		
+			, term_kr_nm	
+			, term_en_nm	
+			, term_dfn	
+			, del_yn		
+			, ( SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno ) AS reg_usernm
+			, reg_userno
+			, GET_DATEFORMAT( reg_date ) AS reg_date
+			, upd_userno
+			, GET_DATEFORMAT( upd_date ) AS upd_date
+		FROM 
+			T_TERM_DICT a
+		WHERE 
+			term_sn = #{term_sn}
+	</select>
+	
+	
+	<update id="insertDictionary" parameterType="Map" >
+		<selectKey resultType="String" keyProperty="new_term_sn" order="BEFORE">
+        	SELECT IFNULL( MAX( term_sn ) , 0 ) + 1 FROM T_TERM_DICT  
+		</selectKey>
+	
+		INSERT INTO T_TERM_DICT (
+			term_sn		
+			, kr_idx		
+			, en_idx		
+			, term_kr_nm	
+			, term_en_nm	
+			, term_dfn	
+			, del_yn		
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			#{new_term_sn}		
+			, #{kr_idx}
+			, #{en_idx}
+			, #{term_kr_nm}
+			, #{term_en_nm}
+			, #{term_dfn}
+			, 'N'
+			, #{s_user_no}
+			, DATE_FORMAT( SYSDATE() , '%Y%m%d%H%i%s' )			
+			, #{s_user_no}
+			, DATE_FORMAT( SYSDATE() , '%Y%m%d%H%i%s' )			
+		)
+	</update>
+	
+	<update id="updateDictionary" parameterType="Map" >
+	    UPDATE T_TERM_DICT
+		SET
+			kr_idx = #{kr_idx}
+			, en_idx = #{en_idx}
+			, term_kr_nm = #{term_kr_nm}
+			, term_en_nm = #{term_en_nm}
+			, term_dfn = #{term_dfn}
+			, upd_userno = #{s_user_no}
+			, upd_date = DATE_FORMAT( SYSDATE() , '%Y%m%d%H%i%s' )
+		WHERE 
+			term_sn = #{term_sn}
+	</update>
+	
+	<update id="deleteDictionary" parameterType="Map" >
+	 	UPDATE T_TERM_DICT
+	 	SET
+	 		del_yn = 'Y'
+		WHERE 	
+			term_sn = #{term_sn}
+	</update>	
+	
+	
+	<select id="searchTermHistory" parameterType="Map" resultMap="dictionaryMap">
+	 	SELECT 
+	   		term_sn					
+			, term_kr_nm			
+		FROM 
+			T_TERM_DICT
+		WHERE 
+			del_yn = 'N' AND ( term_kr_nm = TRIM( #{dic_keyword} ) OR term_en_nm = TRIM( #{dic_keyword} ) )
+	</select>
+	
+	<select id="searchTermHistoryTop5" parameterType="Map" resultMap="searchTermMap">
+	 	SELECT sch_term , count( term_sn ) AS cnt from T_TERM_SCH_HIST GROUP BY SCH_TERM ORDER BY cnt DESC LIMIT 0 , 5
+	</select>
+	
+	<insert id="insertTermHistory" parameterType="Map">
+	 	INSERT INTO T_TERM_SCH_HIST ( term_sn , sch_term , sch_dt )	
+	 	VALUES ( #{term_sn} , #{term_kr_nm} , now() )
+	</insert>
+
+	
+</mapper>

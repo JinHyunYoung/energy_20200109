@@ -1,0 +1,40 @@
+
+
+  /*********************************************************************************************
+		-	SET THE SCREEN SIZES FOR THE BANNER IF YOU WISH TO MAKE THE BANNER RESOPONSIVE 	-	
+  **********************************************************************************************/
+  
+  /*	-	THE BANNER CONTAINER (Padding, Shadow, Border etc. )	-	*/
+
+
+ .fullwidthbanner-container{
+	width:100% !important;		
+	position:relative;
+	padding:0;		
+	max-height:459px !important;
+	/* max-height:750px !important; */
+	overflow:hidden;
+} 
+
+.fullwidthbanner-container .fullwidthabnner	{
+	width:100% !important;
+	max-height:459px !important;
+	/* max-height:450px !important; */
+	position:relative;	
+}
+   
+   
+
+   @media only screen and (min-width: 768px) and (max-width: 959px) {		
+ 		  .banner, .bannercontainer			{width:750px; height: 179px;} /* {width:750px; height:412px;} */
+		  .fullwidthbanner-container .fullwidthabnner img{height: 179px !important;}
+   }
+  
+   @media only screen and (min-width: 480px) and (max-width: 767px) {
+		   .banner, .bannercontainer		{width:470px; height:112px;} /* {width:470px; height:258px;} */
+		   .fullwidthbanner-container .fullwidthabnner {height: 112px !important;}
+   }
+   
+   @media only screen and (min-width: 0px) and (max-width: 479px) {
+			.banner, .bannercontainer		{width:310px; height:74px;} /* {width:310px; height:170px;} */	 
+   }

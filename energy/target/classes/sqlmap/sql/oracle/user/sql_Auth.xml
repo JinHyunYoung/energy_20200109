@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AuthDao">
+ 
+	<select id="selectAuthPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		
+		SELECT 
+	   		auth_id
+			, grp
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'AUTH_GROUP' AND code = a.grp) AS grp_nm
+			, auth_nm
+			, auth_desc
+			, use_yn
+			, range
+			, orgn
+			, reg_userno
+			, reg_date
+		FROM T_AUTH a
+		WHERE 
+			1 = 1  			
+			<if test='auth_nm != null and !auth_nm.equals("")' >
+			   AND auth_nm = #{auth_nm}
+			</if>
+			<if test='use_yn != null and !use_yn.equals("")' >
+			   AND use_yn = #{use_yn}
+			</if>
+				
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="selectAuthList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			ROWNUM AS RNUM
+			, auth_id
+			, grp
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'AUTH_GROUP' AND code = a.grp) AS grp_nm
+			, auth_nm
+			, auth_desc
+			, use_yn
+			, range
+			, orgn
+			, reg_userno
+			, reg_date
+		FROM T_AUTH a
+	</select>
+	
+	<select id="selectAuth" parameterType="Map" resultType="caseMap">
+		SELECT 
+			auth_id
+			, grp
+			, auth_nm
+			, auth_desc
+			, use_yn
+			, range
+			, orgn
+			, reg_userno
+			, reg_date
+		FROM T_AUTH
+		WHERE 
+			auth_id = #{auth_id}
+	</select>
+	
+	<select id="selectAuthExist" parameterType="Map" resultType="integer">
+		SELECT 
+			count(*)
+		FROM T_AUTH
+		WHERE	
+			auth_id = #{auth_id}
+			
+	</select>
+	
+	<update id="insertAuth" parameterType="Map" >
+		INSERT INTO T_AUTH (
+			auth_id
+			, grp
+			, auth_nm
+			, auth_desc
+			, use_yn
+			, range
+			, orgn
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			#{auth_id}
+			, #{grp}
+			, #{auth_nm}
+			, #{auth_desc}
+			, #{use_yn}
+			, #{range}
+			, #{orgn}
+			, #{s_user_no}
+			, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+			, #{s_user_no}
+			, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+		)
+	</update>
+	
+	<update id="updateAuth" parameterType="Map" >
+	    UPDATE T_AUTH
+		SET
+			grp = #{grp}
+			, auth_nm = #{auth_nm}
+			, auth_desc = #{auth_desc}
+			, use_yn = #{use_yn}
+			, range = #{range}
+			, orgn = #{orgn}
+			, upd_userno = #{s_user_no}
+			, upd_date = TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')	
+		WHERE 
+			auth_id = #{auth_id}
+	</update>
+	
+	<delete id="deleteAuth" parameterType="Map" >
+	 	DELETE FROM T_AUTH 
+		WHERE 
+			auth_id = #{auth_id}
+	</delete>
+	
+	<select id="managerAuthPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		
+		SELECT 
+	        a.user_no
+	        , a.user_id
+	        , a.user_nm
+	        , a.user_pw
+	        , a.intro
+	        , a.user_email
+	        , a.user_mobile
+	        , a.del_yn
+	        , a.pwd_mod_dt
+	        , a.birth
+	        , a.user_tel
+	        , a.post
+	        , a.addr1
+	        , a.addr2
+	        , GET_DATEFORMAT(a.agree_dt) AS agree_dt
+	        , a.user_gb
+	        , (SELECT RTRIM(xmlagg(xmlelement(e,x.auth_id,',') order by x.auth_id).extract('//text()'),',') FROM T_AUTH x INNER JOIN T_MANAGERAUTH y ON x.auth_id = y.auth_id WHERE y.user_no = a.user_no) AS auth
+	        , (SELECT RTRIM(xmlagg(xmlelement(e,x.auth_nm,',') order by x.auth_id).extract('//text()'),',') FROM T_AUTH x INNER JOIN T_MANAGERAUTH y ON x.auth_id = y.auth_id WHERE y.user_no = a.user_no) AS auth_nm
+	        , a.dept
+	        , a.reg_userno
+	        , GET_DATEFORMAT(a.reg_date) AS reg_date
+		FROM T_USER a 
+		INNER JOIN T_MANAGERAUTH b ON a.user_no = b.user_no
+		WHERE 
+			a.del_yn = 'N' 
+			AND A.USER_GB = 'M'
+			AND b.auth_id = #{auth_id}
+			
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<update id="insertManagerAuth" parameterType="Map" >
+		INSERT INTO T_MANAGERAUTH (
+			auth_id
+			, user_no
+			, reg_userno
+			, reg_date
+		) VALUES ( 
+			#{auth_id}
+			, #{user_no}
+			, #{s_user_no}
+			, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+		)
+	</update>
+	
+	<delete id="deleteManagerAuth" parameterType="Map" >
+	 	DELETE FROM T_MANAGERAUTH
+		WHERE 
+			auth_id = #{auth_id} 
+			AND user_no = #{user_no}
+	</delete>
+
+</mapper>

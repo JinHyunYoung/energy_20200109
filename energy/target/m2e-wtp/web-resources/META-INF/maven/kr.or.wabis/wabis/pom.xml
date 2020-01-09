@@ -1,0 +1,645 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>kr.or.wabis</groupId>
+	<artifactId>wabis</artifactId>
+	<name>wabis</name>
+	<packaging>war</packaging>
+	<version>1.0</version>
+
+	<repositories>
+		
+		<repository>
+			<id>mvn2</id>
+			<url>http://repo1.maven.org/maven2/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		
+		<repository>
+  			<id>mesir-repo</id>
+  			<url>http://mesir.googlecode.com/svn/trunk/mavenrepo</url>
+ 		</repository>
+ 		
+ 		<repository>
+      		<id>codelds</id>
+      		<url>https://code.lds.org/nexus/content/groups/main-repo</url>
+    	</repository>
+
+		<repository>
+		   <id>com.springsource.repository.bundles.external</id>
+		   <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
+		   <url>http://repository.springsource.com/maven/bundles/external</url>
+		</repository>
+        
+	</repositories>
+
+	<properties>
+		<java-version>1.7</java-version>
+		<org.springframework-version>4.3.9.RELEASE</org.springframework-version> 
+		<org.springframework-security-version>3.2.4.RELEASE</org.springframework-security-version>
+		<org.aspectj-version>1.8.10</org.aspectj-version>
+		<org.slf4j-version>1.7.25</org.slf4j-version>
+		<org.apache.tiles.version>3.0.7</org.apache.tiles.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
+
+	<dependencies>
+
+		<!-- ============================================================ -->
+        <!-- spring -->
+        <!-- ============================================================ -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${org.springframework-version}</version>
+			<exclusions>
+				<!-- Exclude Commons Logging in favor of SLF4j -->
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-oxm</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+		
+		<!-- ============================================================ -->
+        <!-- spring Security -->
+        <!-- ============================================================ -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${org.springframework-security-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${org.springframework-security-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${org.springframework-security-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+			<version>${org.springframework-security-version}</version>
+		</dependency>
+		
+		<!-- ============================================================ -->
+        <!-- AspectJ (AOP) -->
+        <!-- ============================================================ -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>${org.aspectj-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>${org.aspectj-version}</version>
+		</dependency>
+		
+        <!-- Code Generator Library -->
+		<dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>3.1</version>
+        </dependency>
+
+        <!-- Inject -->
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>1</version>
+		</dependency>
+
+		<!-- ============================================================ -->
+        <!-- Servlet -->
+        <!-- ============================================================ -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>com.springsource.org.apache.taglibs.standard</artifactId>
+					<groupId>org.apache.taglibs</groupId>
+				</exclusion>
+			</exclusions>
+			
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.1</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+		</dependency>
+                
+        <!-- ============================================================ -->
+        <!-- Json -->
+        <!-- ============================================================ -->			
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+
+		<!-- ============================================================ -->
+        <!-- Gson -->
+        <!-- ============================================================ -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.2.4</version>
+		</dependency>
+		
+		<!-- ============================================================ -->
+        <!-- Tile -->
+        <!-- ============================================================ -->
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-extras</artifactId>
+			<version>${org.apache.tiles.version}</version>
+		</dependency>
+
+		<!-- ============================================================ -->
+        <!-- Logging -->
+        <!-- ============================================================ -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${org.slf4j-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${org.slf4j-version}</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${org.slf4j-version}</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.15</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.mail</groupId>
+					<artifactId>mail</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.jms</groupId>
+					<artifactId>jms</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jdmk</groupId>
+					<artifactId>jmxtools</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jmx</groupId>
+					<artifactId>jmxri</artifactId>
+				</exclusion>
+			</exclusions>
+			<scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.lazyluke</groupId>
+		    <artifactId>log4jdbc-remix</artifactId>
+		    <version>0.2.7</version>
+		</dependency>
+		
+		<!-- SQL 로그 -->
+		<!-- <dependency>
+			<groupId>com.googlecode.log4jdbc</groupId>
+			<artifactId>log4jdbc</artifactId>
+			<version>1.2</version>
+		</dependency> -->
+		
+		<!-- ============================================================ -->
+        <!-- JDBC Type driver -->
+        <!-- ============================================================ -->	
+        <!--  주의사항 JDBC는 Tomcat으로 바로 접속해서 deploy (tomcat7-maven-plugin) 할 경우 memory leak이 발생한다. -->
+        <!--  설치된 tomcat의 lib에 직접 해당 lib를 넣고 war시에는 빼서 deploy 한다. -->
+        <!--  scope를 runtime으로 처리해서 메모리 누수를 막음. -->
+        <!-- ============================================================ -->		
+        <!-- Oracle -->
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc6</artifactId>
+			<version>11.2.0.3</version>
+   			<scope>provided</scope>
+		</dependency>	
+			
+        <!-- Mysql -->	
+		<dependency>
+		    <groupId>mysql</groupId>
+		    <artifactId>mysql-connector-java</artifactId>
+		    <version>5.1.42</version>
+   			<scope>provided</scope>
+		</dependency>
+		
+		<!-- ============================================================ -->
+        <!-- MyBatis -->
+        <!-- ============================================================ -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>3.2.8</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-spring</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+		
+		<!-- ============================================================ -->
+        <!-- Office Lib (Excel, Word, Power Point, CSV) -->
+        <!-- ============================================================ -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.15</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.15</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml-schemas</artifactId>
+            <version>3.15</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>stax</groupId>
+                    <artifactId>stax-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+		
+		<dependency>
+			<groupId>net.sf.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>2.3</version>
+		</dependency>
+		
+		<!-- ============================================================ -->
+        <!-- JDOM : XML Lib -->
+        <!-- ============================================================ -->
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom2</artifactId>
+			<version>2.0.6</version>
+		</dependency>
+		
+		<!-- ============================================================ -->
+        <!-- 배치 -->
+        <!-- ============================================================ -->
+		<dependency>
+		    <groupId>org.quartz-scheduler</groupId>
+		    <artifactId>quartz</artifactId>
+		    <version>2.2.3</version>
+		</dependency>
+			
+		<!-- ============================================================ -->
+        <!-- 메일 -->
+        <!-- ============================================================ -->
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4.2</version>
+		</dependency>
+	
+		<!-- ============================================================ -->
+        <!-- Common Utils -->
+        <!-- ============================================================ -->
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.2.2</version>
+		</dependency>
+
+        <dependency>
+		    <groupId>commons-beanutils</groupId>
+		    <artifactId>commons-beanutils</artifactId>
+		    <version>1.8.3</version>
+        </dependency>
+
+        <dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>1.3.1</version>
+        </dependency>
+
+		<!-- Config 로딩 Utils -->
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			<version>1.10</version>
+		</dependency>
+
+        <!-- Base 64, MD5 유틸 -->
+		<dependency>
+		   <groupId>commons-codec</groupId>
+		   <artifactId>commons-codec</artifactId>
+		   <version>1.10</version>
+		</dependency>
+
+        <!-- Http Client -->
+		<dependency>
+		    <groupId>commons-httpclient</groupId>
+		    <artifactId>commons-httpclient</artifactId>
+		    <version>3.1</version>
+		</dependency>
+                
+		<!-- ============================================================ -->
+        <!-- Test -->
+        <!-- ============================================================ -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.7</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- ============================================================ -->
+        <!-- Jersey framework (RESTFull) -->
+        <!-- ============================================================ -->	
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>1.19</version>
+		</dependency>
+
+		<dependency>
+		    <groupId>com.sun.jersey</groupId>
+		    <artifactId>jersey-servlet</artifactId>
+		    <version>1.19</version>
+		</dependency>
+
+	     <dependency>
+	        <groupId>com.sun.jersey</groupId>
+	        <artifactId>jersey-json</artifactId>
+	        <version>1.19</version>
+	    </dependency>   
+		
+		<!-- ============================================================ -->
+        <!-- 이미지변환, 썸네일 -->
+        <!-- ============================================================ -->
+		<dependency>
+		   <groupId>javax.media.jai</groupId>
+		   <artifactId>com.springsource.javax.media.jai.core</artifactId>
+		   <version>1.1.3</version>
+		</dependency>
+
+		<!-- ============================================================ -->
+        <!-- 자동기입방지 -->
+        <!-- ============================================================ -->
+		<dependency>
+		    <groupId>com.liferay</groupId>
+		    <artifactId>nl.captcha.simplecaptcha</artifactId>
+		    <version>1.1.1</version>
+		</dependency>
+
+		<!-- ============================================================ -->
+        <!-- 유니 코드 및 국제화 -->
+        <!-- ============================================================ -->
+		<dependency>
+			<groupId>com.ibm.icu</groupId>
+			<artifactId>icu4j</artifactId>
+			<version>4.0.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+				
+        <!-- ============================================================ -->
+        <!-- 국제화 (i18n), 시간, 타임존 -->
+        <!-- ============================================================ -->
+        <dependency>
+		  	<groupId>joda-time</groupId>
+		  	<artifactId>joda-time</artifactId>
+		  	<version>2.9.7</version>
+		</dependency>  
+
+	</dependencies>
+
+
+	<build>
+	
+		<finalName>wabis</finalName>
+		
+		<resources>
+		
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            
+            <resource>
+                <directory>src/main/resources-${env}</directory>
+            </resource>
+            
+        </resources>
+        
+		<plugins>
+			<plugin>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<additionalProjectnatures>
+						<projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
+					</additionalProjectnatures>
+					<additionalBuildcommands>
+						<buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand>
+					</additionalBuildcommands>
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>true</downloadJavadocs>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.2</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			
+            <plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-war-plugin</artifactId>
+		        <version>2.5</version>
+		        <configuration>
+        			<warSourceDirectory>src/main/webapp</warSourceDirectory>	
+        			<webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+		        </configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<configuration>
+					<mainClass>org.test.int1.Main</mainClass>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            
+            <plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<url>${url}</url>
+					<warFile>target/wabis.war</warFile>
+					<path>/wabis</path>
+					<username>${username}</username>
+					<password>${password}</password>
+				</configuration>
+			</plugin>
+            
+		</plugins>
+	</build>
+
+	<profiles>
+	
+        <profile>
+            <id>local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+           
+            <properties>
+                <env>local</env>
+				<url>http://localhost:15000/manager/text</url>
+				<username>admin</username>
+				<password>hnsconsulting1!</password>
+            </properties>
+        </profile>
+        
+        <profile>
+            <id>dev</id>
+            <properties>
+                <env>dev</env>
+				<url>http://hnskr.iptime.org:25000/manager/text</url>
+				<username>admin</username>
+				<password>hnsconsulting1!</password>
+            </properties>
+        </profile>
+        
+        <profile>
+            <id>prod</id>
+            <properties>
+                <env>prod</env>
+				<url>http://210.219.174.77:8080/manager/text</url>
+				<username>wabis</username>
+				<password>wabis_1112</password>
+            </properties>
+        </profile>
+        
+    </profiles>
+    
+</project>

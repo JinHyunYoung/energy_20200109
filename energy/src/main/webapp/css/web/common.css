@@ -1,0 +1,295 @@
+@charset "utf-8";
+@import "nanumgothic.css";
+ 
+
+/* 폰트, color는 디자인가이드에 맞게사용 */ 
+body {font-size: 0.86em; color: #333333; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;} 
+input, button, select, textarea {font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 12px;}
+
+
+
+/* hidden */
+.hidden {display: block; position: absolute; overflow: hidden; top: -999999px; left: -999999px; width: 1px; height: 1px; font-size: 0; text-indent: -999999px; line-height: 0;}
+
+
+
+/* button area */
+.btn {display: inline-block; vertical-align: bottom;}
+.btn img {border: 0; vertical-align: middle;}
+.btn:hover {text-decoration: none;}
+
+
+
+/*
+ * 조건부 검색 시 쓰는 버튼
+ * 검색 : sch
+ * 전체보기 : clear
+ */
+.table_top_area .btn.table_search {height: 35px; padding: 0 14px; font-size: 13px; color: #ffffff; text-align: center; line-height: 35px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; background-color: #d89d00;}
+
+
+/*
+ * 노멀한 버튼 : normal
+ */
+button.btn.normal {width: 167px; height: 34px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 15px; font-weight: bold;}
+a.btn.normal {width: 165px; height: 32px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 15px; font-weight: bold; line-height: 32px;}
+.btn.normal {border: 1px solid #e86a02; color: #ffffff; text-align: center; background-color: #f68121;}
+
+
+/*
+ * 테이블
+ * 주소찾기 : basic
+ */
+.btn.basic {display: inline-block; height: 25px; padding: 0 14px; font-size: 12px; color: #ffffff; line-height: 25px; font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif; background-color: #7b736b;
+    border-radius: 2px;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+}
+
+
+/* 
+ * 목록 : list
+ * 저장, 수정, 등록, 추가 : save
+ * 취소, 삭제 : cancel
+ * 댓글 저장 : s_save_btn
+ * 댓글 취소 : s_cancel_btn
+ */
+button.btn.list,
+button.btn.save,
+button.btn.delete,
+button.btn.cancel {min-width: 86px; height: 38px; padding: 0 6px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 15px; font-weight: bold;}
+a.btn.list,
+a.btn.save,
+a.btn.delete,
+a.btn.cancel {min-width: 78px; height: 36px; padding: 0 6px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 15px; font-weight: bold; line-height: 36px;}
+.btn.list {border: 1px solid #959595; color: #ffffff; text-align: center; background-color: #a0a0a0;}
+.btn.save {border: 1px solid #e86a02; color: #ffffff; text-align: center; background-color: #f68121;}
+.btn.cancel {border: 1px solid #707070; color: #ffffff; text-align: center; background-color: #707070;}
+.btn.delete {border: 1px solid #686159; color: #ffffff; text-align: center; background-color: #7b736b;}
+
+button.s_save_btn,
+button.s_cancel_btn {width: 65px; height: 25px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 13px; font-weight: bold; color: #ffffff;}
+.btn.s_save_btn {border: 1px solid #e86a02; text-align: center; background-color: #e86a02;}
+.btn.s_cancel_btn {border: 1px solid #686159; text-align: center; background-color: #7b736b;}
+
+
+
+/* input & Select Type */
+textarea {text-align: left; text-indent: 3px; line-height: 1.4em;}
+p {line-height: 1.5em; text-align: left;}
+select {height: 25px; border: 1px solid #d2d2d2; text-align: left; text-indent: 1px;}
+input {display: inline-block; display: inline; vertical-align: middle;}
+input[type=text] {height: 23px; border: 1px solid #d2d2d2; font-size: 100%; text-indent: 10px; line-height: 25px; text-align: left;  font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+input[type=password] {text-indent: 10px;}
+input {border: expression((this.type=='text')?'0px':''); height: 23px; font-size: 100%; text-indent: 1px; line-height: 25px; text-align: left;}
+input[type=text].alignc {text-align: center;}
+    .in_wp40 {width: 40px; border: 1px solid #d2d2d2;}
+    .in_wp50 {width: 50px; border: 1px solid #d2d2d2;}
+    .in_wp60 {width: 60px; border: 1px solid #d2d2d2;}
+    .in_wp70 {width: 70px; border: 1px solid #d2d2d2;}
+    .in_wp80 {width: 80px; border: 1px solid #d2d2d2;}
+    .in_wp90 {width: 90px; border: 1px solid #d2d2d2;}
+    .in_wp100 {width: 100px; border: 1px solid #d2d2d2;}
+    .in_wp110 {width: 110px; border: 1px solid #d2d2d2;}
+    .in_wp120 {width: 120px; border: 1px solid #d2d2d2;}
+    .in_wp130 {width: 130px; border: 1px solid #d2d2d2;}
+    .in_wp140 {width: 140px; border: 1px solid #d2d2d2;}
+    .in_wp150 {width: 150px; border: 1px solid #d2d2d2;}
+    .in_wp160 {width: 160px; border: 1px solid #d2d2d2;}
+    .in_wp170 {width: 170px; border: 1px solid #d2d2d2;}
+    .in_wp180 {width: 180px; border: 1px solid #d2d2d2;}
+    .in_wp190 {width: 190px; border: 1px solid #d2d2d2;}
+    .in_wp200 {width: 200px; border: 1px solid #d2d2d2;}
+    .in_wp250 {width: 250px; border: 1px solid #d2d2d2;}
+    .in_wp300 {width: 300px; border: 1px solid #d2d2d2;}
+    .in_wp400 {width: 400px; border: 1px solid #d2d2d2;}
+    .in_wp500 {width: 500px; border: 1px solid #d2d2d2;}
+    .in_wp600 {width: 600px; border: 1px solid #d2d2d2;}
+    .in_w5 {width: 5%; border: 1px solid #d2d2d2;}
+    .in_w10 {width: 10%; border: 1px solid #d2d2d2;}
+    .in_w15 {width: 15%; border: 1px solid #d2d2d2;}
+    .in_w20 {width: 20%; border: 1px solid #d2d2d2;}
+    .in_w25 {width: 25%; border: 1px solid #d2d2d2;}
+    .in_w30 {width: 30%; border: 1px solid #d2d2d2;}
+    .in_w33 {width: 33%; border: 1px solid #d2d2d2;}
+    .in_w35 {width: 35%; border: 1px solid #d2d2d2;}
+    .in_w39 {width: 39%; border: 1px solid #d2d2d2;}
+    .in_w40 {width: 40%; border: 1px solid #d2d2d2;}
+    .in_w45 {width: 45%; border: 1px solid #d2d2d2;}
+    .in_w50 {width: 50%; border: 1px solid #d2d2d2;}
+    .in_w60 {width: 60%; border: 1px solid #d2d2d2;}
+    .in_w70 {width: 70%; border: 1px solid #d2d2d2;}
+    .in_w80 {width: 80%; border: 1px solid #d2d2d2;}
+    .in_w90 {width: 90%; border: 1px solid #d2d2d2;}
+    .in_w93 {width: 93%; border: 1px solid #d2d2d2;}
+    .in_w95 {width: 95%; border: 1px solid #d2d2d2;}
+    .in_w98 {width: 98%; border: 1px solid #d2d2d2;}
+    .in_w100 {width: 99.4%; border: 1px solid #d2d2d2;}
+    
+
+
+/* margin & padding */
+.marginl3 {margin-left: 3px;}
+.marginl5 {margin-left: 5px;}
+.marginl10 {margin-left: 10px;}
+.marginl12 {margin-left: 12px;}
+.marginl15 {margin-left: 15px;}
+.marginl20 {margin-left: 20px;}
+.marginl22 {margin-left: 22px;}
+.marginl25 {margin-left: 25px;}
+.marginl30 {margin-left: 30px;}
+.marginl40 {margin-left: 40px;}
+.marginml5 {margin-left: -5px;}
+.marginr3 {margin-right: 3px;}
+.marginr5 {margin-right: 5px;}
+.marginr10 {margin-right: 10px;}
+.marginr20 {margin-right: 20px;}
+.marginmt2 {margin-top: -2px;}
+.margintm5 {margin-top: -5px;}
+.margintm10 {margin-top: -10px;}
+.margintm15 {margin-top: -15px;}
+.margintm20 {margin-top: -20px;}
+
+.margint2 {margin-top: 2px;}
+.margint3 {margin-top: 3px;}
+.margint5 {margin-top: 5px;}
+.margint6 {margin-top: 6px;}
+.margint10 {margin-top: 10px;}
+.margint15 {margin-top: 15px;}
+.margint20 {margin-top: 20px;}
+.margint26 {margin-top: 26px;}
+.margint30 {margin-top: 30px;}
+.margint40 {margin-top: 40px;}
+.margint49 {margin-top: 49px;}
+.margint50 {margin-top: 50px;}
+.marginb10 {margin-bottom: 10px;}
+.marginb20 {margin-bottom: 20px;}
+.marginb30 {margin-bottom: 30px;}
+.marginb40 {margin-bottom: 40px;}
+.marginb50 {margin-bottom: 50px;}
+
+.margin5 {margin: 5px;}
+
+.pad5 {padding: 5px;}
+.pad510 {padding: 5px 10px;}
+.padt5 {padding-top: 8px;}
+.padt6 {padding-top: 6px;}
+.padt52 {padding-top: 52px;}
+.padl5 {padding-left: 5px;}
+.padl10 {padding-left: 10px;}
+.padl15 {padding-left: 15px;}
+.padt10 {padding-top: 10px;}
+.pad105 {padding: 10px 10px 5px;}
+
+
+/* a css */
+a {cursor: pointer;}
+a,
+a:link,
+a:visited {text-decoration: none;}
+a:hover {text-decoration: underline;}
+
+
+/* align */
+.alignl {text-align: left;}
+.alignr {text-align: right;}
+.alignc {text-align: center;}
+
+.float_left {float: left;}
+.float_right {float: right;}
+.ableft {position: absolute; left: 0; top: 0;}
+.abright {position: absolute; right: 0; top: 0;}
+
+.vertical_top {vertical-align: top;}
+
+/* color */
+.color_none {color: #4d4d4d;}
+.color_point {color: #005bac;}
+.color_pointr {color: #ff0000;}
+.color_pointg {color: #21872d;}
+.color_pointo {color: #ff6600;}
+.color_pointb {color: #2256a4;}
+.color_pointgr {color: #8bc138;}
+.color_pointgy {color: #777777;}
+.color_pointsb {color: #0972bd;}
+.bold {font-weight: bold;}
+
+
+
+
+/* skip */
+.skip_nav {height: 0;}
+    .skip_nav a {display: block; position: absolute; left: 0; top: -100px; width: 100%; height: 1px; text-align: center;}
+    .skip_nav a:focus,
+    .skip a:active {position: absolute; top: 0; z-index: 120; height: 25px; padding: 10px 0; font-size: 1.4em; font-weight: 700; color: #36348f; background: #fff;}
+
+
+
+/* block */
+.theblock {display: block;}
+.inblock {display: inline-block;}
+
+
+
+/* area */
+.division {overflow: hidden;}
+.division20 {overflow: hidden; margin-bottom: 20px;}
+.division40 {overflow: hidden; margin-bottom: 40px;}
+.division50 {overflow: hidden; margin-bottom: 50px;}
+.table_area {overflow: hidden; margin-bottom: 20px;}
+.button_area {overflow: hidden; margin-bottom: 34px;}
+    .button_area a {display: inline-block;}
+.float_left {float: left;}
+.float_right {float: right;}
+.file_area + .file_area {margin-top: 8px;}
+.editor_area {overflow: hidden;}
+.half_area {overflow: hidden; float: left; width: 50%;}
+.area5 {float: left; width: 5%;}
+.area20 {float: left; width: 20%;}
+.area30 {float: left; width: 30%;}
+.area35 {float: left; width: 35%;}
+.area40 {float: left; width: 40%;}
+.area45 {float: left; width: 45%;}
+.area48 {width: 48%;}
+.area50 {float: left; width: 50%;}
+.area55 {float: left; width: 55%;}
+.area60 {float: left; width: 60%;}
+.area65 {float: left; width: 65%;}
+.area70 {float: left; width: 70%;}
+.area80 {float: left; width: 80%;}
+.area_xscroll {overflow-x: auto; min-width: 730px;} /* 가로 스크롤 레이아웃 */
+.area_xscroll2 {overflow-x: auto;} /* 가로 스크롤 레이아웃 */
+
+.select_area {overflow: hidden; padding: 8px 10px; border: 1px solid #dedede;} /* border area */
+.select_area strong.title {font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-weight: bold; font-size: 13px;}
+.select_area span.txt {font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 13px;}
+
+
+
+
+/* 화면 해상도 width 640px 이상 Design --------------------------------------*/
+@media screen and (min-width: 1025px){
+
+
+
+}
+
+
+/* 화면 해상도 width 640px 이상 960px 이하 Design --------------------------------------*/ 
+@media screen and (max-width: 1024px) and (min-width: 641px) {
+
+
+
+
+}
+
+
+/* 화면 해상도 width 640px 이하 Design --------------------------------------*/
+@media screen and (max-width: 640px){
+
+    /* button_area */
+    .button_area .float_right {margin-top: 10px;}
+    .button_area .float_right button,
+    .button_area .float_right a {margin: 2px 0;}
+
+}

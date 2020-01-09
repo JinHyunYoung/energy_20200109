@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RequestDao">
+	
+	<update id="insertRequest" parameterType="Map" >
+		insert into t_request(
+			req_gb
+			,user_nm
+			,email
+			,handphone
+			,title
+			,contents
+			,attach_file
+			,reg_date
+			,user_ci
+		) values(
+			 #{req_gb}
+			,#{user_nm}
+			,#{email}
+			,#{handphone}
+			,#{title}
+			,#{contents}
+			,#{attach_file}
+			,DATE_FORMAT( now() , '%Y%m%d%H%i%S' )
+			,#{user_ci}
+		)
+	</update>
+	
+	<select id="selectRequestPageList" parameterType="Map" resultType="caseMap">
+	<include refid="CommonSql.pageingTop"/>
+		select 
+		    req_id
+		    ,req_gb
+		    ,(select code_nm from t_code where gubun = 'REQ_GUBUN' and code = a.req_gb) as req_gb_nm
+			,user_nm
+			,email
+			,handphone
+			,title
+			,contents
+			,attach_file
+			,case when attach_file is not null then 'Y' else 'N' end as attach_file_yn 
+			,date_format(STR_TO_DATE(a.reg_date,'%Y%m%d%H%i%s'),'%Y.%m.%d') as reg_date
+			,user_ci
+			,answer_no
+			,case when answer_no is not null then 'Y' else 'N' end as answer_yn
+			,(select user_nm from t_user where user_no = a.answer_no) as answer_nm
+			,date_format(STR_TO_DATE(a.answer_date,'%Y%m%d%H%i%s'),'%Y.%m.%d') as answer_date
+			,answer 
+		from t_request a
+		where 1=1
+		  <if test='p_req_gb != null and !p_req_gb.equals("")' >
+		    and req_gb = #{p_req_gb}
+		  </if>
+		  <if test='p_answer != null and !p_answer.equals("")' >
+			  <if test='p_answer != null and p_answer.equals("N")' >
+			    and answer_no is null
+			  </if>
+			  <if test='p_answer != null and p_answer.equals("Y")' >
+			    and answer_no is not null
+			  </if>
+		  </if>
+	  	  <if test='p_searchtxt != null and !p_searchtxt.equals("")' >
+			  <if test='p_searchkey != null and p_searchkey.equals("user_nm")' >
+			  and a.user_nm like concat('%',#{p_searchtxt},'%')
+			  </if>
+			  <if test='p_searchkey != null and p_searchkey.equals("handphone")' >
+			  and a.handphone like concat('%',#{p_searchtxt},'%')
+			  </if>
+			  <if test='p_searchkey != null and p_searchkey.equals("email")' >
+			  and a.email like concat('%',#{p_searchtxt},'%')
+			  </if>
+			  <if test='p_searchkey != null and p_searchkey.equals("title")' >
+			  and a.title like concat('%',#{p_searchtxt},'%')
+			  </if>			  
+		   </if>	  
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="selectRequest" parameterType="Map" resultType="caseMap">
+			select
+			    req_id
+			    ,req_gb
+			    ,(select code_nm from t_code where gubun = 'REQ_GUBUN' and code = a.req_gb) as req_gb_nm
+				,user_nm
+				,email
+				,handphone
+				,title
+				,contents
+				,attach_file
+				,(SELECT file_nm FROM T_COMMONFILE WHERE file_id = a.attach_file) AS attach_file_nm
+				,date_format(STR_TO_DATE(a.reg_date,'%Y%m%d%H%i%s'),'%Y.%m.%d') as reg_date
+				,user_ci
+				,answer_no
+				,(select user_nm from t_user where user_no = a.answer_no) as answer_nm
+				,date_format(STR_TO_DATE(a.answer_date,'%Y%m%d%H%i%s'),'%Y.%m.%d') as answer_date
+				,answer
+			from t_request a 
+			where req_id = #{req_id}
+	</select>
+		
+	<delete id="deleteRequest" parameterType="Map" >
+		delete from t_request                          
+        where req_id = #{req_id} 
+	</delete>
+
+	<update id="updateRequestAnswer" parameterType="Map" >
+		update t_request
+		set 
+		   answer_no = #{s_user_no}
+		   ,answer_date = DATE_FORMAT( now() , '%Y%m%d%H%i%S' )
+		   ,answer = #{answer}
+		where req_id = #{req_id}   
+	</update>	
+	
+</mapper>

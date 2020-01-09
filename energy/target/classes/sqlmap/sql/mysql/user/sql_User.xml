@@ -1,0 +1,741 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserDao">
+
+	<resultMap id="userVO" type="kr.or.wabis.user.vo.UserVO">
+	    <result property="userNo" column="USER_NO"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userName" column="USER_NM"/>
+		<result property="userPw" column="USER_PW"/>
+		<result property="age" column="AGE"/>
+		<result property="userEmail" column="USER_EMAIL"/>
+		<result property="userMobile" column="USER_MOBILE"/>
+		<result property="userTel" column="USER_TEL"/>
+		<result property="dept" column="DEPT"/>		
+		<result property="pwdModDt" column="PWD_MOD_DT"/>
+		<result property="pwdChgYn" column="PWD_CHG_YN"/>
+		<result property="delYn" column="DEL_YN"/>
+		<result property="auth" column="AUTH"/>
+		<result property="authNm" column="AUTH_NM"/>
+		<result property="userGb" column="USER_GB"/>
+		<result property="todayconnCnt" column="TODAYCONN_CNT"/>
+		<result property="regUserNo" column="REG_USERNO"/>
+		<result property="regDate" column="REG_DATE"/>
+		<result property="errCnt" column="ERR_CNT"/>
+		<result property="lastErrDt" column="LAST_ERR_DT"/>
+	</resultMap> 
+	
+	<select id="selectUserLogin" parameterType="String" resultMap="userVO">
+		SELECT 
+			user_no
+			, user_id
+			, user_nm
+			, user_pw
+			, CASE 
+				WHEN birth is not null THEN FLOOR(TIMESTAMPDIFF(MONTH, DATE_FORMAT(birth, '%Y%m%d'), SYSDATE())/12) 
+				ELSE 1 
+			END AS age 
+	      	, (SELECT GROUP_CONCAT(X.auth_id) FROM T_AUTH X INNER JOIN T_MANAGERAUTH Y ON X.auth_id = Y.auth_id WHERE Y.user_no = A.user_no order by X.auth_id) AS auth
+	      	, (SELECT GROUP_CONCAT(X.auth_nm) FROM T_AUTH X INNER JOIN T_MANAGERAUTH Y ON X.auth_id = Y.auth_id WHERE Y.user_no = A.user_no order by X.auth_id) AS auth_nm
+			, user_email
+			, user_mobile
+			, user_tel
+			, dept
+			, pwd_mod_dt
+			, CASE 
+        		WHEN DATEDIFF( SYSDATE() + 1, DATE_FORMAT(pwd_mod_dt, '%Y%m%d'))  <![CDATA[ >= ]]> 90 or pwd_mod_dt is null THEN 'Y' 
+				ELSE 'N' 
+			END pwd_chg_yn
+			, user_gb
+			, del_yn
+			, reg_userno
+			, reg_date
+			, err_cnt
+			, IFNULL(last_err_dt, '99999999999999') last_err_dt
+		FROM T_USER A
+		WHERE 
+			del_yn = 'N'
+			AND user_id = #{user_id}
+	</select>
+	 
+	 <select id="selectUserId" parameterType="String" resultMap="userVO">
+		SELECT 
+			user_no
+			, user_id
+			, user_nm
+			, user_pw
+			, CASE 
+				WHEN birth is not null THEN FLOOR(TIMESTAMPDIFF(MONTH, DATE_FORMAT(birth, '%Y%m%d'), SYSDATE())/12) 
+				ELSE 1 
+			END AS age
+		    , (SELECT GROUP_CONCAT(X.auth_id) FROM T_AUTH X INNER JOIN T_MANAGERAUTH Y ON X.auth_id = Y.auth_id WHERE Y.user_no = A.user_no order by X.auth_id) AS auth
+		    , (SELECT GROUP_CONCAT(X.auth_nm) FROM T_AUTH X INNER JOIN T_MANAGERAUTH Y ON X.auth_id = Y.auth_id WHERE Y.user_no = A.user_no order by X.auth_id) AS auth_nm
+			, user_email
+			, user_mobile
+			, user_tel
+			, dept
+			, intro
+			, pwd_mod_dt
+			, CASE 
+				WHEN DATEDIFF( SYSDATE() + 1, DATE_FORMAT(pwd_mod_dt, '%Y%m%d'))  <![CDATA[ >= ]]>  90 or pwd_mod_dt is null THEN 'Y' 
+				ELSE 'N' 
+			END pwd_chg_yn
+			, administ_cd
+			, user_gb
+			, del_yn
+			, (SELECT COUNT(distinct user_no) FROM T_HOMEPAGECONN WHERE substr(conn_dt,0,8) = DATE_FORMAT(SYSDATE(), '%Y%m%d')) AS todayconn_cnt
+			, reg_userno
+			, reg_date
+		FROM T_USER A
+		WHERE 
+			del_yn = 'N'
+			AND user_id = #{user_id}
+	</select>
+		
+    <sql id="selectUserPageTable">
+    	SELECT 
+		    user_no
+			, user_id
+			, user_nm
+			, user_pw
+			, user_gb	
+			, user_email
+			, user_mobile
+			, user_tel
+			, intro
+			, dept
+			, del_yn
+			, pwd_mod_dt
+			, birth
+			, post
+			, addr1
+			, addr2		
+			, reg_userno
+			, GET_DATEFORMAT(agree_dt) as agree_dt
+	        , (SELECT GROUP_CONCAT(X.auth_id) FROM T_AUTH X INNER JOIN T_MANAGERAUTH Y ON X.auth_id = Y.auth_id WHERE Y.user_no = A.user_no order by X.auth_id) AS auth
+	        , (SELECT GROUP_CONCAT(X.auth_nm) FROM T_AUTH X INNER JOIN T_MANAGERAUTH Y ON X.auth_id = Y.auth_id WHERE Y.user_no = A.user_no order by X.auth_id) AS auth_nm
+			, GET_DATEFORMAT(reg_date) AS reg_date
+		FROM T_USER A
+		WHERE 
+			del_yn = 'N' 
+	   		<if test='user_gb != null and user_gb.equals("N")' >
+	   		   AND user_gb = 'N'
+	   		</if>
+	   		<if test='user_gb != null and !user_gb.equals("N")' >
+	   		   AND user_gb != 'N'
+	   		</if>
+    		<if test='searchtxt != null and !searchtxt.equals("")' >
+	    		<if test='searchkey != null and searchkey.equals("user_nm")' >
+			   		AND UPPER(user_nm) LIKE CONCAT('%', UPPER(#{searchtxt}), '%')
+			   	</if>	
+	    		<if test='searchkey != null and searchkey.equals("user_id")' >
+			   		AND UPPER(user_id) LIKE CONCAT('%', UPPER(#{searchtxt}), '%')
+			   	</if>	
+	    		<if test='searchkey != null and searchkey.equals("user_mobile")' >
+			   		AND user_mobile = #{searchtxt}
+			   	</if>	
+	    		<if test='searchkey != null and searchkey.equals("user_email")' >
+			   		AND user_email = #{searchtxt}
+			   	</if>	
+		    </if>
+		    <if test='reg_stadt != null and !reg_stadt.equals("") and reg_enddt != null and !reg_enddt.equals("")' >
+		            AND GET_DATEFORMAT(REG_DATE) BETWEEN #{reg_stadt} AND #{reg_enddt}
+		    </if>
+    </sql>
+	
+	<select id="selectUserPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		SELECT T.*, TOT.TOTAL_CNT
+		FROM (
+			<include refid="selectUserPageTable" />	
+		) T
+		JOIN(
+			SELECT COUNT(*) AS TOTAL_CNT 
+			FROM (
+				<include refid="selectUserPageTable" />	
+			) T
+			WHERE 
+			1=1
+			<if test='auth != null and !auth.equals("")' >
+	   		   AND T.auth LIKE CONCAT('%', #{auth}, '%')
+	   		</if>
+		) TOT
+		WHERE 
+			1=1
+			<if test='auth != null and !auth.equals("")' >
+	   		   AND T.auth LIKE CONCAT('%', #{auth}, '%')
+	   		</if>
+	   		
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="selectUserSearchPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+			
+		SELECT 
+    		user_no
+	        , user_id
+			, user_nm
+			, intro
+			, user_email
+			, user_mobile
+			, user_tel
+			, dept
+			, del_yn
+			, pwd_mod_dt
+			, reg_userno
+			, reg_date
+			, TOT.TOTAL_CNT
+		FROM T_USER T
+		JOIN 
+        	(
+        		SELECT COUNT(*) AS TOTAL_CNT 
+        		FROM T_USER
+        	 	WHERE 
+					1 = 1  			
+					<if test='user_nm != null and !user_nm.equals("")' >
+					   AND user_nm LIKE CONCAT('%', #{user_nm}, '%')
+					</if>
+        	) TOT
+		WHERE  
+			1=1			
+			<if test='user_nm != null and !user_nm.equals("")' >
+			   AND user_nm LIKE CONCAT('%', #{user_nm}, '%')
+			</if>
+			
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="selectUserList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			user_no
+			, user_id
+			, user_nm
+			, user_pw
+			, intro
+			, user_email
+			, user_mobile
+			, user_tel
+			, dept
+			, del_yn
+			, pwd_mod_dt
+			, birth
+			, post
+			, addr1
+			, addr2
+			, GET_DATEFORMAT(agree_dt) as agree_dt
+			, user_gb
+	        , (SELECT GROUP_CONCAT(X.auth_id) FROM T_AUTH X INNER JOIN T_MANAGERAUTH Y ON X.auth_id = Y.auth_id WHERE Y.user_no = A.user_no order by X.auth_id) AS auth
+	        , (SELECT GROUP_CONCAT(X.auth_nm) FROM T_AUTH X INNER JOIN T_MANAGERAUTH Y ON X.auth_id = Y.auth_id WHERE Y.user_no = A.user_no order by X.auth_id) AS auth_nm
+			, administ_cd
+			, reg_userno
+			, GET_DATEFORMAT(reg_date) AS reg_date
+		FROM T_USER A
+		WHERE 
+			1 = 1  			
+			<if test='user_nm != null and !user_nm.equals("")' >
+			   AND user_nm = #{user_nm}
+			</if>
+	</select>
+	
+	<select id="selectUser" parameterType="Map" resultType="caseMap">
+	    SELECT 
+			user_no
+			, user_id
+			, user_nm
+			, user_pw
+			, intro
+			, user_email
+			, user_mobile
+			, user_tel
+			, dept
+			, del_yn
+			, pwd_mod_dt
+			, birth
+			, gender
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'USER_GENDER' AND code = A.gender ) AS gender_nm
+			, GET_DATEFORMAT(birth) as birth_dt 
+			, post
+			, addr1
+			, addr2
+			, GET_DATEFORMAT(agree_dt) as agree_dt
+			, CASE 
+				WHEN DATEDIFF( SYSDATE() + 1, DATE_FORMAT(A.agree_dt, '%Y%m%d')) <![CDATA[ > ]]> 700 THEN 'Y' 
+				ELSE 'N' 
+			END AS reagree_yn
+			, user_gb
+	        , (SELECT GROUP_CONCAT(X.auth_id) FROM T_AUTH X INNER JOIN T_MANAGERAUTH Y ON X.auth_id = Y.auth_id WHERE Y.user_no = A.user_no order by X.auth_id) AS auth
+	        , (SELECT GROUP_CONCAT(X.auth_nm) FROM T_AUTH X INNER JOIN T_MANAGERAUTH Y ON X.auth_id = Y.auth_id WHERE Y.user_no = A.user_no order by X.auth_id) AS auth_nm
+			, administ_cd
+			, reg_userno
+			, (SELECT user_nm FROM T_USER WHERE user_no = A.reg_userno) AS reg_usernm
+			, GET_DATEFORMAT(reg_date) AS reg_date			
+		FROM T_USER A
+		WHERE 
+			user_no = #{user_no}
+	</select>
+	
+	<select id="selectUserExist" parameterType="Map" resultType="integer">
+		SELECT 
+			count(*)
+		FROM T_USER
+		WHERE 
+			user_id = #{user_id}		
+	</select>
+	
+	<update id="insertUser" parameterType="Map" >
+		INSERT INTO T_USER (
+			user_no
+			, user_id
+			, user_nm
+			, user_pw
+			, user_email
+			, user_mobile
+			, user_tel
+			, dept
+			, del_yn
+			, birth
+			, gender
+			, post
+			, addr1
+			, addr2
+			<if test='user_gb != null and user_gb.equals("N")' >
+			, agree_dt
+			, pwd_mod_dt
+			</if>
+			, user_gb
+			, administ_cd
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			 #{user_no}
+			, #{user_id}
+			, #{user_nm}
+			, #{user_pw}
+			, #{user_email}
+			, #{user_mobile}
+			, #{user_tel}
+			, #{dept}
+			, 'N'
+			, #{birth}
+			, #{gender}
+			, #{post}
+			, #{addr1}
+			, #{addr2}
+			<if test='user_gb != null and user_gb.equals("N")' >
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+			</if>
+			, #{user_gb}
+			, #{administ_cd}
+			, #{s_user_no}
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+			, #{s_user_no}
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+		)
+	</update>
+	
+	<update id="updateUser" parameterType="Map" >
+	    UPDATE T_USER
+		SET
+			upd_userno = #{s_user_no}
+			, upd_date = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+			<if test='user_nm != null and !user_nm.equals("")' >
+			, user_nm = #{user_nm}
+			</if>
+			<if test='user_pw != null and !user_pw.equals("")' >
+			, user_pw = #{user_pw}
+			</if>
+			, user_email = #{user_email}
+			, user_mobile = #{user_mobile}
+			, user_tel = #{user_tel}
+			, post = #{post}
+			, addr1 = #{addr1}
+			, addr2 = #{addr2}
+			<if test='user_gb != null and !user_gb.equals("")' >
+			, user_gb = #{user_gb}
+			</if>
+			<if test='dept != null and !dept.equals("")' >
+			, dept = #{dept}
+			</if>
+			<if test='gender != null and !gender.equals("")' >
+			, gender = #{gender}
+			</if>
+			, administ_cd = #{administ_cd}
+		WHERE
+			user_no = #{user_no}
+	</update>
+	
+	<delete id="deleteUser" parameterType="Map" >
+	 	DELETE FROM T_USER 
+		WHERE 
+			user_no = #{user_no}
+	</delete>
+	
+	<select id="selectUserEmailExist" parameterType="Map" resultType="integer">
+		SELECT
+			count(*)
+		FROM T_USER
+		WHERE 
+			del_yn = 'N' 
+			AND user_nm = #{user_nm} 
+			AND user_email = #{user_email}
+	</select>
+	
+	<update id="insertAuth" parameterType="Map" >
+		INSERT INTO T_AUTH (
+			user_no
+			, auth
+		) VALUES ( 
+			#{user_no}
+			, #{auth}
+		)
+	</update>
+	
+	<delete id="deleteAuth" parameterType="Map" >
+	 	DELETE FROM T_AUTH 
+		WHERE  
+			user_no = #{user_no}
+	</delete>
+	
+	<update id="insertAdminAuth" parameterType="Map" >
+		INSERT INTO T_MANAGERAUTH (
+			user_no
+			, auth_id
+			, reg_userno
+			, reg_date
+		) VALUES ( 
+			#{user_no}
+			, #{auth_id}
+			, #{s_user_no}
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+		)
+	</update>
+	
+	<delete id="deleteAdminAuth" parameterType="Map" >
+	 	DELETE FROM T_MANAGERAUTH 
+		WHERE  
+			user_no = #{user_no}
+	</delete>
+	
+	<update id="updatePwdConfirmWord" parameterType="Map" >
+	 	UPDATE T_USER
+		SET 
+			pwd_confirm_word = 	#{pwd_confirm_word}
+		WHERE  
+			user_email = #{user_email}
+	</update>
+	
+	<update id="updatePasswordChange" parameterType="Map" >
+	 	UPDATE T_USER
+		SET 
+			user_pw = 	#{user_pw}
+			, pwd_mod_dt = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+		WHERE  
+			user_no = 	#{user_no}
+	</update>
+	
+	<select id="selectAuthList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			AUTH_ID AS code
+			, AUTH_NM AS codenm 
+		FROM T_AUTH
+		ORDER BY GRP
+	</select>
+	
+	<select id="selectManagerAuthList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			A.AUTH_ID
+			, A.AUTH_NM 
+		FROM T_AUTH A 
+		INNER JOIN T_MANAGERAUTH B ON A.AUTH_ID = B.AUTH_ID
+		WHERE 
+			USER_NO = #{user_no}
+		ORDER BY A.GRP
+	</select>
+	
+	<insert id="insertUserModHistory" parameterType="Map">
+		<selectKey resultType="String" keyProperty="hist_id" order="BEFORE">
+	    SELECT UPPER(REPLACE(UUID(),'-','')) FROM DUAL       
+	  	</selectKey>    
+	    INSERT INTO T_USERMODHISTORY (
+	    	USER_NO
+	    	, HIST_ID
+	    	, HIST_MSG
+	    	, REG_USERNO
+	    	, REG_DATE
+	    ) VALUES (
+	    	#{user_no}
+	    	, #{hist_id}
+	    	, #{hist_msg}
+	    	, #{s_user_no}
+	    	, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+	    )        
+	</insert>
+	    
+	<select id="selectUserAuthPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		
+		SELECT 
+		    user_no
+			, user_id
+			, user_nm
+			, user_pw
+			, intro
+			, user_email
+			, user_mobile
+			, user_tel
+			, dept
+			, del_yn
+			, pwd_mod_dt
+			, birth
+			, post
+			, addr1
+			, addr2
+			, GET_DATEFORMAT(agree_dt) as agree_dt
+			, user_gb
+	        , (SELECT GROUP_CONCAT(X.auth_id) FROM T_AUTH X INNER JOIN T_MANAGERAUTH Y ON X.auth_id = Y.auth_id WHERE Y.user_no = A.user_no order by X.auth_id) AS auth
+	        , (SELECT GROUP_CONCAT(X.auth_nm) FROM T_AUTH X INNER JOIN T_MANAGERAUTH Y ON X.auth_id = Y.auth_id WHERE Y.user_no = A.user_no order by X.auth_id) AS auth_nm
+			, reg_userno
+			, GET_DATEFORMAT(reg_date) AS reg_date
+			, TOT.TOTAL_CNT
+		FROM T_USER A
+		JOIN 
+        	(
+        		SELECT COUNT(*) AS TOTAL_CNT 
+        		FROM T_USER
+        	 	WHERE 
+					del_yn = 'N' 
+				   	AND user_gb = 'M'
+		    		<if test='searchtxt != null and !searchtxt.equals("")' >
+			    		<if test='searchkey != null and !searchkey.equals("")' >
+					   		AND ${searchkey} LIKE CONCAT('%', #{searchtxt},'%')
+					   	</if>	
+				    </if>
+				    AND user_no not IN (select user_no from T_MANAGERAUTH where auth_id = #{auth_id})
+        	) TOT
+		WHERE 
+			del_yn = 'N' 
+		   	AND user_gb = 'M'
+    		<if test='searchtxt != null and !searchtxt.equals("")' >
+	    		<if test='searchkey != null and !searchkey.equals("")' >
+			   		AND ${searchkey} LIKE CONCAT('%', #{searchtxt}, '%')
+			   	</if>	
+		    </if>
+		    AND user_no not IN (select user_no from T_MANAGERAUTH where auth_id = #{auth_id})
+		    
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<update id="updateAgreement" parameterType="Map" >
+	 	UPDATE T_USER
+		SET 
+			agree_dt = 	DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+		WHERE  
+			user_no = 	#{s_user_no}
+	</update>
+		
+	<!-- 회원 탈퇴 -->
+	<update id="userDropOut" parameterType="Map" >
+		UPDATE T_USER
+		SET 
+			del_yn = 'Y'
+			, user_pw = ' '
+			, intro = ''
+			, user_email = ''
+			, user_mobile = ''
+			, user_tel = ''
+			, dept = ''
+			, pwd_mod_dt = ''
+			, upd_userno = #{s_user_no}
+			, upd_date = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+			, birth = ''
+			, post = ''
+			, addr1 = ''
+			, addr2 = ''
+			, agree_dt = ''
+			, user_gb = ''
+		WHERE  
+			user_no = 	#{user_no}
+	</update>
+	
+	<!-- 재 동의가 필요한 사용자 목록  -->
+	<select id="selectReAgreeUserList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			user_no
+			, user_nm
+			, user_mobile
+		FROM T_USER
+		WHERE 
+			del_yn != 'Y'
+			AND user_gb = 'N'
+			AND agree_dt is not null
+			<if test='pday != null and !pday.equals("")' >
+			AND DATEDIFF( SYSDATE() + 1, DATE_FORMAT(A.agree_dt, '%Y%m%d')) = #{pday}
+			</if>
+			<if test='dday != null and !dday.equals("")' >
+			AND DATEDIFF( SYSDATE() + 1, DATE_FORMAT(A.agree_dt, '%Y%m%d')) > #{dday}
+			</if>
+	</select>
+	
+	<!-- 11개월동안 로그인하지 않은 회원  -->
+	<select id="selectUserLoginList" parameterType="Map" resultType="caseMap">
+		SELECT
+		    user_no
+		    , user_nm
+		    , user_mobile
+		    , conn_dt
+		FROM (
+			SELECT 
+				a.user_no
+				, a.user_nm
+				, a.user_mobile
+				, (SELECT MAX(CONN_DT) FROM T_HOMEPAGECONN thc WHERE thc.user_no = a.user_no) conn_dt  
+			FROM T_USER a
+			WHERE 
+				del_yn != 'Y'
+				AND user_gb = 'N'
+				AND agree_dt is not null)
+		WHERE 
+			DATEDIFF( SYSDATE() + 1, DATE_FORMAT(conn_dt, '%Y%m%d')) = #{pday}
+	</select>
+	
+	<!-- 회원 탈퇴 -->
+	<update id="userAutoDropOut" parameterType="Map" >
+	 	UPDATE T_USER
+		SET 
+			del_yn = 'Y'
+			, user_pw = ' '
+			, intro = ''
+			, user_email = ''
+			, user_mobile = ''
+			, pwd_mod_dt = ''
+			, upd_userno = ''
+			, upd_date = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+			, birth = ''
+			, user_tel = ''
+			, post = ''
+			, addr1 = ''
+			, addr2 = ''
+			, agree_dt = ''
+			, user_gb = ''
+			, dept = ''
+		WHERE  
+			del_yn != 'Y'
+			AND user_gb = 'N'
+			AND agree_dt is not null
+			AND DATEDIFF( SYSDATE() + 1, DATE_FORMAT(A.agree_dt, '%Y%m%d')) > 730
+	</update>
+	
+	<select id="selectUserPassExist" parameterType="Map" resultType="integer">
+		SELECT 
+			COUNT(*)
+		FROM T_USER
+		WHERE 
+			user_no = #{s_user_no}
+			AND user_pw = #{now_pw}
+	</select>
+	
+	<select id="selectUserPhoneExist" parameterType="Map" resultType="caseMap">
+		SELECT 
+		      user_no
+		      , user_id
+		FROM (
+			SELECT 
+				@ROWNUM := @ROWNUM + 1 AS ROWNUM
+        		, user_no
+				, user_id
+			FROM 
+				T_USER
+				, (SELECT @ROWNUM := 0) R
+			WHERE 
+				del_yn = 'N' 
+				AND user_nm = #{user_nm} 
+				AND user_mobile = #{user_mobile}
+		    ORDER BY REG_DATE DESC
+		) X 
+		WHERE 
+			ROWNUM = 1        
+	</select>
+	
+	<select id="selectUserIdPhoneExist" parameterType="Map" resultType="caseMap">
+		SELECT 
+			user_no
+			, user_id
+		FROM 
+			T_USER
+		WHERE 
+			del_yn = 'N' 
+			AND user_id = #{user_id}
+			AND user_nm = #{user_nm} 
+			AND user_mobile = #{user_mobile}
+	</select>
+	
+	<update id="initErrorLoginCount" parameterType="String" >
+	    UPDATE T_USER
+		SET
+			err_cnt = 0
+		WHERE
+			user_id = #{user_id}
+	</update>
+	
+	<update id="updateErrorLoginCount" parameterType="String" >
+	    UPDATE T_USER
+		SET
+			err_cnt = err_cnt + 1
+		,	last_err_dt = DATE_FORMAT(now(),'%Y%m%d%H%i')
+		WHERE
+			user_id = #{user_id}
+	</update>
+	
+	
+	<insert id="insertLoginHistory" parameterType="Map">	
+		INSERT INTO T_LOGIN_LOG
+		(
+			USER_ID,
+			IP,
+			LOGIN_YN,
+			SYSTEM,
+			REG_DATE
+		)
+		VALUES
+		(
+			#{user_id},
+			#{ip},
+			#{login_yn},
+			#{system},
+			DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+		)		
+	</insert>
+	
+	<select id="selectLoginHistoryList" parameterType="Map" resultType="caseMap">
+      SELECT T.*
+		  FROM (
+					SELECT @ROWNUM := @ROWNUM + 1 AS ROWNUM
+					     , A.USER_ID
+					     , (SELECT USER_NM FROM T_USER WHERE USER_ID = A.USER_ID) AS USER_NM
+					     , A.IP
+					     , A.LOGIN_YN
+					     , CASE WHEN A.LOGIN_YN = 'Y'
+					            THEN '성공'
+					            ELSE '실패'
+					       END AS ACCESS_YN
+					     , A.SYSTEM
+					     , DATE_FORMAT(A.REG_DATE, '%Y-%m-%d') REG_DATE
+					     , DATE_FORMAT(A.REG_DATE, '%Y-%m-%d %H:%i:%s') LOGIN_DATE
+					  FROM T_LOGIN_LOG A
+					     , (SELECT @ROWNUM := 0) R
+					  ORDER BY A.REG_DATE DESC
+		       ) T
+		 WHERE 1 = 1
+		   <if test='userId != null and !userId.equals("")' >
+		   AND T.USER_ID = #{userId}
+		   </if>
+		   AND DATE_FORMAT(T.REG_DATE, '%Y-%m-%d') BETWEEN #{startDate} AND #{endDate}	
+		 
+	</select>
+	
+</mapper>

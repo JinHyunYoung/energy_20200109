@@ -1,0 +1,359 @@
+@charset "utf-8";
+
+
+/* table list */
+table.list {width: 100%; border-top: 2px solid #5db4dc; border-bottom: 1px solid #b6b6b6; font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+table.list.fixed {table-layout: fixed;}
+table.list thead th {padding: 10px 0px; border: 1px solid #dddddd; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕'; font-size: 13px; font-weight: bold; color: #4d4d4d; text-align: center; vertical-align: middle; background: url("/images/admin/common/bg_table_thline.png") repeat-x 0 bottom #f9f9f9;}
+table.list thead th.first {border-left: 0;}
+table.list thead th.last {border-right: 0;}
+table.list thead th.borderl {border-left: 1px solid #dddddd;}
+table.list thead th.borderr {border-right: 1px solid #dddddd;}
+table.list thead th.alignl {padding-left: 10px; text-align: left;}
+table.list thead th.alignr {text-align: right;}
+table.list tbody th {border-top: 1px solid #dddddd; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕'; font-size: 13px; font-weight: bold; color: #4d4d4d; text-align: center; background-color: #fcfcfc;} 
+table.list tbody th.borderl {border-left: 1px solid #dddddd;}
+table.list tbody th.borderr {border-right: 1px solid #dddddd;}
+table.list tbody td {padding: 8px 5px; border-top: 1px solid #dddddd; border-bottom: 0; border-left: 1px solid #dddddd; border-right: 1px solid #dddddd; font-size: 12px; color: #626262; text-align: center; line-height: 1.4em; vertical-align: middle;}
+table.list tbody td.first {border-left: 0;}
+table.list tbody td.last {border-right: 0;}
+table.list tbody td.bg {background-color: #f5fbfc;}
+table.list tbody th.alignl, 
+table.list tbody td.alignl {padding-left: 10px; text-align: left;}
+table.list tbody th.alignr, 
+table.list tbody td.alignr {text-align: right;}
+table.list tbody td.subject {table-layout: fixed; overflow: hidden; color: #333333; text-align: left; text-overflow: ellipsis; white-space: nowrap;}
+table.list tbody td a {color: #626262; text-decoration: none;}
+table.list tbody td a:hover {text-decoration: underline;}
+table.list tbody tr td.bg_gray {background-color: #f7f7f7;}
+table.list tbody tr.inactive td {text-decoration: line-through; color: #858585; background-color: #ececec;}
+table.list tbody tr td.nopadding {padding: 0px;}
+table.list tbody tr.bg td {background-color: #f7f7f7;}
+table.list tbody tr td.borderl {border-left: 1px solid #dddddd;}
+table.list tbody tr td.nobordert {border-top: 0;}
+table.list tbody tr td.noborderb {border-bottom: 0;}
+table.list tbody tr td img {display: inline; display: inline-block; vertical-align: middle;}
+table.list tbody tr td.imgs img {width: 20%;}
+table.list tbody tr td.imgm img {width: 40%;}
+table.list tbody tr td.imgl img {width: 60%;}
+table.list tbody tr.title td {font-weight: bold; background-color: #fbfbfb;}
+table.list tfoot th {padding: 8px 0px; border-top: 2px solid #c4ebfb; border-bottom: 1px solid #b2b2b2; border-left: 0; border-right: 0; font-size: 1.05em; color: #333333; background-color: #e6f8ff;}
+table.list tfoot td {padding: 8px 5px; border-top: 2px solid #c4ebfb; border-bottom: 1px solid #b2b2b2; border-left: 0; border-right: 0; font-size: 1.05em; font-weight: bold; color: #333333; text-align: center; background-color: #e6f8ff;}
+table.list tfoot td.bg {background-color: #ffffff;}
+
+table.list thead th.bg_group {background-color: #effaff;}
+table.list tbody tr td.bg_group {background-color: #effaff;}
+table.list tbody td.reply {padding-left: 44px; background: url("/images/admin/icon/icon_reply.png") no-repeat 12px 10px;}
+
+
+td.icon_img_align img {margin: 0 0 0 -2px; padding: 0;}
+
+
+/* 앨범형 */
+.album_list_area {overflow: hidden; padding-top: 20px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+	ul.album_list {overflow: hidden;}
+	ul.album_list > li {float: left; margin: 0 10px 30px;}
+	ul.album_list li {list-style: none;}
+	ul.album_list li .album {overflow: hidden; width: 254px; height: 336px; font-size: 12px; border-top: 3px solid #7b736b; border-bottom: 1px solid #7b736b;}
+	ul.album_list li .album .album_img_area {overflow: hidden; width: 254px; height: 163px;}
+	ul.album_list li .album .album_img_area img {width: 254px; height: 163px; vertical-align: top;}
+	ul.album_list li .album .album_txt_area {overflow: hidden; min-height: 169px; padding: 21px 19px; border-left: 1px solid #eeeeee; border-right: 1px solid #eeeeee;}
+	ul.album_list li .album .album_txt_area .album_name_area {overflow: hidden; margin-bottom: 10px; font-weight: bold; }
+	ul.album_list li .album .album_txt_area .album_nation {font-size: 13px; font-weight: bold; color: #e86a02;}
+		ul.album_list li .album .album_txt_area .album_nation:after {content: '|'; padding-left: 4px;}
+	ul.album_list li .album .album_txt_area .album_category {font-size: 13px; font-weight: bold; color: #e86a02;}
+	ul.album_list li .album .album_txt_area .album_number {float: right; font-size: 13px; font-weight: bold; color: #333333;}
+	ul.album_list li .album .album_txt_area .album_title_area {overflow: hidden; height: 32px; margin-bottom: 10px; font-size: 13px; color: #333333;}
+	ul.album_list li .album .album_txt_area .album_title_area .album_title {font-size: 13px; font-weight: bold; color: #4d4d4d;}
+	ul.album_list li .album .album_txt_area .album_title_area .album_title a {font-size: 13px; font-weight: bold; color: #4d4d4d;}
+	ul.album_list li .album .album_txt_area .album_title_area .album_title a:hover {text-decoration: underline;}
+	ul.album_list li .album .album_txt_area .album_title_area .album_reply {font-size: 13px; color: #333333;}
+	ul.album_list li .album .album_txt_area .album_title_area .album_reply span {font-weight: bold; font-size: 13px; color: #e5350e;}
+	ul.album_list li .album .album_txt_area .album_file_area {overflow: hidden; height: 24px; margin-bottom: 10px;}
+	ul.album_list li .album .album_txt_area .album_file_area span.album_file {overflow: hidden; display: inline-block;}
+	  
+	ul.album_list li .album .album_txt_area .album_register_area {font-size: 11px; height: 40px;}
+	ul.album_list li .album .album_txt_area .album_register_area ul li {color: #909090; list-style: none;}
+	ul.album_list li .album .album_txt_area .album_register_area ul li + li {margin-top: 5px;}
+	ul.album_list li .album .album_txt_area .album_register_area ul li strong.register_name {padding-right: 6px; margin-right: 6px; font-weight: normal; background: url('/images/admin/common/bg_view_vdt2.png') no-repeat right center;}
+	ul.album_list li .album .album_txt_area .album_register_area ul li span {font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 11px; color: #909090;}
+	ul.album_list li .album .album_txt_area .album_register_area ul li p.reply_count {display: inline-block;}
+		ul.album_list li .album .album_txt_area .album_register_area ul li p.reply_count span {font-weight: bold; color: #e5350e;}
+
+/* 보고서형 */
+	ul.album_list.report_list > li {float: left; margin: 0 7px 30px;}
+	ul.album_list.report_list li .album {overflow: hidden; width: 166px; height: 291px; font-size: 12px; border-top: 3px solid #7b736b; border-bottom: 1px solid #7b736b;  border-left: 1px solid #eeeeee; border-right: 1px solid #eeeeee;}
+	ul.album_list.report_list li .album .album_img_area {overflow: hidden; width: 166px; height: 180px; padding-top: 10px; text-align: center;}
+	ul.album_list.report_list li .album .album_img_area img {width: 146px; height: 180px; vertical-align: top;}
+	ul.album_list.report_list li .album .album_txt_area {overflow: hidden; min-height: 84px; padding: 12px; border-left: 0; border-right: 0;}
+	ul.album_list.report_list li .album .album_txt_area .album_title_area {overflow: hidden; height: inherit; margin-bottom: 10px; font-size: 13px; color: #333333;}
+	ul.album_list.report_list li .album .album_txt_area .album_register_area {height: inherit; margin-bottom: 16px; font-size: 11px;}
+
+
+/* table write */
+table.write {width: 100%; border-top: 2px solid #5db4dc; border-bottom: 1px solid #dddddd; border-left: 0; border-right: 0; font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+table.write tbody th,
+table.write tbody td {padding: 8px 10px; border-bottom: 1px solid #dddddd; text-align: left; vertical-align: top;}
+table.write tbody th {padding-right: 12px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕'; font-size: 13px; font-weight: bold; color: #4d4d4d; text-align: right; line-height: 1.5em; background-color: #f9f9f9;}
+table.write tbody th.alignc,
+table.write tbody td.alignc {text-align: center;}
+table.write tbody td {font-size: 12px; color: #626262; line-height: 1.5em;}
+table.write tbody td input {display: inline-block; height: 20px;}
+table.write tbody td select {display: inline-block; height: 22px;}
+table.write tbody td.borderl {border-left: 1px solid #dddddd;}
+table.write tbody a {color: #626262; text-decoration: none;}
+table.write tbody td img {display: inline-block; margin-left: 1px; margin-right: 1px; vertical-align: middle;}
+
+table.modify {width: 100%; border: 0; border-top: 2px solid #5db4dc; border-bottom: 1px solid #dddddd; table-layout: fixed; font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+table.modify tbody th {min-height: 24px; padding: 10px 10px 10px 26px; border: 0; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕'; font-size: 13px; font-weight: bold; color: #4d4d4d; text-align: left; line-height: 1.5em; color: #444444; vertical-align: top; background: url('/images/admin/common/bullet_title_04.png') no-repeat 15px 18px;}
+table.modify tbody td {min-height: 24px; padding: 10px 10px; border: 0; font-size: 12px; color: #626262; line-height: 1.5em; text-align: left; vertical-align: middle;}
+table.modify tbody th span.title {padding-left: 10px; vertical-align: middle; background: url('/images/admin/common/bullet_03.png') no-repeat 0px 4px;}
+table.modify tbody th.alignl {text-align: left;}
+table.modify tbody td.alignc {text-align: center;}
+table.modify tbody td.alignr {text-align: right;}
+table.modify tbody a:hover {text-decoration: underline;}
+table.modify tbody a.btn:hover {text-decoration: none;}
+table.modify tbody td input {display: inline-block; height: 22px;}
+table.modify tbody td select {display: inline-block; height: 24px;}
+table.modify tbody td img {display: inline-block; margin-left: 1px; margin-right: 1px; vertical-align: middle;}
+table.modify tbody td label {display: inline-block; display: inline; vertical-align: middle;}
+table.modify tbody td.editor {padding: 10px 0 4px;}
+
+
+/* uninsert_area */
+.uninsert_area {overflow: hidden; padding: 15px; margin: 20px 0; border: 1px solid #dee0e3; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕';}
+	.uninsert_box {overflow: hidden; padding: 0 0 0 14px; margin: 5px 0 0; font-size: 0.98em;}
+
+
+
+/* table view */
+table.view {width: 100%; border-top: 2px solid #5db4dc; border-bottom: 1px solid #dddddd; border-left: 0; border-right: 0; font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+table.view tbody th,
+table.view tbody td {padding: 8px 10px; border-bottom: 1px solid #dddddd; text-align: left; vertical-align: top;}
+table.view tbody th {padding-right: 12px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕'; font-size: 13px; font-weight: bold; color: #4d4d4d; text-align: center; line-height: 1.5em; background-color: #f9f9f9;}
+table.view tbody td.alignc {text-align: center;}
+table.view tbody td {font-size: 12px; color: #626262; line-height: 1.5em;}
+table.view tbody td.borderl {border-left: 1px solid #dddddd;}
+table.view tbody td input {display: inline-block; height: 20px;}
+table.view tbody a {color: #626262; text-decoration: none;}
+table.view tbody td img {display: inline-block; margin-left: 1px; margin-right: 1px; vertical-align: middle;}
+
+
+/* 요약형 */
+
+	/* dl view */
+	.view_area {overflow: hidden; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+		.view_title {overflow: hidden; padding: 18px 22px 18px; border-top: 3px solid #7b736b; border-bottom: 1px solid #dcdcdc; font-weight: bold; font-size: 14px; line-height: 1.4em; background-color: #f9f4f0;}
+		span.count_num {float: right; font-size: 13px; color: #4d4d4d;}
+		.dl_view {overflow: hidden; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 13px;}
+		dl.view {overflow: hidden; padding: 10px 14px 8px; margin-bottom: 3px; border-bottom: 1px solid #dcdcdc; color: #333333; color: #4d4d4d;}
+			dl.view.top_line {border-top: 1px solid #dcdcdc;}
+			dl.view > dt.vdt {float: left; display: inline-block; padding-left: 9px; font-weight: bold; line-height: 1.5em; background: url('/images/admin/common/bg_view_divider.png') no-repeat 0 4px;}
+			dl.view > dt.vdt:first-child {padding-left: 0px; background: none;}
+			dl.view > dt.vdt span {display: block; padding-right: 7px; margin-right: 5px; background: url('/images/admin/common/bg_view_vdt.png') no-repeat right 6px;}
+			dl.view > dd.vdd {float: left; display: inline-block; margin-right: 8px; font-weight: normal; line-height: 1.5em;}
+			dl.view > dd.vdd.file {overflow: hidden; width: 90%;}
+			dl.view > dd.vdd input[type="file"] {display: inline-block; height: 22px;}
+			dl.view > dd.vdd a {color: #333333; text-decoration: none;}
+			dl.view > dd.vdd a:hover {color: #1f3662; text-decoration: underline;}
+			dl.view > dd.vdd a.link {color: #0068b7; text-decoration: underline;}
+			dl.view > dd.vdd a.download {display: block; padding: 3px 5px; margin: 2px; /*border: 1px solid #dcdcdc;*/ font-size: 0.89em; letter-spacing: -0.03em;}
+			dl.view > dd.vdd a.download:hover {color: #333333; text-decoration: none;}
+			dl.view > dd.vdd a.download:first-child {margin-top: 0px; padding-top: 2px;}
+			dl.view > dd.vdd a.download img {display: block; float: left; margin-top: 2px; margin-right: 5px; vertical-align: middle;}
+		.editor {overflow: hidden; margin-bottom: 40px; padding: 20px 23px 40px; border-bottom: 1px solid #686159; font-size: 13px;}
+		.editor p {line-height: 1.5em;}
+
+	.album_list_hor_area {overflow: hidden; border-top: 3px solid #7b736b; border-bottom: 1px solid #7b736b;}
+	
+	ul.album_list_hor {overflow: hidden;}
+		ul.album_list_hor li {overflow: hidden; padding: 15px 20px; border-top: 1px solid #e5e5e5; list-style: none;}
+		ul.album_list_hor li:first-child {margin-top: 0; border-top: none;}
+		ul.album_list_hor li img.info_img {float: left; width: 179px; height: 133px; margin-right: 20px; border: 1px solid #dcdcdc;}
+		ul.album_list_hor li strong.reply_count {color: #e5350e;}
+		
+		.list_info {overflow: hidden; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 13px;}
+			.list_info strong.related_organ_category {display: block; margin-bottom: 13px; font-size: 13px; font-weight: bold; color: #e86a02;}
+			.list_info strong.related_organ_name {display: block; margin-bottom: 13px; font-size: 14px; font-weight: bold; color: #333333;}
+			.list_info strong.title {overflow: hidden; display: block; width: 100%; margin-bottom: 3px; font-size: 13px; font-weight: normal; color: #333333; text-align: left; text-overflow: ellipsis; white-space: nowrap; line-height: 1.5em;}
+			.list_info strong.title a {font-size: 13px; color: #4d4d4d; font-weight: bold;}
+			.list_info strong.title a:hover {text-decoration: underline;}
+			.list_info p.memo {overflow: hidden; font-size: 0.96em; line-height: 1.5em;}
+			.list_info dl.view {padding: 0; border-bottom: 0;}
+
+
+	/* answer_area */
+	.answer_area {overflow: hidden; margin-bottom: 20px; padding: 16px 20px; border: 5px solid #eaeaea; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕';}
+		.answer_title {overflow: hidden; padding: 11px 14px 10px; border-top: 2px solid #137dbf; border-bottom: 3px double #dddddd; font-weight: bold; font-size: 1.1em; line-height: 1.4em;}
+		dl.answer {overflow: hidden; padding: 10px 5px 8px; border-bottom: 1px solid #dddddd; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕'; font-size: 0.98em; color: #4d4d4d;}
+			dl.answer > dt.adt {float: left; display: inline-block; padding-left: 9px; font-weight: bold; line-height: 1.5em; background: url('/images/admin/common/bg_view_divider.png') no-repeat 0 4px;}
+			dl.answer > dt.adt:first-child {padding-left: 0px; background: none;}
+			dl.answer > dt.adt span {display: block; margin-right: 5px;}
+			dl.answer > dd.add {float: left; display: inline-block; padding-left: 7px; margin-right: 8px; font-weight: normal; line-height: 1.5em; background: url('/images/admin/common/bg_view_vdt.png') no-repeat 0 6px;}
+			dl.answer > dd.add input[type="file"] {display: inline-block; height: 22px;}
+			dl.answer > dd.add a {color: #333333; text-decoration: none;}
+			dl.answer > dd.add a:hover {color: #1f3662; text-decoration: underline;}
+			dl.answer > dd.add a.download {display: inline-block; padding: 2px 5px; margin: 2px; border: 1px solid #dcdcdc; font-size: 0.89em; letter-spacing: -0.03em;}
+			dl.answer > dd.add a.download:hover {color: #333333; text-decoration: none;}
+			dl.answer > dd.add a.download img {display: block; float: left; margin-top: 2px; margin-right: 5px; vertical-align: top;}
+		
+		.answer_area > .editor_area {padding: 5px 2px; text-align: center;}
+
+
+
+/* paging */
+.paging_area {overflow: hidden; width: 100%; margin: 15px 0; padding: 0; font-size: 0.88em; font-weight: bold; text-align: center;}
+    .paging_area strong {display: inline-block; height: 22px; padding: 0 8px; border: 1px solid #137dbf; font-weight: bold; color: #f00000; line-height: 23px; vertical-align: top; background-color: #ffffff;}
+    .paging_area a {display: inline-block; height: 24px; padding: 0 6px 0; line-height: 24px; color: #333333;}  
+    .paging_area a:hover {text-decoration: underline;}
+    .paging_area a.stimg {display: inline-block; padding: 0; border: 0; text-decoration: none;}
+    .paging_area a.stimg img {display: inline-block; height: 24px; border: 0; text-decoration: none; vertical-align: top;}
+    .paging_area a.stimg:hover {text-decoration: none;}
+
+
+
+/* table search_box */
+.search_area {overflow: hidden; position: relative; margin-bottom: 40px; padding: 15px 160px 15px 22px; border: 1px solid #dfdede; background-color: #f7f7f7;}
+		table.search_box {width: 100%; border: 0; table-layout: fixed; color: #4d4d4d;}
+		table.search_box tbody th {padding: 10px 0 0 10px; border: 0; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 13px; font-weight: bold; text-align: left; vertical-align: top; background: url('/images/admin/common/bullet_search.png') no-repeat 0 16px;}
+		table.search_box tbody td {height: 24px; padding: 6px 10px; text-align: left; border: 0; font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 12px;}
+		table.search_box tbody td a:hover img {text-decoration: none;}
+		table.search_box tbody td input {display: inline-block; display: inline; vertical-align: middle;}
+		table.search_box tbody td input[type=text] {height: 22px; border: 1px solid #8a8a8a; background-color: #ffffff;}
+		table.search_box tbody td input {border: expression((this.type=='text')?'0px':''); height: 22px; font-size: 100%; text-indent: 1px; line-height: 21px; text-align: left;}
+		table.search_box tbody td select {height: 24px; border: 1px solid #8a8a8a;}
+		table.search_box tbody td.btn_align {padding: 0 0 5px 0; vertical-align: bottom;}
+		table.search_box tbody th.alignc,
+		table.search_box tbody td.alignc {text-align: center;}
+		table.search_box tbody th.alignr,
+		table.search_box tbody td.alignr {text-align: right;}
+		
+	.search_area_btnarea {position: absolute; bottom: 21px; right: 20px;}
+
+
+/* reply_area */
+.reply_area {overflow: hidden; margin-bottom: 20px; padding: 19px 21px 27px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; background-color: #f1eeec;}
+	.reply_area strong {display: block; margin-bottom: 12px; padding-left: 17px; font-size: 15px; font-weight: bold; color: #2a2d41; background: url('/images/admin/icon/icon_reply_01.png') no-repeat 0 0;}
+	.reply_area .reply_detail_box {overflow: hidden; border: 1px solid #e5e5e5; background-color: #ffffff;
+		border-radius: 2px;
+		-webkit-border-radius: 2px;
+		-moz-border-radius: 2px;
+		}
+	.reply_area .reply_date {overflow: hidden; padding: 14px 17px 13px; border-bottom: 1px solid #e5e5e5; font-size: 13px; color: #2a2d41;}
+		.reply_area .reply_date span.reply_date_tt {display: inline-block; padding-right: 6px; background: url('/images/admin/common/bg_view_vdt.png') no-repeat right 4px;);}
+	.reply_area .reply_txt {overflow-y: hidden; padding: 16px 17px 43px; font-size: 13px; color: #2a2d41;}
+
+/* comment_area */
+.comment_area {overflow: hidden; margin-top: 80px}
+	.comment_title_area {overflow: hidden; padding-bottom: 10px; border-bottom: 1px solid #dcdcdc;}
+		.comment_title_area h5.comment_title {float: left; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 15px; font-weight: bold; color: #2a2d41;}
+		.comment_title_area strong.number {display: inline; display: inline-block; float: left; padding-left: 5px;}
+		.comment_title_area strong.number span {display: block; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 15px; font-weight: bold; color: #e5350e;}
+
+	.commentbox_area {overflow: hidden; margin-top: 20px;}
+	    .txtinput_area {overflow: hidden; position: relative; padding-bottom: 20px;}
+	    	.txtbox {overflow: hidden;}
+	    	.txtbox .count_number {display: inline-block; padding-right: 10px; font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 13px; color: #333333;} 
+		    .txtbox .count_number strong {font-weight: normal; color: #333333;}
+		    .txtinput_area input {width: 195px; height: 33px; border: 1px solid #d2d2d2; font-size: 13px; color: #a8a9ad; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+		    .txtinput_area textarea.txtinput {width: 99.8%; height: 70px; margin-top: 7px; border: 1px solid #d2d2d2; resize: none;}
+		 	.txtinput_area button.btn_comment_save {position: absolute; right: 0; top: 0; display: inline; width: 112px; height: 99px; border:1px solid #154475; border-radius: 2px; background-color: #275c92;}
+		    .txtinput_area button.btn_comment_save span {font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 18px; font-weight: bold; color:#ffffff;}
+	    
+	    .commentbox {overflow: hidden; vertical-align: middle; background-color: #ffffff;}
+	    	ul.comment_list {overflow: hidden; border-top: 1px solid #dcdcdc; border-bottom: 1px solid #7b736b;}
+		    	ul.comment_list > li {overflow: hidden; position: relative; padding: 27px 20px 25px; border-top: 1px dotted #d2d2d2; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 13px;}
+		    	ul.comment_list > li:first-child {border-top: 0;}
+		    	ul.comment_list > li .info_area {overflow: hidden; margin-right: 25px;}
+		    	ul.comment_list > li .info_area strong.name {display: inline-block; display: inline; margin-right: 4px; padding-right: 10px; font-size: 14px; font-weight: bold; color: #333333; background: url('/images/admin/common/commentbox_bar.png') no-repeat right 3px;}
+		    	ul.comment_list > li .info_area span {display: inline-block; display: inline; font-size: 13px; color: #b5b5b5;}
+		    	
+		    	.info_area input[type=text].input_name {width: 120px; height: 23px; font-size: 13px; text-indent: 5px; border: 1px solid #d2d2d2;}
+		    	.info_area input[type=password].input_pass {width: 150px; height: 23px; font-size: 13px; text-indent: 5px; border: 1px solid #d2d2d2;}
+		    	
+		    	ul.comment_button_area {overflow: hidden; display: inline-block; vertical-align: middle; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 11px;}
+		    	ul.comment_button_area li {float: left; list-style: none; padding: 0 5px; font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif; background: url('/images/admin/common/comment_button_bar.png') no-repeat left 1px;}
+		    	ul.comment_button_area li:first-child {background: none;}
+		    	ul.comment_button_area li a {color: #535353 !important; font-size: 11px !important;}
+		    	ul.comment_button_area li a span {color: #535353 !important; font-size: 11px !important;}
+		    	
+		    	.txt_area {overflow: hidden; padding: 1px; margin: 20px 0 0px 0; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 12px; line-height: 1.5em; color: #686868;}
+		    	.txt_area p {font-size: 13px; line-height: 1.5em; color: #686868;}
+		    	
+		    .recommentbox {overflow: hidden; margin-top: 15px; background-color: #ffffff;}
+			    .recommentbox ul.comment_list {overflow: hidden; border: 0;}
+			    	.recommentbox ul.comment_list > li {overflow: hidden; position: relative; padding: 20px 24px 22px 44px; margin-top: 1px; border-top: 0; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 13px; border-bottom: 0px; background: url('/images/admin/common/bullet_comment_reply.png') no-repeat 24px 17px #f1eeec;}
+			    	.recommentbox ul.comment_list > li .info_area {overflow: hidden; margin-right: 25px;}
+			    	.recommentbox ul.comment_list > li .info_area strong.name {display: inline-block; display: inline; font-weight: bold; color: #444444;}
+			    	.recommentbox ul.comment_list > li .info_area span {display: inline-block; display: inline; color: #a09f9f;}
+			    	
+			ul.comment_list li .txtinput_area {overflow: hidden; position: relative; padding-bottom: 0; background: none;}
+				ul.comment_list li .txtinput_area .re_input_area {overflow: hidden; margin-right: 150px;}
+				ul.comment_list li .txtinput_area .re_input_area div.input_box {width: 98%;}
+				ul.comment_list li .txtinput_area .re_input_area input {height: 23px; font-size: 12px; color: #a8a9ad;}
+				ul.comment_list li .txtinput_area .re_input_area textarea.txtinput {width: 99.8%; height: 23px; font-size: 13px; text-indent: 5px; border: 1px solid #d2d2d2;}
+				ul.comment_list li .txtinput_area .re_input_area .re_count_number {overflow: hidden; margin-top: 5px; margin-right: 18px; text-align: right; font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 12px; color: #333333;}
+				ul.comment_list li .txtinput_area .re_button_area {overflow: hidden; position: absolute; bottom: 20px; right: 11px;}
+
+
+
+/* etc */
+.editor_area {overflow: hidden; margin: 0; padding: 5px 0; border-bottom: 1px solid #dddddd;}
+.editor_area.view {padding: 15px 15px 50px;}
+
+.table_toplineb {border-top: 1px solid #0262ac;}
+table td input.bg_gray {background-color: #f7f7f7;}
+
+ul.file_list {overflow: hidden; padding: 10px 15px; border: 1px solid #cacaca;}
+	ul.file_list li {padding: 2px 0 0 10px; margin-top: 7px; line-height: 1.5em; list-style: none; background: url('/images/admin/common/bullet_file_list.png') no-repeat 0 9px;}
+	ul.file_list li:first-child {margin-top: 0;}
+	ul.file_list li a:hover {text-decoration: underline;}
+	ul.file_list li a.btn_file_delete {display: inline-block; margin-top: -2px; vertical-align: top;}
+	ul.file_list li .file_list_img {overflow: hidden;}
+	
+ul.list {overflow: hidden; padding: 10px 15px;}
+	ul.list li {padding-left: 10px; margin-top: 8px; line-height: 1.5em; list-style: none; background: url('/images/admin/common/bullet_file_list.png') no-repeat 0 9px;}
+	ul.list li:first-child {margin-top: 0;}
+	ul.list li a:hover {text-decoration: underline;}
+	ul.list li label span.title {display: inline; display: inline-block; width: 100px;}
+
+/* contents_table */
+.contents_table {overflow: hidden; margin-bottom: 30px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; border-bottom: 3px solid #ebf4f8;}
+.contents_table .contents_title {height: 50px; padding: 0 20px; background-color: #cfe5ef;}
+.contents_table .contents_title strong {font-size: 15px; font-weight: bold; color: #2a2d41; line-height: 50px;}
+.contents_table .contents_title .contents_title_btn_area {display: inline-block; line-height: 50px; float: right;}
+.contents_table .contents_title .contents_title_btn_area a:hover {text-decoration: none;}
+.contents_table .contents_list {overflow: hidden;}
+.contents_table .contents_list ul.line_list {overflow: hidden; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+.contents_table .contents_list ul.line_list li {list-style: none; margin: 10px; border: 1px solid #d2d2d2; border-radius: 3px;} 
+.contents_table .contents_list ul.line_list li .list_row {overflow: hidden; margin: 10px 0;}
+.contents_table .contents_list ul.line_list li .list_row .head_area {float: left; overflow: hidden; width: 150px; padding: 0 20px; line-height: 25px;}
+.contents_table .contents_list ul.line_list li .list_row .head_area strong {font-size: 14px; color:#333333;}
+.contents_table .contents_list ul.line_list li .list_row .body_area {overflow: hidden; line-height: 25px;}
+.contents_table .contents_list ul.line_list li .list_row .body_area .contents_list_btn_area {overflow: hidden; display: inline-block; float: right; margin-right: 20px;}
+.contents_table .contents_list ul.no_list {overflow: hidden; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+.contents_table .contents_list ul.no_list > li {list-style: none; margin: 10px 0; border-bottom: 1px solid #e5e5e5;}
+.contents_table .contents_list ul.no_list li:last-child {border: 0px;} 
+.contents_table .contents_list ul.no_list li .list_row {overflow: hidden; margin: 10px 0;}
+.contents_table .contents_list ul.no_list li .list_row .head_area {float: left; overflow: hidden; width: 130px; padding: 0 20px; line-height: 25px;}
+.contents_table .contents_list ul.no_list li .list_row .head_area strong {font-size: 14px; color:#333333;}
+.contents_table .contents_list ul.no_list li .list_row .body_area {overflow: hidden; line-height: 25px;}
+.contents_table .contents_list ul.no_list li .list_row .body_area .contents_list_btn_area {overflow: hidden; display: inline-block; float: right; margin-right: 20px;}
+.contents_table .contents_list ul.no_list li .list_row .body_area p.body_txt {font-size: 13px; color: #e5350e}
+.contents_table .contents_list ul.no_list li .list_row .body_area ul.left_list {overflow: hidden;}
+.contents_table .contents_list ul.no_list li .list_row .body_area ul.left_list > li {list-style: none; float: left; font-size: 13px; color: #333333;}
+.contents_table .contents_list ul.no_list li .list_row .body_area ul.bottom_list {overflow: hidden;}
+.contents_table .contents_list ul.no_list li .list_row .body_area ul.bottom_list > li {list-style: none; font-size: 13px; color: #333333;}
+.contents_table .contents_list ul.no_list li .list_row .body_area ul.bottom_list > li + li {margin-top: 5px;}
+
+/* 제품사진 리스트 */
+.product_photo_area {overflow: hidden; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+	.product_list {overflow: hidden;}
+	.product_list li {float: left; width: 205px; height: 216px; margin: 10px 8px; border-top: 2px solid #7b736b; border-left: 1px solid #eeeeee; border-right: 1px solid #eeeeee; border-bottom: 1px solid #eeeeee; list-style: none;}
+	/*.product_list li:hover {width: 201px; height: 214px; border: 2px solid #f68121;}*/
+	.product_list li a:hover {text-decoration: none;}
+	.product_list li .product_img {overflow: hidden; width: 205px; height: 135px; border-bottom: 1px solid #cbc9c6; text-align: center;}
+		.product_list li .product_img img {}
+	.product_list li .product_txt {overflow: hidden; padding: 19px;}
+		.product_list li .product_txt strong {display: block; margin-bottom: 10px; font-size: 15px; font-weight: bold; color: #333333;}
+		.product_list li .product_txt p {font-size: 11px; color: #f68121; font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif;}

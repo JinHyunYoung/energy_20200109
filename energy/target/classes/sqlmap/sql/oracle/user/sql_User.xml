@@ -1,0 +1,636 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserDao">
+
+	<resultMap id="userVO" type="kr.or.wabis.user.vo.UserVO">
+	    <result property="userNo" column="USER_NO"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userName" column="USER_NM"/>
+		<result property="userPw" column="USER_PW"/>
+		<result property="age" column="AGE"/>
+		<result property="userEmail" column="USER_EMAIL"/>
+		<result property="userMobile" column="USER_MOBILE"/>
+		<result property="userTel" column="USER_TEL"/>
+		<result property="dept" column="DEPT"/>		
+		<result property="pwdModDt" column="PWD_MOD_DT"/>
+		<result property="pwdChgYn" column="PWD_CHG_YN"/>
+		<result property="delYn" column="DEL_YN"/>
+		<result property="auth" column="AUTH"/>
+		<result property="authNm" column="AUTH_NM"/>
+		<result property="userGb" column="USER_GB"/>
+		<result property="todayconnCnt" column="TODAYCONN_CNT"/>
+		<result property="regUserNo" column="REG_USERNO"/>
+		<result property="regDate" column="REG_DATE"/>
+	</resultMap> 
+	
+	<select id="selectUserLogin" parameterType="String" resultMap="userVO">
+		SELECT 
+			user_no
+			, user_id
+			, user_nm
+			, user_pw
+			, CASE 
+				WHEN birth is not null THEN floor(months_between(sysdate, to_date(birth,'YYYYMMDD'))/12) 
+				ELSE 1 
+			END AS age 
+			, (SELECT RTRIM(xmlagg(xmlelement(e,x.auth_id,',') ORDER BY x.auth_id).extract('//text()'),',') FROM T_AUTH x INNER JOIN T_MANAGERAUTH y ON x.auth_id = y.auth_id WHERE y.user_no = a.user_no) AS auth
+			, (SELECT RTRIM(xmlagg(xmlelement(e,x.auth_nm,',') ORDER BY x.auth_id).extract('//text()'),',') FROM T_AUTH x INNER JOIN T_MANAGERAUTH y ON x.auth_id = y.auth_id WHERE y.user_no = a.user_no) AS auth_nm		
+			, user_email
+			, user_mobile
+			, user_tel
+			, dept
+			, pwd_mod_dt
+			, CASE 
+				WHEN trunc((sysdate+1) - to_date(pwd_mod_dt,'YYYYMMDDHH24MISS')) <![CDATA[ >= ]]> 90 or pwd_mod_dt is null THEN 'Y' 
+				ELSE 'N' 
+			END pwd_chg_yn
+			, user_gb
+			, del_yn
+			, reg_userno
+			, reg_date
+		FROM T_USER a
+		WHERE 
+			del_yn = 'N'
+			AND user_id = #{user_id}
+	</select>
+	 
+	 <select id="selectUserId" parameterType="String" resultMap="userVO">
+		SELECT 
+			user_no
+			, user_id
+			, user_nm
+			, user_pw
+			, CASE 
+				WHEN birth is not null THEN floor(months_between(sysdate, to_date(birth,'YYYYMMDD'))/12) 
+				ELSE 1 
+			END AS age
+		    , (SELECT RTRIM(xmlagg(xmlelement(e,x.auth_id,',') ORDER BY x.auth_id).extract('//text()'),',') FROM T_AUTH x INNER JOIN T_MANAGERAUTH y on x.auth_id = y.auth_id WHERE y.user_no = a.user_no) AS auth
+		    , (SELECT RTRIM(xmlagg(xmlelement(e,x.auth_nm,',') ORDER BY x.auth_id).extract('//text()'),',') FROM T_AUTH x INNER JOIN T_MANAGERAUTH y on x.auth_id = y.auth_id WHERE y.user_no = a.user_no) AS auth_nm
+			, user_email
+			, user_mobile
+			, user_tel
+			, dept
+			, intro
+			, pwd_mod_dt
+			, CASE 
+				WHEN trunc((sysdate+1) - to_date(pwd_mod_dt,'YYYYMMDDHH24MISS')) <![CDATA[ >= ]]> 90 or pwd_mod_dt is null THEN 'Y' 
+				ELSE 'N' 
+			END pwd_chg_yn
+			, administ_cd
+			, user_gb
+			, del_yn
+			, (SELECT COUNT(distinct user_no) FROM T_HOMEPAGECONN WHERE substr(conn_dt,0,8) = TO_CHAR(SYSDATE,'YYYYMMDD')) AS todayconn_cnt
+			, reg_userno
+			, reg_date
+		FROM T_USER a
+		WHERE 
+			del_yn = 'N'
+			AND user_id = #{user_id}
+	</select>
+		
+	<select id="selectUserPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		SELECT T.* 
+		FROM (
+			SELECT 
+			    user_no
+				, user_id
+				, user_nm
+				, user_pw
+				, user_gb
+				, user_email
+				, user_mobile
+				, user_tel
+				, intro
+				, dept
+				, del_yn
+				, pwd_mod_dt
+				, birth
+				, post
+				, addr1
+				, addr2
+				, reg_userno
+				, GET_DATEFORMAT(agree_dt) as agree_dt
+		        , (SELECT rtrim(xmlagg(xmlelement(e,x.auth_id,',') order by x.auth_id).extract('//text()'),',') from t_auth x inner join t_managerauth y on x.auth_id = y.auth_id where y.user_no = a.user_no) as auth
+		        , (SELECT rtrim(xmlagg(xmlelement(e,x.auth_nm,',') order by x.auth_id).extract('//text()'),',') from t_auth x inner join t_managerauth y on x.auth_id = y.auth_id where y.user_no = a.user_no) as auth_nm
+				, GET_DATEFORMAT(reg_date) as reg_date
+			FROM T_USER a
+			WHERE 
+				del_yn = 'N' 
+		   		<if test='user_gb != null and user_gb.equals("N")' >
+		   		   AND user_gb = 'N'
+		   		</if>
+		   		<if test='user_gb != null and !user_gb.equals("N")' >
+		   		   AND user_gb != 'N'
+		   		</if>
+	    		<if test='searchtxt != null and !searchtxt.equals("")' >
+		    		<if test='searchkey != null and searchkey.equals("user_nm")' >
+				   		AND upper(user_nm) LIKE '%'||upper(#{searchtxt})||'%'
+				   	</if>	
+		    		<if test='searchkey != null and searchkey.equals("user_id")' >
+				   		AND upper(user_id) LIKE '%'||upper(#{searchtxt})||'%'
+				   	</if>	
+		    		<if test='searchkey != null and searchkey.equals("user_mobile")' >
+				   		AND user_mobile = #{searchtxt}
+				   	</if>	
+		    		<if test='searchkey != null and searchkey.equals("user_email")' >
+				   		AND user_email = #{searchtxt}
+				   	</if>	
+			    </if>
+			    <if test='reg_stadt != null and !reg_stadt.equals("") and reg_enddt != null and !reg_enddt.equals("")' >
+			            AND GET_DATEFORMAT(REG_DATE) BETWEEN #{reg_stadt} AND #{reg_enddt}
+			    </if>
+		) T
+		WHERE 
+			1=1
+			<if test='auth != null and !auth.equals("")' >
+	   		   AND T.auth LIKE '%'||#{auth}||'%'
+	   		</if>
+	   		
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="selectUserSearchPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+			
+		SELECT 
+    		user_no
+	        , user_id
+			, user_nm
+			, intro
+			, user_email
+			, user_mobile
+			, user_tel
+			, dept
+			, del_yn
+			, pwd_mod_dt
+			, reg_userno
+			, reg_date
+		FROM T_USER
+		WHERE  
+			1=1			
+			<if test='user_nm != null and !user_nm.equals("")' >
+			   AND user_nm LIKE '%'||#{user_nm}||'%')
+			</if>
+			
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="selectUserList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			user_no
+			, user_id
+			, user_nm
+			, user_pw
+			, intro
+			, user_email
+			, user_mobile
+			, user_tel
+			, dept
+			, del_yn
+			, pwd_mod_dt
+			, birth
+			, user_tel
+			, post
+			, addr1
+			, addr2
+			, GET_DATEFORMAT(agree_dt) as agree_dt
+			, user_gb
+	        , (SELECT RTRIM(xmlagg(xmlelement(e,x.auth_id,',') ORDER BY x.auth_id).extract('//text()'),',') FROM T_AUTH x INNER JOIN T_MANAGERAUTH y ON x.auth_id = y.auth_id WHERE y.user_no = a.user_no) AS auth
+	        , (SELECT RTRIM(xmlagg(xmlelement(e,x.auth_nm,',') ORDER BY x.auth_id).extract('//text()'),',') FROM T_AUTH x INNER JOIN T_MANAGERAUTH y ON x.auth_id = y.auth_id WHERE y.user_no = a.user_no) AS auth_nm
+			, dept
+			, administ_cd
+			, reg_userno
+			, GET_DATEFORMAT(reg_date) AS reg_date
+		FROM T_USER a
+		WHERE 
+			1 = 1  			
+			<if test='user_nm != null and !user_nm.equals("")' >
+			   AND user_nm = #{user_nm}
+			</if>
+	</select>
+	
+	<select id="selectUser" parameterType="Map" resultType="caseMap">
+	    SELECT 
+			user_no
+			, user_id
+			, user_nm
+			, user_pw
+			, intro
+			, user_email
+			, user_mobile
+			, user_tel
+			, dept
+			, del_yn
+			, pwd_mod_dt
+			, birth
+			, gender
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'USER_GENDER' AND code = a.gender ) AS gender_nm
+			, GET_DATEFORMAT(birth) as birth_dt 
+			, user_tel
+			, post
+			, addr1
+			, addr2
+			, GET_DATEFORMAT(agree_dt) as agree_dt
+			, CASE 
+				WHEN trunc((sysdate+1) - to_date(agree_dt,'YYYYMMDDHH24MISS')) <![CDATA[ > ]]> 700 THEN 'Y' 
+				ELSE 'N' 
+			END AS reagree_yn
+			, user_gb
+	        , (SELECT RTRIM(xmlagg(xmlelement(e,x.auth_id,',') ORDER BY x.auth_id).extract('//text()'),',') FROM T_AUTH x INNER JOIN T_MANAGERAUTH y ON x.auth_id = y.auth_id WHERE y.user_no = a.user_no) AS auth
+	        , (SELECT RTRIM(xmlagg(xmlelement(e,x.auth_nm,',') ORDER BY x.auth_id).extract('//text()'),',') FROM T_AUTH x INNER JOIN T_MANAGERAUTH y ON x.auth_id = y.auth_id WHERE y.user_no = a.user_no) AS auth_nm
+			, dept
+			, administ_cd
+			, reg_userno
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, GET_DATEFORMAT(reg_date) AS reg_date			
+		FROM T_USER a
+		WHERE 
+			user_no = #{user_no}
+	</select>
+	
+	<select id="selectUserExist" parameterType="Map" resultType="integer">
+		SELECT 
+			count(*)
+		FROM T_USER
+		WHERE 
+			user_id = #{user_id}		
+	</select>
+	
+	<update id="insertUser" parameterType="Map" >
+		INSERT INTO T_USER (
+			user_no
+			, user_id
+			, user_nm
+			, user_pw
+			, user_email
+			, user_mobile
+			, user_tel
+			, dept
+			, del_yn
+			, birth
+			, gender
+			, post
+			, addr1
+			, addr2
+			<if test='user_gb != null and user_gb.equals("N")' >
+			, agree_dt
+			, pwd_mod_dt
+			</if>
+			, user_gb
+			, administ_cd
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			 #{user_no}
+			, #{user_id}
+			, #{user_nm}
+			, #{user_pw}
+			, #{user_email}
+			, #{user_mobile}
+			, #{user_tel}
+			, #{dept}
+			, 'N'
+			, #{birth}
+			, #{gender}
+			, #{post}
+			, #{addr1}
+			, #{addr2}
+			<if test='user_gb != null and user_gb.equals("N")' >
+			, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+			, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+			</if>
+			, #{user_gb}
+			, #{administ_cd}
+			, #{s_user_no}
+			, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+			, #{s_user_no}
+			, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+		)
+	</update>
+	
+	<update id="updateUser" parameterType="Map" >
+	    UPDATE T_USER
+		SET
+			upd_userno = #{s_user_no}
+			, upd_date = TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+			<if test='user_nm != null and !user_nm.equals("")' >
+			, user_nm = #{user_nm}
+			</if>
+			<if test='user_pw != null and !user_pw.equals("")' >
+			, user_pw = #{user_pw}
+			</if>
+			, user_email = #{user_email}
+			, user_mobile = #{user_mobile}
+			, user_tel = #{user_tel}
+			, post = #{post}
+			, addr1 = #{addr1}
+			, addr2 = #{addr2}
+			<if test='user_gb != null and !user_gb.equals("")' >
+			, user_gb = #{user_gb}
+			</if>
+			<if test='dept != null and !dept.equals("")' >
+			, dept = #{dept}
+			</if>
+			<if test='gender != null and !gender.equals("")' >
+			, gender = #{gender}
+			</if>
+			, administ_cd = #{administ_cd}
+		WHERE
+			user_no = #{user_no}
+	</update>
+	
+	<delete id="deleteUser" parameterType="Map" >
+	 	DELETE FROM T_USER 
+		WHERE 
+			user_no = #{user_no}
+	</delete>
+	
+	<select id="selectUserEmailExist" parameterType="Map" resultType="integer">
+		SELECT
+			count(*)
+		FROM T_USER
+		WHERE 
+			del_yn = 'N' 
+			AND user_nm = #{user_nm} 
+			AND user_email = #{user_email}
+	</select>
+	
+	<update id="insertAuth" parameterType="Map" >
+		INSERT INTO T_AUTH (
+			user_no
+			, auth
+		) VALUES ( 
+			#{user_no}
+			, #{auth}
+		)
+	</update>
+	
+	<delete id="deleteAuth" parameterType="Map" >
+	 	DELETE FROM T_AUTH 
+		WHERE  
+			user_no = #{user_no}
+	</delete>
+	
+	<update id="insertAdminAuth" parameterType="Map" >
+		INSERT INTO T_MANAGERAUTH (
+			user_no
+			, auth_id
+			, reg_userno
+			, reg_date
+		) VALUES ( 
+			#{user_no}
+			, #{auth_id}
+			, #{s_user_no}
+			, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+		)
+	</update>
+	
+	<delete id="deleteAdminAuth" parameterType="Map" >
+	 	DELETE FROM T_MANAGERAUTH 
+		WHERE  
+			user_no = #{user_no}
+	</delete>
+	
+	<update id="updatePwdConfirmWord" parameterType="Map" >
+	 	UPDATE T_USER
+		SET 
+			pwd_confirm_word = 	#{pwd_confirm_word}
+		WHERE  
+			user_email = #{user_email}
+	</update>
+	
+	<update id="updatePasswordChange" parameterType="Map" >
+	 	UPDATE T_USER
+		SET 
+			user_pw = 	#{user_pw}
+			, pwd_mod_dt = TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+		WHERE  
+			user_no = 	#{user_no}
+	</update>
+	
+	<select id="selectAuthList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			AUTH_ID AS code
+			, AUTH_NM AS codenm 
+		FROM T_AUTH
+		ORDER BY GRP
+	</select>
+	
+	<select id="selectManagerAuthList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			A.AUTH_ID
+			, A.AUTH_NM 
+		FROM T_AUTH A 
+		INNER JOIN T_MANAGERAUTH B ON A.AUTH_ID = B.AUTH_ID
+		WHERE 
+			USER_NO = #{user_no}
+		ORDER BY A.GRP
+	</select>
+	
+	<insert id="insertUserModHistory" parameterType="Map">
+		<selectKey resultType="String" keyProperty="hist_id" order="BEFORE">
+	    SELECT GET_GUID() FROM DUAL       
+	  	</selectKey>    
+	    INSERT INTO T_USERMODHISTORY (
+	    	USER_NO
+	    	, HIST_ID
+	    	, HIST_MSG
+	    	, REG_USERNO
+	    	, REG_DATE
+	    ) VALUES (
+	    	#{user_no}
+	    	, #{hist_id}
+	    	, #{hist_msg}
+	    	, #{s_user_no}
+	    	, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+	    )        
+	</insert>
+	    
+	<select id="selectUserAuthPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		
+		SELECT 
+		    user_no
+			, user_id
+			, user_nm
+			, user_pw
+			, intro
+			, user_email
+			, user_mobile
+			, user_tel
+			, dept
+			, del_yn
+			, pwd_mod_dt
+			, birth
+			, user_tel
+			, post
+			, addr1
+			, addr2
+			, GET_DATEFORMAT(agree_dt) as agree_dt
+			, user_gb
+	        , (SELECT RTRIM(xmlagg(xmlelement(e,x.auth_id,',') ORDER BY x.auth_id).extract('//text()'),',') FROM T_AUTH x INNER JOIN T_MANAGERAUTH y ON x.auth_id = y.auth_id WHERE y.user_no = a.user_no) AS auth
+	        , (SELECT RTRIM(xmlagg(xmlelement(e,x.auth_nm,',') ORDER BY x.auth_id).extract('//text()'),',') FROM T_AUTH x INNER JOIN T_MANAGERAUTH y ON x.auth_id = y.auth_id WHERE y.user_no = a.user_no) AS auth_nm
+			, dept
+			, reg_userno
+			, GET_DATEFORMAT(reg_date) AS reg_date
+		FROM T_USER a
+		WHERE 
+			del_yn = 'N' 
+		   	AND user_gb = 'M'
+    		<if test='searchtxt != null and !searchtxt.equals("")' >
+	    		<if test='searchkey != null and !searchkey.equals("")' >
+			   		AND ${searchkey} LIKE '%'||#{searchtxt}||'%'
+			   	</if>	
+		    </if>
+		    AND user_no not IN (select user_no from T_MANAGERAUTH where auth_id = #{auth_id})
+		    
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<update id="updateAgreement" parameterType="Map" >
+	 	UPDATE T_USER
+		SET 
+			agree_dt = 	TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+		WHERE  
+			user_no = 	#{s_user_no}
+	</update>
+	
+	<!-- 회원 탈퇴 -->
+	<update id="userDropOut" parameterType="Map" >
+		UPDATE T_USER
+		SET 
+			del_yn = 'Y'
+			, user_pw = ' '
+			, intro = ''
+			, user_email = ''
+			, user_mobile = ''
+			, user_tel = ''
+			, dept = ''
+			, pwd_mod_dt = ''
+			, upd_userno = #{s_user_no}
+			, upd_date = TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+			, birth = ''
+			, user_tel = ''
+			, post = ''
+			, addr1 = ''
+			, addr2 = ''
+			, agree_dt = ''
+			, user_gb = ''
+			, dept = ''
+		WHERE  
+			user_no = 	#{user_no}
+	</update>
+	
+	<!-- 재 동의가 필요한 사용자 목록  -->
+	<select id="selectReAgreeUserList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			user_no
+			, user_nm
+			, user_mobile
+		FROM T_USER
+		WHERE 
+			del_yn != 'Y'
+			AND user_gb = 'N'
+			AND agree_dt is not null
+			<if test='pday != null and !pday.equals("")' >
+			AND trunc((sysdate+1) - to_date(agree_dt,'YYYYMMDDHH24MISS')) = #{pday}
+			</if>
+			<if test='dday != null and !dday.equals("")' >
+			AND trunc((sysdate+1) - to_date(agree_dt,'YYYYMMDDHH24MISS')) > #{dday}
+			</if>
+	</select>
+	
+	<!-- 11개월동안 로그인하지 않은 회원  -->
+	<select id="selectUserLoginList" parameterType="Map" resultType="caseMap">
+		SELECT
+		    user_no
+		    , user_nm
+		    , user_mobile
+		    , conn_dt
+		FROM (
+			SELECT 
+				a.user_no
+				, a.user_nm
+				, a.user_mobile
+				, (SELECT MAX(CONN_DT) FROM T_HOMEPAGECONN thc WHERE thc.user_no = a.user_no) conn_dt  
+			FROM T_USER a
+			WHERE 
+				del_yn != 'Y'
+				AND user_gb = 'N'
+				AND agree_dt is not null)
+		WHERE 
+			trunc((sysdate+1) - to_date(conn_dt,'YYYYMMDDHH24MISS')) = #{pday}
+	</select>
+	
+	<!-- 회원 탈퇴 -->
+	<update id="userAutoDropOut" parameterType="Map" >
+	 	UPDATE T_USER
+		SET 
+			del_yn = 'Y'
+			, user_pw = ' '
+			, intro = ''
+			, user_email = ''
+			, user_mobile = ''
+			, pwd_mod_dt = ''
+			, upd_userno = ''
+			, upd_date = TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+			, birth = ''
+			, user_tel = ''
+			, post = ''
+			, addr1 = ''
+			, addr2 = ''
+			, agree_dt = ''
+			, user_gb = ''
+			, dept = ''
+		WHERE  
+			del_yn != 'Y'
+			AND user_gb = 'N'
+			AND agree_dt is not null
+			AND trunc((sysdate+1) - to_date(agree_dt,'YYYYMMDDHH24MISS')) > 730
+	</update>
+	
+	<select id="selectUserPassExist" parameterType="Map" resultType="integer">
+		SELECT 
+			COUNT(*)
+		FROM T_USER
+		WHERE 
+			user_no = #{s_user_no}
+			AND user_pw = #{now_pw}
+	</select>
+	
+	<select id="selectUserPhoneExist" parameterType="Map" resultType="caseMap">
+		SELECT 
+		      user_no
+		      , user_id
+		FROM (
+			SELECT 
+				user_no
+				, user_id
+			FROM T_USER
+			WHERE 
+				del_yn = 'N' 
+				AND user_nm = #{user_nm} 
+				AND user_mobile = #{user_mobile}
+		    ORDER BY REG_DATE DESC
+		) X 
+		WHERE 
+			ROWNUM = 1        
+	</select>
+	
+	<select id="selectUserIdPhoneExist" parameterType="Map" resultType="caseMap">
+			SELECT 
+				user_no
+				, user_id
+			FROM T_USER
+			WHERE 
+				del_yn = 'N' 
+			    AND user_id = #{user_id}
+				AND user_nm = #{user_nm} 
+				AND user_mobile = #{user_mobile}
+	</select>
+	
+</mapper>

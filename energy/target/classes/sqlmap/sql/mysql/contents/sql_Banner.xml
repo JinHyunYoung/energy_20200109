@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BannerDao">
+ 
+	<select id="selectBannerPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		
+		SELECT 
+	   		banner_id
+			, region
+			, sort
+			, file_id
+			, titl_nm
+			, titl_alt
+			, image
+	   	    , click_cnt
+			, url
+			, target
+			, use_yn
+			, reg_userno
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, GET_DATEFORMAT(reg_date) AS reg_date
+			, TOT.TOTAL_CNT
+		FROM 
+			T_BANNER a
+			JOIN 
+        	(
+        		SELECT COUNT(*) AS TOTAL_CNT 
+        		FROM T_BANNER
+        	 	WHERE 
+					1 = 1  			
+					<if test='region != null and !region.equals("")' >
+					   AND region = #{region}
+					</if>
+					<if test='use_yn != null and !use_yn.equals("")' >
+					   AND use_yn = #{use_yn}
+					</if>
+        	) TOT
+		WHERE 
+			1 = 1  			
+			<if test='region != null and !region.equals("")' >
+			   AND region = #{region}
+			</if>
+			<if test='use_yn != null and !use_yn.equals("")' >
+			   AND use_yn = #{use_yn}
+			</if>
+			
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="selectBannerList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			@ROWNUM := @ROWNUM + 1 AS RNUM
+			, banner_id
+			, region
+			, sort
+			, titl_nm
+			, titl_alt
+		    , image
+		    , (SELECT file_nm FROM T_COMMONFILE WHERE file_id = image) AS image_nm
+	   	    , click_cnt
+			, url
+			, target
+			, use_yn
+			, reg_userno
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, GET_DATEFORMAT(reg_date) AS reg_date
+		FROM 
+			T_BANNER a
+			, (SELECT @ROWNUM := 0) R
+		WHERE 
+			region = #{region}
+			<if test='use_yn != null and !use_yn.equals("")' >
+			   AND use_yn = #{use_yn}
+			</if>
+		ORDER BY sort asc
+	</select>
+	
+	<select id="selectBanner" parameterType="Map" resultType="caseMap">
+		SELECT 
+			banner_id
+			, region
+			, sort
+			, titl_nm
+			, titl_alt
+			, image
+			, (SELECT file_nm FROM T_COMMONFILE WHERE file_id = a.image) AS image_nm
+	   	    , click_cnt
+			, url
+			, target
+			, use_yn
+			, reg_userno
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, GET_DATEFORMAT(reg_date) AS reg_date
+		FROM T_BANNER a
+		WHERE 
+			banner_id = #{banner_id}
+	</select>
+	
+	<select id="selectBannerExist" parameterType="Map" resultType="integer">
+		SELECT 
+			  count(*)
+		FROM T_BANNER
+		WHERE  
+			banner_id = #{banner_id}
+	</select>
+	
+	<update id="insertBanner" parameterType="Map" >
+		<selectKey resultType="String" keyProperty="sort" order="BEFORE">
+        	SELECT IFNULL(MAX(sort),0)+1 FROM T_BANNER WHERE region = #{region}     
+		</selectKey>
+	
+		INSERT INTO T_BANNER (
+			banner_id
+			, region
+			, sort
+			, titl_nm
+			, titl_alt
+			, image
+			, click_cnt
+			, url
+			, target
+			, use_yn
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			 #{banner_id}
+			, #{region}
+			, #{sort}
+			, #{titl_nm}
+			, #{titl_alt}
+			, #{image}
+		   	, 0
+		<![CDATA[	, REPLACE(#{url}, '& #39;', '''') ]]>
+			, #{target}
+			, 'Y'
+			, #{s_user_no}
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+			, #{s_user_no}
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+		)
+	</update>
+	
+	<update id="updateBanner" parameterType="Map" >
+	    UPDATE T_BANNER
+		SET
+			 region = #{region}
+			, titl_nm = #{titl_nm}
+			, titl_alt = #{titl_alt}
+			, image = #{image}
+		<![CDATA[	, url = REPLACE(#{url}, '& #39;', '''') ]]>
+			, target = #{target}
+			, use_yn = #{use_yn}
+			, upd_userno = #{s_user_no}
+			, upd_date = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+		WHERE  
+			banner_id = #{banner_id}
+	</update>
+	
+	<delete id="deleteBanner" parameterType="Map" >
+	 	DELETE FROM T_BANNER 
+		WHERE 
+			banner_id = #{banner_id}
+	</delete>
+	
+	<update id="updateBannerSort" parameterType="Map" >
+	    UPDATE T_BANNER
+	    SET 
+	    	sort = #{sort}
+	    WHERE 
+	    	banner_id = #{banner_id}
+	</update>
+	
+	<update id="deleteBannerReorder" parameterType="Map" >
+		<selectKey resultType="String" keyProperty="sort" order="BEFORE">
+        	SELECT sort FROM T_BANNER WHERE banner_id = #{banner_id}    
+		</selectKey>
+
+	    UPDATE T_BANNER
+		SET
+			sort = sort - 1
+		WHERE	
+			sort > #{sort}
+	</update>
+	
+	<select id="selectBannerVideoList" parameterType="Map" resultType="caseMap">
+		SELECT IFNULL(local_type, IFNULL(url_type,'NA')) AS apply_type
+		     , a.* 
+		  FROM ( 
+		           SELECT @ROWNUM := @ROWNUM + 1 AS RNUM
+		                , banner_id
+		                , region
+		                , sort
+		                , titl_nm
+		                , titl_alt
+		                , IMAGE
+		                , ( SELECT file_nm FROM T_COMMONFILE WHERE file_id = IMAGE ) AS image_nm
+		                , ( SELECT file_type FROM T_COMMONFILE WHERE file_id = IMAGE ) AS image_type
+		                , ( SELECT (case when upper(file_type) in ('PNG','JPG','GIF') then 'IMAGE_LOCAL' when upper(file_type) in ('MP4','MP3','AVI') then 'VIDEO_LOCAL' else NULL end) FROM T_COMMONFILE WHERE file_id = IMAGE ) AS local_type
+		                , ( CASE WHEN UPPER(URL) regexp'PNG$|JPG$|GIF$' THEN 'IMAGE_URL' WHEN UPPER(URL) regexp'MP4$|MP3$|AVI$' THEN 'VIDEO_URL' ELSE NULL END ) as url_type
+		                , click_cnt
+		                , url
+		                , target
+		                , use_yn
+		                , reg_userno
+		                , ( SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno ) AS reg_usernm
+		                , GET_DATEFORMAT(reg_date) AS reg_date
+		           FROM T_BANNER a
+		              , ( SELECT @ROWNUM := 0 ) R
+		          WHERE region = #{region}
+				<if test='use_yn != null and !use_yn.equals("")' >
+				    AND use_yn = #{use_yn}
+				</if> 
+		          ORDER BY sort DESC 
+		          limit 0, 1
+		       ) a	
+	</select>	
+
+</mapper>

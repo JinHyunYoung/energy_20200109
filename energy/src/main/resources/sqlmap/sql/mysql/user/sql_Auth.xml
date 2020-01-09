@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AuthDao">
+ 
+	<select id="selectAuthPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		
+		SELECT 
+	   		auth_id
+			, grp
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'AUTH_GROUP' AND code = a.grp) AS grp_nm
+			, auth_nm
+			, auth_desc
+			, use_yn
+			, `range`
+			, orgn
+			, reg_userno
+			, reg_date
+			, TOT.TOTAL_CNT
+		FROM T_AUTH a
+		JOIN 
+        	(
+        		SELECT COUNT(*) AS TOTAL_CNT 
+        		FROM T_AUTH
+        	 	WHERE 
+					1 = 1  			
+					<if test='auth_nm != null and !auth_nm.equals("")' >
+					   AND auth_nm = #{auth_nm}
+					</if>
+					<if test='use_yn != null and !use_yn.equals("")' >
+					   AND use_yn = #{use_yn}
+					</if>
+        	) TOT
+		WHERE 
+			1 = 1  			
+			<if test='auth_nm != null and !auth_nm.equals("")' >
+			   AND auth_nm = #{auth_nm}
+			</if>
+			<if test='use_yn != null and !use_yn.equals("")' >
+			   AND use_yn = #{use_yn}
+			</if>
+				
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="selectAuthList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			@ROWNUM := @ROWNUM + 1 AS RNUM
+			, auth_id
+			, grp
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'AUTH_GROUP' AND code = A.grp) AS grp_nm
+			, auth_nm
+			, auth_desc
+			, use_yn
+			, `range`
+			, orgn
+			, reg_userno
+			, reg_date
+		FROM 
+			T_AUTH A
+			, (SELECT @ROWNUM := 0) R
+		
+	</select>
+	
+	<select id="selectAuth" parameterType="Map" resultType="caseMap">
+		SELECT 
+			auth_id
+			, grp
+			, auth_nm
+			, auth_desc
+			, use_yn
+			, `range`
+			, orgn
+			, reg_userno
+			, reg_date
+		FROM T_AUTH
+		WHERE 
+			auth_id = #{auth_id}
+	</select>
+	
+	<select id="selectAuthExist" parameterType="Map" resultType="integer">
+		SELECT 
+			count(*)
+		FROM T_AUTH
+		WHERE	
+			auth_id = #{auth_id}
+			
+	</select>
+	
+	<update id="insertAuth" parameterType="Map" >
+		INSERT INTO T_AUTH (
+			auth_id
+			, grp
+			, auth_nm
+			, auth_desc
+			, use_yn
+			, `range`
+			, orgn
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			#{auth_id}
+			, #{grp}
+			, #{auth_nm}
+			, #{auth_desc}
+			, #{use_yn}
+			, #{range}
+			, #{orgn}
+			, #{s_user_no}
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+			, #{s_user_no}
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+		)
+	</update>
+	
+	<update id="updateAuth" parameterType="Map" >
+	    UPDATE T_AUTH
+		SET
+			grp = #{grp}
+			, auth_nm = #{auth_nm}
+			, auth_desc = #{auth_desc}
+			, use_yn = #{use_yn}
+			, `range` = #{range}
+			, orgn = #{orgn}
+			, upd_userno = #{s_user_no}
+			, upd_date = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+		WHERE 
+			auth_id = #{auth_id}
+	</update>
+	
+	<delete id="deleteAuth" parameterType="Map" >
+	 	DELETE FROM T_AUTH 
+		WHERE 
+			auth_id = #{auth_id}
+	</delete>
+	
+	<select id="managerAuthPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		SELECT A.*, TOT.TOTAL_CNT FROM (
+			SELECT 
+		        A.user_no
+		        , A.user_id
+		        , A.user_nm
+		        , A.user_pw
+		        , A.intro
+		        , A.user_email
+		        , A.user_mobile
+		        , A.del_yn
+		        , A.pwd_mod_dt
+		        , A.birth
+		        , A.user_tel
+		        , A.post
+		        , A.addr1
+		        , A.addr2
+		        , GET_DATEFORMAT(A.agree_dt) AS agree_dt
+		        , A.user_gb
+		        , (SELECT GROUP_CONCAT(X.auth_id) FROM T_AUTH X INNER JOIN T_MANAGERAUTH Y ON X.auth_id = Y.auth_id WHERE Y.user_no = A.user_no order by X.auth_id) AS auth
+		        , (SELECT GROUP_CONCAT(X.auth_nm)  FROM T_AUTH X INNER JOIN T_MANAGERAUTH Y ON X.auth_id = Y.auth_id WHERE Y.user_no = A.user_no order by X.auth_id) AS auth_nm
+		        , A.dept
+		        , A.reg_userno
+		        , GET_DATEFORMAT(A.reg_date) AS reg_date
+			FROM T_USER A 
+			INNER JOIN T_MANAGERAUTH B ON A.user_no = B.user_no
+			WHERE 
+				A.del_yn = 'N' 
+				AND A.USER_GB = 'M'
+				AND B.auth_id = #{auth_id}
+			) A
+			JOIN 
+        	(
+        		SELECT COUNT(*) AS TOTAL_CNT 
+        		FROM T_USER A 
+				INNER JOIN T_MANAGERAUTH B ON A.user_no = B.user_no
+				WHERE 
+					A.del_yn = 'N' 
+					AND A.USER_GB = 'M'
+					AND B.auth_id = #{auth_id}
+        	) TOT
+			
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<update id="insertManagerAuth" parameterType="Map" >
+		INSERT INTO T_MANAGERAUTH (
+			auth_id
+			, user_no
+			, reg_userno
+			, reg_date
+		) VALUES ( 
+			#{auth_id}
+			, #{user_no}
+			, #{s_user_no}
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+		)
+	</update>
+	
+	<delete id="deleteManagerAuth" parameterType="Map" >
+	 	DELETE FROM T_MANAGERAUTH
+		WHERE 
+			auth_id = #{auth_id} 
+			AND user_no = #{user_no}
+	</delete>
+
+</mapper>

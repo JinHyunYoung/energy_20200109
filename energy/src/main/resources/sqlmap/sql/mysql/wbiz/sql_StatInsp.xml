@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StatInspDao">
+
+	 <resultMap id="statInspMap" type="Map">
+	 
+	 	<result property="stats_app_sn" column="stats_app_sn" />
+	 	<result property="biz_reg_no" column="biz_reg_no" />
+		<result property="cmpy_nm" column="cmpy_nm" />
+		<result property="invg_yy" column="invg_yy" />
+		<result property="inds_tp_cd" column="inds_tp_cd" />
+		<result property="wbiz_tp_l_cd" column="wbiz_tp_l_cd" />
+		<result property="wbiz_tp_m_cd" column="wbiz_tp_m_cd" />
+		<result property="wbiz_tp_s_cd" column="wbiz_tp_s_cd" />
+		<result property="empl_cnt" column="empl_cnt" />
+		<result property="post" column="post" />
+		<result property="addr1" column="addr1" />
+		<result property="addr2" column="addr2" />
+		<result property="pic_nm" column="pic_nm" />
+		<result property="telno" column="telno" />
+		<result property="pic_clph_no" column="pic_clph_no" />
+		<result property="pic_email" column="pic_email" />		
+		<result property="pic_dept" column="pic_dept" />
+		<result property="pstn_nm" column="pstn_nm" />
+		<result property="del_yn" column="del_yn" />
+		<result property="reg_date" column="reg_date" />
+		<result property="upd_userno" column="upd_userno" />
+		<result property="upd_date" column="upd_date" />		
+	</resultMap>
+	
+	<select id="selectStatInspApplyPageListExcel" parameterType="Map" resultType="caseMap">		
+		<include refid="CommonSql.pageingTop"/>
+		SELECT 
+	   		stats_app_sn
+			, biz_reg_no
+			, cmpy_nm
+			, invg_yy
+			, ( SELECT B.code_nm FROM T_CODE B WHERE B.use_yn = 'Y' AND B.gubun = 'INDS_TP_CD' AND B.code = a.inds_tp_cd ) AS inds_tp_cd
+			, ( SELECT B.wbiz_clsf_nm FROM T_WBIZ_CLSF B WHERE B.wbiz_cd_tp = 'L' AND B.wbiz_tp_l_cd = a.wbiz_tp_l_cd ) AS wbiz_tp_l_cd 
+			, ( SELECT B.wbiz_clsf_nm FROM T_WBIZ_CLSF B WHERE B.wbiz_cd_tp = 'M' AND B.wbiz_tp_m_cd = a.wbiz_tp_m_cd ) AS wbiz_tp_m_cd
+			, ( SELECT B.wbiz_clsf_nm FROM T_WBIZ_CLSF B WHERE B.wbiz_cd_tp = 'S' AND B.wbiz_tp_s_cd = a.wbiz_tp_s_cd ) AS wbiz_tp_s_cd
+			, empl_cnt
+			, post
+			, addr1
+			, addr2
+			, pic_nm
+			, telno
+			, pic_clph_no
+			, pic_email
+			, pic_dept
+			, pstn_nm
+			, del_yn			
+			, GET_DATEFORMAT( reg_date ) AS reg_date
+			, upd_userno
+			, GET_DATEFORMAT( upd_date ) AS upd_date
+		FROM 
+			T_STATS_APP a
+		WHERE 
+			1 = 1 
+			AND del_yn = 'N'	
+			<if test='invg_yy != null and ! invg_yy.equals( "" )'>
+				AND invg_yy = #{invg_yy}
+			</if>
+			<if test='searchText != null and ! searchText.equals( "" )'>
+				<if test='searchField.equals( "pic_nm" )'>
+				AND pic_nm LIKE CONCAT('%',  #{searchText}, '%')
+				</if>
+				<if test='searchField.equals( "pic_clph_no" )'>
+				AND pic_clph_no LIKE CONCAT('%',  #{searchText}, '%')
+				</if>
+				<if test='searchField.equals( "pic_email" )'>
+				AND pic_email LIKE CONCAT('%',  #{searchText}, '%')
+				</if>
+			</if>		
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="selectStatInspApplyPageList" parameterType="Map" resultType="caseMap">		
+		<include refid="CommonSql.pageingTop"/>
+		SELECT 
+	   		stats_app_sn
+			, biz_reg_no
+			, cmpy_nm
+			, invg_yy
+			, inds_tp_cd
+			, wbiz_tp_l_cd
+			, wbiz_tp_m_cd
+			, wbiz_tp_s_cd
+			, empl_cnt
+			, post
+			, addr1
+			, addr2
+			, pic_nm
+			, telno
+			, pic_clph_no
+			, pic_email
+			, pic_dept
+			, pstn_nm
+			, del_yn			
+			, GET_DATEFORMAT( reg_date ) AS reg_date
+			, upd_userno
+			, GET_DATEFORMAT( upd_date ) AS upd_date
+		FROM 
+			T_STATS_APP a
+		WHERE 
+			1 = 1 
+			AND del_yn = 'N'	
+			<if test='invg_yy != null and ! invg_yy.equals( "" )'>
+				AND invg_yy = #{invg_yy}
+			</if>
+			<if test='searchText != null and ! searchText.equals( "" )'>
+				<if test='searchField.equals( "pic_nm" )'>
+				AND pic_nm LIKE CONCAT('%',  #{searchText}, '%')
+				</if>
+				<if test='searchField.equals( "pic_clph_no" )'>
+				AND pic_clph_no LIKE CONCAT('%',  #{searchText}, '%')
+				</if>
+				<if test='searchField.equals( "pic_email" )'>
+				AND pic_email LIKE CONCAT('%',  #{searchText}, '%')
+				</if>
+			</if>		
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<update id="statInspApplyInsert" parameterType="Map" >
+		INSERT INTO T_STATS_APP
+			(
+			stats_app_sn
+			, biz_reg_no
+			, cmpy_nm
+			, invg_yy
+			, inds_tp_cd
+			, wbiz_tp_l_cd
+			, wbiz_tp_m_cd
+			, wbiz_tp_s_cd
+			, empl_cnt
+			, post
+			, addr1
+			, addr2
+			, pic_nm
+			, telno
+			, pic_clph_no
+			, pic_email
+			, pic_dept
+			, pstn_nm
+			, del_yn
+			, reg_date
+			, upd_userno
+			, upd_date
+			)
+		VALUES
+			( 
+			( SELECT A.idx FROM ( SELECT IFNULL( MAX( stats_app_sn ) , 0 ) + 1 AS idx FROM T_STATS_APP ) A )
+			, #{biz_reg_no}
+			, #{cmpy_nm}
+			, ( SELECT A.invg_yy FROM ( SELECT CAST( YEAR( NOW() ) + 1 AS CHAR(4) ) AS invg_yy ) A ) 
+			, #{inds_tp_cd}
+			, #{wbiz_tp_l_cd}
+			, #{wbiz_tp_m_cd}
+			, #{wbiz_tp_s_cd}
+			, #{empl_cnt}
+			, #{post}
+			, #{addr1}
+			, #{addr2}
+			, #{pic_nm}
+			, #{telno}
+			, #{pic_clph_no}
+			, #{pic_email}
+			, #{pic_dept}
+			, #{pstn_nm}
+			, 'N'
+			, DATE_FORMAT( now() , '%Y%m%d%H%i%S' )
+			, #{s_user_no}
+			, DATE_FORMAT( now() , '%Y%m%d%H%i%S' )
+			)
+	</update>
+	
+	
+	
+	<select id="statInspApplySelect" parameterType="Map" resultMap="statInspMap">
+		SELECT 
+			stats_app_sn
+			, biz_reg_no
+			, cmpy_nm
+			, invg_yy
+			, inds_tp_cd
+			, wbiz_tp_l_cd
+			, wbiz_tp_m_cd
+			, wbiz_tp_s_cd
+			, empl_cnt
+			, post
+			, addr1
+			, addr2
+			, pic_nm
+			, telno
+			, pic_clph_no
+			, pic_email
+			, pic_dept
+			, pstn_nm
+			, del_yn
+			, reg_date
+			, upd_userno
+			, upd_date		
+		FROM 
+			T_STATS_APP a
+		WHERE			 
+			a.del_yn = 'N'			
+			<if test='stats_app_sn != null and ! stats_app_sn.equals( "" )' >
+			AND a.stats_app_sn = #{stats_app_sn}
+			</if>
+			<if test='invg_yy != null and ! invg_yy.equals( "" )' >
+			AND a.invg_yy = #{invg_yy}
+			</if>
+			<if test='biz_reg_no != null and ! biz_reg_no.equals( "" )' >
+			AND a.biz_reg_no = #{biz_reg_no}
+			</if>
+			
+	</select>
+	
+	<update id="statInspApplyUpdate" parameterType="Map" >
+		UPDATE T_STATS_APP SET			
+			biz_reg_no = #{biz_reg_no}
+			, cmpy_nm = #{cmpy_nm}
+			, invg_yy = #{invg_yy}
+			, inds_tp_cd = #{inds_tp_cd}
+			, wbiz_tp_l_cd = #{wbiz_tp_l_cd}
+			, wbiz_tp_m_cd = #{wbiz_tp_m_cd}
+			, wbiz_tp_s_cd = #{wbiz_tp_s_cd}
+			, empl_cnt = #{empl_cnt}
+			, post = #{post}
+			, addr1 = #{addr1}
+			, addr2 = #{addr2}
+			, pic_nm = #{pic_nm}
+			, telno = #{telno}
+			, pic_clph_no = #{pic_clph_no}
+			, pic_email = #{pic_email}
+			, pic_dept = #{pic_dept}
+			, pstn_nm = #{pstn_nm}			 
+			, upd_userno =  #{s_user_no}
+			, upd_date = DATE_FORMAT( now() , '%Y%m%d%H%i%S' )
+		WHERE
+			stats_app_sn = #{stats_app_sn}
+	</update>
+	
+
+	
+	<update id="statInspApplyDelete" parameterType="String" >
+		UPDATE T_STATS_APP SET
+			del_yn = 'Y'
+			, upd_userno =  #{s_user_no}
+			, upd_date = DATE_FORMAT( now() , '%Y%m%d%H%i%S' )
+		WHERE
+			stats_app_sn = #{stats_app_sn}
+	</update>
+	
+	
+	
+</mapper>

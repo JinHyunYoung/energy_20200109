@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+<PRE>
+T_기업디렉토리연혁 정보를 관리
+</PRE>
+
+-->
+<mapper namespace="CmpyDirHstrDao">
+    
+     <!--
+	기업디렉토리 연혁 정보를 조회한다.
+    -->
+    <select id="selectCmpyDirHstrList" parameterType="Map" resultType="caseMap">
+   	
+    	SELECT
+    	    dir_sn     
+    	    , hstr_sn    
+    	    , hstr_yy    
+            , (SELECT count(*) FROM T_CMPY_DIR_HSTR WHERE dir_sn = #{dir_sn} AND hstr_yy = a.hstr_yy) hstr_yy_rowspan
+    	    , CAST(hstr_mm AS SIGNED INTEGER) AS hstr_mm
+    	    , hstr_cn 
+    	    , hstr_cn_en    
+    	    , reg_userno    
+    	    , reg_date    
+    	    , upd_userno    
+    	    , upd_date   
+    	FROM T_CMPY_DIR_HSTR a
+    	<trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	</trim>
+    	ORDER BY hstr_yy DESC, hstr_mm DESC
+    	
+    </select>
+    
+    <!--
+	기업디렉토리 연혁 정보를 등록한다.
+    -->
+    <insert id="insertCmpyDirHstr" parameterType="Map">
+    	INSERT INTO T_CMPY_DIR_HSTR (
+    	    dir_sn      
+    	    , hstr_sn    
+    	    , hstr_yy    
+    	    , hstr_mm    
+    	    , hstr_cn    
+    	    , hstr_cn_en    
+    	    , reg_userno    
+    	    , reg_date    
+    	    , upd_userno    
+    	    , upd_date    
+    	) VALUES (
+    	    #{dir_sn}     
+    	    , ( SELECT * FROM ( SELECT IFNULL(MAX(CAST(hstr_sn AS UNSIGNED)),0)+1 FROM T_CMPY_DIR_HSTR WHERE dir_sn = #{dir_sn} ) AS t ) 
+    	    , #{hstr_yy}    
+    	    , #{hstr_mm}    
+    	    , #{hstr_cn}    
+    	    , #{hstr_cn_en}    
+    	    , #{reg_userno}    
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    , #{reg_userno}    
+    	    , DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	)
+    	
+    </insert>
+    
+    <!--
+	기업디렉토리 연혁 정보를 수정한다.
+    -->
+    <update id="updateCmpyDirHstr" parameterType="Map">
+    	UPDATE T_CMPY_DIR_HSTR 
+    	    <trim prefix="SET" prefixOverrides=", ">
+    	    , hstr_yy = #{hstr_yy}
+    	    , hstr_mm = #{hstr_mm}    
+    	    , hstr_cn = #{hstr_cn}    
+    	    , hstr_cn_en = #{hstr_cn_en}    
+    	    , upd_userno = #{reg_userno}        
+    	    , upd_date = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    </trim>
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	            <if test="dir_sn != null and dir_sn != '' ">
+    	                AND dir_sn = #{dir_sn}    
+    	            </if>
+		    	    <if test="hstr_sn != null and hstr_sn != '' ">
+		    	        AND hstr_sn = #{hstr_sn}    
+		    	    </if>
+    	    </trim>
+    	
+    </update>
+    
+    
+    <!--
+	기업디렉토리 연혁 정보를 삭제한다.
+    -->
+    <delete id="deleteCmpyDirHstr" parameterType="Map">
+    	DELETE FROM T_CMPY_DIR_HSTR
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	    </trim>
+    	
+    </delete>
+    
+    </mapper>
+    

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="NewsApplyDao">
+	
+	 <resultMap id="newsApplyMap" type="Map">
+		<result property="app_sn" column="app_sn" />
+		<result property="name" column="name" />
+		<result property="email" column="email" />
+		<result property="app_stt_cd" column="app_stt_cd" />
+		<result property="del_yn" column="del_yn" />		
+		<result property="reg_date" column="reg_date" />
+		<result property="upd_userno" column="upd_userno" />
+		<result property="upd_date" column="upd_date" />
+	</resultMap>
+
+		
+	<select id="selectNewsApplyPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		SELECT 
+	   		app_sn		
+			, name		
+			, email			
+			, app_stt_cd	
+			, del_yn
+			, GET_DATEFORMAT( reg_date ) AS reg_date
+			, upd_userno
+			, GET_DATEFORMAT( upd_date ) AS upd_date
+		FROM 
+			T_NEWS_APP a
+		WHERE 
+			1 = 1 
+			AND del_yn = 'N'
+			<if test='searchText != null and ! searchText.equals( "" )' >
+				<if test='searchField != null and searchField.equals( "name" )' >
+					AND name LIKE CONCAT('%',  #{searchText}, '%')
+				</if>
+				<if test='searchField != null and searchField.equals( "email" )' >
+					AND email LIKE CONCAT('%',  #{searchText}, '%')
+				</if>				
+			</if>
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+
+	<select id="selectNewsApply" parameterType="Map" resultMap="newsApplyMap">
+		SELECT 
+	   		app_sn		
+			, name		
+			, email			
+			, app_stt_cd	
+			, del_yn
+			, GET_DATEFORMAT( reg_date ) AS reg_date
+			, upd_userno
+			, GET_DATEFORMAT( upd_date ) AS upd_date
+		FROM 
+			T_NEWS_APP a
+		WHERE 
+			del_yn = 'N'
+			AND email = #{email}
+	</select>
+	
+	
+	<update id="insertNewsApply" parameterType="Map" >
+		<selectKey resultType="String" keyProperty="new_app_sn" order="BEFORE">
+        	SELECT IFNULL( MAX( app_sn ) , 0 ) + 1 FROM T_NEWS_APP  
+		</selectKey>
+	
+		INSERT INTO T_NEWS_APP (
+			app_sn		
+			, name		
+			, email			
+			, app_stt_cd	
+			, del_yn		
+			, reg_date	
+			, upd_userno	
+			, upd_date
+		) VALUES ( 
+			#{new_app_sn}		
+			, #{name}
+			, #{email}
+			, #{app_stt_cd}
+			, 'N'			
+			, DATE_FORMAT( SYSDATE() , '%Y%m%d%H%i%s' )			
+			, #{s_user_no}
+			, DATE_FORMAT( SYSDATE() , '%Y%m%d%H%i%s' )			
+		)
+	</update>
+	
+	<update id="updateNewsApply" parameterType="Map" >
+	    UPDATE T_NEWS_APP
+		SET
+			name = #{name}
+			, app_stt_cd = #{app_stt_cd}
+			, upd_date = DATE_FORMAT( SYSDATE() , '%Y%m%d%H%i%s' )
+		WHERE 
+			app_sn = #{app_sn}
+	</update>
+	
+	<delete id="deleteNewApply" parameterType="String" >
+	 	DELETE FROM T_NEWS_APP
+	 	WHERE 	
+			app_sn = #{app_sn}
+	</delete>
+	
+</mapper>

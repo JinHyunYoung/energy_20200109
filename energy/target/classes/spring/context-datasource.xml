@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation=
+		"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">		
+  
+    
+    <!-- ******************************************************************************************* -->
+    <!-- Oracle -->
+    <!-- ******************************************************************************************* -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="#{systemConfig['DB_DRIVER']}"/>			 
+		<property name="url" value="#{systemConfig['DB_URL']}"/>
+		<property name="username" value="#{systemConfig['DB_USERNM']}"/>
+		<property name="password" value="#{systemConfig['DB_PASSWD']}"/>
+		<property name="initialSize" value="5"/>
+		<property name="maxActive" value="30"/>
+		<property name="maxIdle" value="5"/>
+		<property name="maxWait" value="30000"/>
+		<property name="validationQuery" value="SELECT 1 FROM DUAL"/>
+		<property name="testOnBorrow" value="true"/>
+		<property name="testOnReturn" value="false"/>
+		<property name="testWhileIdle" value="true"/>
+		<property name="timeBetweenEvictionRunsMillis" value="60000"/>
+		<property name="poolPreparedStatements" value="true"/>
+	</bean>
+	 
+	 
+    <!-- ******************************************************************************************* -->
+    <!-- Mysql 
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://127.0.0.1:3306/example" />
+        <property name="username" value="#{systemConfig['DB_USERNM']}"/>
+        <property name="password" value="#{systemConfig['DB_PASSWD']}"/>
+		<property name="initialSize" value="5"/>
+		<property name="maxActive" value="30"/>
+		<property name="maxIdle" value="5"/>
+		<property name="maxWait" value="30000"/>
+		<property name="validationQuery" value="SELECT 1 FROM DUAL"/>
+		<property name="testOnBorrow" value="true"/>
+		<property name="testOnReturn" value="false"/>
+		<property name="testWhileIdle" value="true"/>
+		<property name="timeBetweenEvictionRunsMillis" value="60000"/>
+		<property name="poolPreparedStatements" value="true"/>
+    </bean>
+    -->
+    <!-- ******************************************************************************************* -->
+    
+    
+	<!-- SQL 로고 설정 -->	
+	<bean id="dataSource-log4j-remix" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+        <constructor-arg ref="dataSource" />
+        <property name="logFormatter">
+            <bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter">
+                <property name="loggingType" value="MULTI_LINE" />
+                <property name="sqlPrefix" value="SQL :  &#10;"/>
+            </bean>
+        </property>
+    </bean>	
+ 
+</beans>

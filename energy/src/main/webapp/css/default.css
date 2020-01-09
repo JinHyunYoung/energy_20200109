@@ -1,0 +1,26 @@
+@charset "utf-8";
+
+html {overflow-y: scroll}
+html, body { width: 100%; height: 100%; }
+body {
+	margin: 0; padding: 0; font-size: 13px; height: 100%; color: #000; font-weight: 400; 
+	font-family: 'Nanum Gothic', 'NanumGothic', '³ª´®°íµñ', Helvetica, 'Apple SD Gothic Neo', Sans-serif;
+}
+
+html, h1, h2, h3, h4, h5, h6, form, fieldset, img, dd, dt {margin: 0; padding: 0; border: 0;}
+a, abbr, acronym, address, applet, article, aside, audio, b, blockquote, big, body, center, canvas, caption, cite, code, command, datalist, dd, del, details, dfn, dl, div, dt, em, embed, fieldset, figcaption, figure, font, footer, form, h1, h2, h3, h4, h5, h6, header, hgroup, html, i, iframe, img, ins, kbd, keygen, label, legend, li, meter, nav, menu, object, ol, output, p, pre, progress, q, s, samp, section, small, span, source, strike, strong, sub, sup, table, tbody, tfoot, thead, th, tr, td, video, tt, u, ul, var, td, input, select, textarea, button {margin: 0; padding: 0}
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {display: block;}
+label, input, button, select, img {vertical-align: middle;}
+input, button {margin: 0;padding: 0;font-size: 1em;}
+button {cursor: pointer;}
+button {border: 0 none; background-color: transparent; cursor: pointer; margin: 0; padding: 0; overflow: visible;}
+button::-moz-focus-inner {border: 0; padding: 0;}
+textarea, select {font-size: 1em;}
+select {margin: 0;}
+p {margin: 0;padding: 0;word-break: break-all;}
+a:link, a:visited {color: #000;text-decoration: none;}
+a:hover, a:focus, a:active {color: #000;text-decoration: none;}
+ul,li {padding: 0; margin: 0; list-style: none;}
+ul:after{display: block; visibility: hidden; clear: both; content:"";}
+table {border-spacing: 0px; border: 0px; border-collapse: collapse;}
+

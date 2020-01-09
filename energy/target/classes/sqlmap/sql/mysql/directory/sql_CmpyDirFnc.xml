@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+<PRE>
+T_기업디렉토리 재무 정보를 관리
+</PRE>
+
+-->
+<mapper namespace="CmpyDirFncDao">
+
+	<!--
+	기업디렉토리 재무 정보를 상세조회한다.
+    -->
+    <select id="selectCmpyDirFncList" parameterType="Map" resultType="caseMap">
+   	
+    	SELECT
+    	    dir_sn      
+    	    , fnc_sn    
+    	    , fnc_yy    
+    	    , fnc_amount    
+    	    , reg_userno    
+    	    , reg_date    
+    	    , upd_userno    
+    	    , upd_date  
+    	FROM T_CMPY_DIR_FNC 
+    	<trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	</trim>
+    	ORDER BY fnc_yy DESC
+   		<if test="limit != null and limit != '' ">
+   	        limit ${limit}
+   	    </if>
+    	
+    </select>
+    
+    <!--
+	기업디렉토리 재무 정보를 등록한다.
+    -->
+    <insert id="insertCmpyDirFnc" parameterType="Map">
+    	INSERT INTO T_CMPY_DIR_FNC (
+    	    dir_sn    
+    	    , fnc_sn    
+    	    , fnc_yy    
+    	    , fnc_amount    
+    	    , reg_userno    
+    	    , reg_date    
+    	    , upd_userno    
+    	    , upd_date    
+    	) VALUES (
+    	    #{dir_sn}     
+    	    , ( SELECT * FROM ( SELECT IFNULL(MAX(CAST(fnc_sn AS UNSIGNED)),0)+1 FROM T_CMPY_DIR_FNC WHERE dir_sn = #{dir_sn} ) AS t ) 
+    	    , #{fnc_yy}   
+    	    , #{fnc_amount}    
+    	    , #{reg_userno}    
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    , #{reg_userno}    
+    	    , DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	)
+    	
+    </insert>
+    
+    <!--
+	기업디렉토리 재무 정보를 수정한다.
+    -->
+    <update id="updateCmpyDirFnc" parameterType="Map">
+    	UPDATE T_CMPY_DIR_FNC 
+    	    <trim prefix="SET" prefixOverrides=", ">
+    	    , fnc_yy = #{fnc_yy}   
+    	    , fnc_amount = #{fnc_amount}   
+    	    , upd_userno = #{reg_userno}        
+    	    , upd_date = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    </trim>
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	            <if test="dir_sn != null and dir_sn != '' ">
+    	                AND dir_sn = #{dir_sn}    
+    	            </if>
+		    	    <if test="fnc_sn != null and fnc_sn != '' ">
+		    	        AND fnc_sn = #{fnc_sn}    
+		    	    </if>
+    	    </trim>
+    	
+    </update>
+    
+    <!--
+	기업디렉토리 재무 정보를 삭제한다.
+    -->
+    <delete id="deleteCmpyDirFnc" parameterType="Map">
+    	DELETE FROM T_CMPY_DIR_FNC
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	    </trim>
+    	
+    </delete>
+    
+    </mapper>
+    

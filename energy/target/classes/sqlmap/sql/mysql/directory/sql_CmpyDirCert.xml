@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+<PRE>
+T_기업디렉토리 인증 정보를 관리
+</PRE>
+
+-->
+<mapper namespace="CmpyDirCertDao">
+    
+    <!--
+    	기업디렉토리 인증 정보를 상세조회한다.
+    -->
+    <select id="selectCmpyDirCertList" parameterType="Map" resultType="caseMap">
+   	
+    	SELECT
+    	    dir_sn      
+    	    , cert_sn    
+    	    , DATE_FORMAT(cert_date, '%Y-%m-%d') AS cert_date
+    	    , domestic_yn    
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'DOMESTIC_YN' AND code = a.domestic_yn) AS domestic_yn_nm
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'DOMESTIC_YN_EN' AND code = a.domestic_yn) AS domestic_yn_nm_en
+    	    , issu_agc    
+    	    , issu_agc_en    
+    	    , prdt_nm    
+    	    , prdt_nm_en    
+    	    , reg_userno    
+    	    , reg_date    
+    	    , upd_userno    
+    	    , upd_date  
+    	FROM T_CMPY_DIR_CERT a
+    	<trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	</trim>
+    	ORDER BY cert_date DESC	
+    	
+    </select>
+    
+    <!--
+	기업디렉토리 인증 정보를 등록한다.
+    -->
+    <insert id="insertCmpyDirCert" parameterType="Map">
+    	INSERT INTO T_CMPY_DIR_CERT (
+    	    dir_sn     
+    	    , cert_sn    
+    	    , cert_date    
+    	    , domestic_yn    
+    	    , issu_agc    
+    	    , issu_agc_en    
+    	    , prdt_nm    
+    	    , prdt_nm_en    
+    	    , reg_userno    
+    	    , reg_date    
+    	    , upd_userno    
+    	    , upd_date    
+    	) VALUES (
+    	    #{dir_sn}   
+    	    , ( SELECT * FROM ( SELECT IFNULL(MAX(CAST(cert_sn AS UNSIGNED)),0)+1 FROM T_CMPY_DIR_CERT WHERE dir_sn = #{dir_sn} ) AS t ) 
+    	    , #{cert_date}    
+    	    , #{domestic_yn}    
+    	    , #{issu_agc}    
+    	    , #{issu_agc_en}    
+    	    , #{prdt_nm}    
+    	    , #{prdt_nm_en}    
+    	    , #{reg_userno}    
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    , #{reg_userno}    
+    	    , DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	)
+    	
+    </insert>
+    
+    <!--
+	기업디렉토리 인증 정보를 수정한다.
+    -->
+    <update id="updateCmpyDirCert" parameterType="Map">
+    	UPDATE T_CMPY_DIR_CERT 
+    	    <trim prefix="SET" prefixOverrides=", ">
+    	    , cert_date = #{cert_date}
+    	    , domestic_yn = #{domestic_yn}    
+    	    , issu_agc = #{issu_agc}    
+    	    , issu_agc_en = #{issu_agc_en}    
+    	    , prdt_nm = #{prdt_nm}    
+    	    , prdt_nm_en = #{prdt_nm_en} 
+    	    , upd_userno = #{reg_userno}        
+    	    , upd_date = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    </trim>
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	            <if test="dir_sn != null and dir_sn != '' ">
+    	                AND dir_sn = #{dir_sn}    
+    	            </if>
+		    	    <if test="cert_sn != null and cert_sn != '' ">
+		    	        AND cert_sn = #{cert_sn}    
+		    	    </if>
+    	    </trim>
+    	
+    </update>
+    
+    <!--
+	기업디렉토리 인증 정보를 삭제한다.
+    -->
+    <delete id="deleteCmpyDirCert" parameterType="Map">
+    	DELETE FROM T_CMPY_DIR_CERT
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	    </trim>
+    	
+    </delete>
+    
+</mapper>
+    

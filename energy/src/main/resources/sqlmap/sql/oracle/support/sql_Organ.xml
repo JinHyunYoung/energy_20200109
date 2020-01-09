@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OrganDao">
+
+	 <resultMap id="organMap" type="Map">
+		<result property="organ_no" column="organ_no" />
+		<result property="organ_gb" column="organ_gb" />
+		<result property="organ_gb_nm" column="organ_gb_nm" />
+		<result property="domestic_yn" column="domestic_yn" />
+		<result property="sort" column="sort" />
+		<result property="organ_nm" column="organ_nm" />
+		<result property="organ_tel" column="organ_tel" />
+		<result property="organ_homepage" column="organ_homepage" />
+		<result property="post" column="post" />
+		<result property="addr1" column="addr1" />
+		<result property="addr2" column="addr2" />
+		<result property="mt_organ_nm" column="mt_organ_nm" />
+		<result property="image_file_id" column="image_file_id" />
+		<result property="image_file_nm" column="image_file_nm" />
+		<result property="use_yn" column="use_yn" />
+		<result property="reg_usernm" column="reg_usernm" />
+		<result property="reg_userno" column="reg_userno" />
+		<result property="reg_date" column="reg_date" />
+		<result property="upd_userno" column="upd_userno" />
+		<result property="upd_date" column="upd_date" />
+	</resultMap>
+		
+	<select id="selectOrganPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		SELECT 
+	   		organ_no
+			, organ_gb
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'ORGAN_GB' AND code = a.organ_gb ) AS organ_gb_nm
+			, domestic_yn
+			, sort
+			, organ_nm
+			, organ_tel
+			, organ_homepage
+			, post
+			, addr1
+			, addr2
+			, mt_organ_nm
+			, image_file_id
+			, (SELECT file_nm FROM T_COMMONFILE WHERE file_id = a.image_file_id) AS image_file_nm
+			, use_yn
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, reg_userno
+			, GET_DATEFORMAT( reg_date ) AS reg_date
+			, upd_userno
+			, GET_DATEFORMAT( upd_date ) AS upd_date
+		FROM 
+			T_ORGAN a
+		WHERE 
+			1 = 1 
+			<if test='organ_gb != null and ! organ_gb.equals( "" )' >
+				AND organ_gb = #{organ_gb}
+			</if>
+			<if test='domestic_yn != null and ! domestic_yn.equals( "" )' >
+				AND domestic_yn = #{domestic_yn}
+			</if>
+			<if test='organ_nm != null and ! organ_nm.equals( "" )' >
+				AND organ_nm LIKE '%' || #{organ_nm} || '%'
+			</if>
+			<if test='use_yn != null and ! use_yn.equals( "" )' >
+			<![CDATA[
+				AND use_yn = #{use_yn}
+			]]>	
+			</if>				
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="selectMainOrganList" parameterType="Map" resultMap="organMap">
+		SELECT 
+	   		organ_no
+			, organ_gb
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'ORGAN_GB' AND code = a.organ_gb ) AS organ_gb_nm
+			, domestic_yn
+			, sort
+			, organ_nm
+			, organ_tel
+			, organ_homepage
+			, post
+			, addr1
+			, addr2
+			, mt_organ_nm
+			, (SELECT origin_file_nm FROM T_COMMONFILE WHERE file_id = a.image_file_id) AS image_file_nm
+			, image_file_id
+			, use_yn
+			, reg_userno
+			, GET_DATEFORMAT( reg_date ) AS reg_date
+			, upd_userno
+			, GET_DATEFORMAT( upd_date ) AS upd_date
+		FROM 
+			T_ORGAN a
+		WHERE
+			use_yn = 'Y' 
+		ORDER BY organ_gb, sort
+	</select>
+
+	
+	<select id="selectOrgan" parameterType="Map" resultMap="organMap">
+		SELECT 
+	   		organ_no
+			, organ_gb
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'ORGAN_GB' AND code = a.organ_gb ) AS organ_gb_nm
+			, domestic_yn
+			, sort
+			, organ_nm
+			, organ_tel
+			, organ_homepage
+			, post
+			, addr1
+			, addr2
+			, mt_organ_nm
+			, image_file_id
+			, (SELECT origin_file_nm FROM T_COMMONFILE WHERE file_id = a.image_file_id) AS image_file_nm
+			, use_yn
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, reg_userno
+			, GET_DATEFORMAT( reg_date ) AS reg_date
+			, upd_userno
+			, GET_DATEFORMAT( upd_date ) AS upd_date
+		FROM 
+			T_ORGAN a
+		WHERE 
+			organ_no = #{organ_no}			
+	</select>
+	
+	
+	<update id="insertOrgan" parameterType="Map" >
+		INSERT INTO T_ORGAN (
+			organ_no
+			, organ_gb
+			, domestic_yn
+			, sort
+			, organ_nm
+			, organ_tel
+			, organ_homepage
+			, post
+			, addr1
+			, addr2
+			, mt_organ_nm
+			, image_file_id
+			, use_yn
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			#{organ_no}
+			, #{organ_gb}
+			, #{domestic_yn}
+			, ( SELECT NVL( MAX( sort ) , 0 ) + 1 FROM T_ORGAN )
+			, #{organ_nm}
+			, #{organ_tel}
+			, #{organ_homepage}
+			, #{post}
+			, #{addr1}
+			, #{addr2}
+			, #{mt_organ_nm}
+			, #{image_file_id}
+			, #{use_yn}
+			, #{s_user_no}
+			, TO_CHAR( SYSDATE , 'YYYYMMDDHH24MISS' )			
+			, #{s_user_no}
+			, TO_CHAR( SYSDATE , 'YYYYMMDDHH24MISS' )
+		)
+	</update>
+	
+	<update id="updateOrgan" parameterType="Map" >
+	    UPDATE T_ORGAN
+		SET
+			organ_gb = #{organ_gb}
+			, domestic_yn = #{domestic_yn}
+			, organ_nm = #{organ_nm}
+			, organ_tel = #{organ_tel}
+			, organ_homepage = #{organ_homepage}
+			, post = #{post}
+			, addr1 = #{addr1}
+			, addr2 = #{addr2}
+			, mt_organ_nm = #{mt_organ_nm}
+			, image_file_id = #{image_file_id}
+			, use_yn = #{use_yn}
+			, upd_userno = #{s_user_no}
+			, upd_date = TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+		WHERE 
+			organ_no = #{organ_no}
+	</update>
+	
+	<update id="deleteOrgan" parameterType="Map" >
+	 	DELETE FROM T_ORGAN
+		WHERE 	
+			organ_no = #{organ_no}
+	</update>	
+	
+	<update id="updateOrganSort" parameterType="Map" >
+	    UPDATE T_ORGAN
+	    SET 
+	    	sort = #{sort}
+	    WHERE 
+			organ_no = #{organ_no}
+	</update>
+	
+	<update id="deleteOrganReorder" parameterType="Map" >
+	    UPDATE T_ORGAN
+		SET
+        	sort = sort - 1
+		WHERE
+			sort > (SELECT sort FROM T_ORGAN WHERE organ_no = #{organ_no})
+	</update>
+	
+</mapper>

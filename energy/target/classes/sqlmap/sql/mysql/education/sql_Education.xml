@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="EducationDao">
+	
+	<select id="selectEduseqPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+			select 
+			    seq_id
+			    ,seq
+				,run_year
+				,apply_strdt
+				,apply_enddt
+				,concat(date_format(STR_TO_DATE(apply_strdt,'%Y%m%d%H%i%s'),'%Y.%m.%d %H:%i'),'~',date_format(STR_TO_DATE(apply_enddt,'%Y%m%d%H%i%s'),'%Y.%m.%d %H:%i')) as apply_data
+				,open_yn
+				,score
+				,(select count(*) from t_eduseqsubj where seq_id = a.seq_id) as subj_cnt
+			   <![CDATA[ 
+				,case when edu_stat is not null then '교육완료' 
+				      when apply_strdt > date_format(now(),'%Y%m%d%H%i%s') then '교육대기'
+				      when apply_strdt <= date_format(now(),'%Y%m%d%H%i%s') and apply_enddt >= date_format(now(),'%Y%m%d%H%i%s') then '교육진행'
+				      else '교육종료' end as subj_stat
+				 ]]>      
+			from t_eduseq a
+			where 1=1
+			  <if test='p_year != null and !p_year.equals("")' >
+			    and run_year = #{p_year}
+			  </if>
+			<include refid="CommonSql.pageingBottom"/>
+	</select>
+
+    <select id="selectEduseq" parameterType="Map" resultType="caseMap">
+        select 
+            seq_id
+			,seq
+			,run_year
+			,apply_strdt
+			,date_format(STR_TO_DATE(apply_strdt,'%Y%m%d%H%i%s'),'%Y-%m-%d') as apply_strdt_date
+			,date_format(STR_TO_DATE(apply_strdt,'%Y%m%d%H%i%s'),'%H') as apply_strdt_hh
+			,date_format(STR_TO_DATE(apply_strdt,'%Y%m%d%H%i%s'),'%i') as apply_strdt_mm
+			,apply_enddt
+			,date_format(STR_TO_DATE(apply_enddt,'%Y%m%d%H%i%s'),'%Y-%m-%d') as apply_enddt_date
+			,date_format(STR_TO_DATE(apply_enddt,'%Y%m%d%H%i%s'),'%H') as apply_enddt_hh
+			,date_format(STR_TO_DATE(apply_enddt,'%Y%m%d%H%i%s'),'%i') as apply_enddt_mm
+			,open_yn
+			,score
+			,edu_stat
+			,(select count(*) from t_eduapply where seq_id = a.seq_id) as apply_cnt
+        from t_eduseq a
+        where seq_id = #{seq_id}
+    </select>
+	    	
+	<insert id="insertEduseq" parameterType="Map" >
+		insert into t_eduseq
+		(seq
+		,run_year
+		,apply_strdt
+		,apply_enddt
+		,open_yn
+		,score
+		)values(
+		 #{seq}
+		,#{run_year}
+		,REPLACE(#{apply_strdt},'-','')
+		,REPLACE(#{apply_enddt},'-','')
+		,#{open_yn}
+		,#{score}
+		)
+	  <selectKey resultType="int" keyProperty="seq_id" order="AFTER">
+        SELECT LAST_INSERT_ID() 
+      </selectKey>
+	</insert>
+
+	<update id="updateEduseq" parameterType="Map" >
+		update t_eduseq
+		set 
+		 seq = #{seq}
+		,run_year = #{run_year}
+		,apply_strdt = REPLACE(#{apply_strdt},'-','')
+		,apply_enddt = REPLACE(#{apply_enddt},'-','')
+		,open_yn = #{open_yn}
+		,score = #{score}
+		where seq_id = #{seq_id}
+	</update>
+
+	<delete id="deleteEduseq" parameterType="Map" >
+		delete t_eduseq
+		where seq_id = #{seq_id}
+	</delete>
+
+	<update id="updateEduseqComplete" parameterType="Map" >
+		update t_eduseq
+		set 
+			edu_stat = 'F'
+		where seq_id = #{seq_id}
+	</update>
+	
+    <select id="selectEduseqsubjList" parameterType="Map" resultType="caseMap">
+        select 
+            seq_id
+			,subj_cd
+			,(select code_nm from t_code where gubun = 'EDUCATION_SUBJ' and code = a.subj_cd) as subj_nm
+			,score
+        from t_eduseqsubj a
+        where seq_id = #{seq_id}
+    </select>
+    
+	<update id="insertEduseqsubj" parameterType="Map" >
+		insert into t_eduseqsubj
+		(
+		seq_id
+		,subj_cd
+		,score
+		)values(
+		 #{seq_id}
+		,#{subj_cd}
+		,#{score}
+		)
+	</update>
+		
+	<delete id="deleteEduseqsubj" parameterType="Map" >
+		delete from t_eduseqsubj
+		where seq_id = #{seq_id}
+	</delete>
+			
+	<update id="insertEducationApply" parameterType="Map" >
+		insert into t_eduapply
+		(
+		seq_id
+		,user_ci
+		,edu_gb
+		,user_nm
+		,birth
+		,gender
+		,email
+		,zipcode
+		,address
+		,address2
+		,handphone
+		,telephone
+		,license_gb
+		,busi_nm
+		,busi_no
+		,repre_nm
+		,busi_field
+		,busi_reg_date
+		,busi_tel
+		,fax
+		,busi_zipcode
+		,busi_address
+		,busi_address2
+		,busi_license
+		,unemp_ins_list
+		,etc_doc
+		,picture
+		,apply_status
+		,reg_date
+		)
+		values(
+		#{seq_id}
+		,#{user_ci}
+		,#{edu_gb}
+		,#{user_nm}
+		,REPLACE(#{birth},'-','')
+		,#{gender}
+		,#{email}
+		,#{zipcode}
+		,#{address}
+		,#{address2}
+		,#{handphone}
+		,#{telephone}
+		,#{license_gb}
+		,#{busi_nm}
+		,#{busi_no}
+		,#{repre_nm}
+		,#{busi_field}
+		,REPLACE(#{busi_reg_date},'-','')
+		,#{busi_tel}
+		,#{fax}
+		,#{busi_zipcode}
+		,#{busi_address}
+		,#{busi_address2}
+		,#{busi_license}
+		,#{unemp_ins_list}
+		,#{etc_doc}
+		,#{picture}
+		,'R'
+		,DATE_FORMAT( now() , '%Y%m%d%H%i%S' )
+		)
+	</update>
+
+	<update id="updateEducationApply" parameterType="Map" >
+		update t_eduapply
+		set                        
+			edu_gb         = #{edu_gb}                           
+			,user_nm        = #{user_nm}                          
+			,birth          = REPLACE(#{birth},'-','')              
+			,gender         = #{gender}                           
+			,email          = #{email}                            
+			,zipcode        = #{zipcode}                          
+			,address        = #{address}                          
+			,address2       = #{address2}                         
+			,handphone      = #{handphone}                        
+			,telephone      = #{telephone}                        
+			,license_gb     = #{license_gb}                       
+			,busi_nm        = #{busi_nm}                          
+			,busi_no        = #{busi_no}                          
+			,repre_nm       = #{repre_nm}                         
+			,busi_field     = #{busi_field}                       
+			,busi_reg_date  = REPLACE(#{busi_reg_date},'-','')      
+			,busi_tel       = #{busi_tel}                         
+			,fax            = #{fax}                              
+			,busi_zipcode   = #{busi_zipcode}                     
+			,busi_address   = #{busi_address}                     
+			,busi_address2  = #{busi_address2}                    
+			,busi_license   = #{busi_license}                     
+			,unemp_ins_list = #{unemp_ins_list}                   
+			,etc_doc        = #{etc_doc}                          
+			,picture        = #{picture}
+			,memo        = #{memo}
+        where seq_id = #{seq_id} and user_ci = #{user_ci}
+	</update>
+	
+	<update id="approvalEducationApply" parameterType="Map" >
+		update t_eduapply
+		set
+		    apply_status = #{apply_status},
+		    apply_reject_reason = #{apply_reject_reason},
+		    apply_proc_date = DATE_FORMAT( now() , '%Y%m%d%H%i%S' )                           
+        where seq_id          = #{seq_id} and user_ci = #{user_ci}
+	</update>
+	
+	<update id="passEducationApply" parameterType="Map" >
+		update t_eduapply
+		set
+		    pass_status = #{pass_status},
+		    pass_reject_reason = #{pass_reject_reason},
+		    pass_proc_date = DATE_FORMAT( now() , '%Y%m%d%H%i%S' )                           
+        where seq_id          = #{seq_id} and user_ci = #{user_ci} 
+	</update>
+		
+	<delete id="deleteEducationApply" parameterType="Map" >
+		delete from t_eduapply                          
+        where seq_id          = #{seq_id} and user_ci = #{user_ci} 
+	</delete>
+	
+	<select id="selectEducationApplyExist" parameterType="Map" resultType="integer">
+	     select count(seq_id) from t_eduapply
+         where seq_id = #{seq_id} and user_ci = #{user_ci} 
+	</select>
+
+	<select id="selectEduseqCodeList" parameterType="Map" resultType="caseMap">
+			select concat(seq_id,'') as code
+			      ,concat(seq,'차','(',date_format(STR_TO_DATE(apply_strdt,'%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i'),'~',date_format(STR_TO_DATE(apply_enddt,'%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i'),')') as codenm
+			from t_eduseq
+			<![CDATA[ where open_yn = 'Y' and date_format(now(), '%Y%m%d%H%i%s') >= apply_strdt and date_format(now(), '%Y%m%d%H%i%s') <= apply_enddt ]]>
+            order by seq desc   			
+	</select>
+
+	<select id="selectEduseqCodeList2" parameterType="Map" resultType="caseMap">
+			select concat(seq_id,'') as code
+			      ,concat(seq,'차') as codenm
+			from t_eduseq
+			where open_yn = 'Y' and run_year = #{year}
+            order by seq desc   			
+	</select>
+	
+	<select id="selectEducationApplyPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+			select
+			  b.seq_id
+			  ,b.user_ci
+			  ,b.edu_gb
+			  ,(select code_nm from t_code where gubun = 'EDU_GUBUN' and code = b.edu_gb) as edu_gb_nm
+			  ,a.seq
+			  ,concat(date_format(STR_TO_DATE(a.apply_strdt,'%Y%m%d%H%i%s'),'%Y-%m-%d'),'~',date_format(STR_TO_DATE(a.apply_enddt,'%Y%m%d%H%i%s'),'%Y.%m.%d')) as apply_priod
+			  ,b.user_nm
+			  ,date_format(STR_TO_DATE(b.birth,'%Y%m%d'),'%Y-%m-%d') as birth
+			  ,gender
+			  ,case when gender = '1' then '남' else '여' end as gender_nm 
+			  ,email
+			  ,zipcode
+			  ,address
+			  ,address2
+			  ,handphone
+			  ,telephone
+			  ,picture
+			  ,(SELECT origin_file_nm FROM t_commonfile WHERE file_id = b.picture) as picture_nm
+			  ,case when picture is not null then 'Y' else 'N'  end as picture_yn
+			  ,license_gb
+			  ,(select code_nm from t_code where gubun = 'LICENSE_GUBUN' and code = b.license_gb) as license_gb_nm
+			  ,busi_nm
+			  ,busi_no
+			  ,repre_nm
+			  ,busi_field
+			  ,date_format(STR_TO_DATE(b.busi_reg_date,'%Y%m%d%H%i%s'),'%Y-%m-%d') as busi_reg_date
+			  ,busi_tel
+			  ,fax
+			  ,busi_zipcode
+			  ,busi_address
+			  ,busi_address2
+			  ,busi_license
+			  ,(SELECT origin_file_nm FROM t_commonfile WHERE file_id = b.busi_license) as busi_license_nm
+		   	  ,case when busi_license is not null then 'Y' else 'N'  end as busi_license_yn
+			  ,unemp_ins_list
+			  ,(SELECT origin_file_nm FROM t_commonfile WHERE file_id = b.unemp_ins_list) as unemp_ins_list_nm
+			  ,case when unemp_ins_list is not null then 'Y' else 'N'  end as unemp_ins_list_yn
+			  ,etc_doc
+			  ,b.apply_status
+			  ,(select code_nm from t_code where gubun = 'EDU_APPROVAL' and code = b.apply_status) as apply_status_nm
+			  ,case when etc_doc is not null then 'Y' else 'N'  end as etc_doc_yn
+			  ,b.pass_status
+			  ,b.apply_proc_date
+			  ,ifnull(date_format(STR_TO_DATE(b.apply_proc_date,'%Y%m%d%H%i%s'),'%Y-%m-%d'),'-') as apply_proc_date_nm 
+			  ,(case when b.pass_status = 'Y' then '합격' 
+			         when b.pass_status = 'N' then '불합격'
+			         else '-'
+			    end 
+			  ) as pass_status_nm
+			  ,b.pass_proc_date
+			  ,ifnull(date_format(STR_TO_DATE(b.pass_proc_date,'%Y%m%d%H%i%s'),'%Y-%m-%d'),'-') as pass_proc_date_nm 
+			  ,date_format(STR_TO_DATE(b.reg_date,'%Y%m%d%H%i%s'),'%Y.%m.%d') as reg_date
+			  ,memo
+			from t_eduseq a inner join t_eduapply b on a.seq_id = b.seq_id
+			where 1=1
+			  <if test='p_year != null and !p_year.equals("")' >
+			  and a.run_year = #{p_year} 
+			  </if>
+			  <if test='p_seq != null and !p_seq.equals("")' >
+			  and a.seq = #{p_seq} 
+			  </if>
+			  <if test='p_apply_status != null and !p_apply_status.equals("")' >
+			  and b.apply_status = #{p_apply_status} 
+			  </if>
+			  <if test='p_pass_status != null and !p_pass_status.equals("")' >
+			  and b.pass_status = #{p_pass_status} 
+			  </if>			  			  			  
+			  <if test='p_searchtxt != null and !p_searchtxt.equals("")' >
+				  <if test='p_searchkey != null and p_searchkey.equals("reg_nm")' >
+				  and b.req_nm like concat('%',#{p_searchtxt},'%')
+				  </if>
+				  <if test='p_searchkey != null and p_searchkey.equals("birth")' >
+				  and birth like concat('%',#{p_searchtxt},'%')
+				  </if>
+			   </if>
+			<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="selectEducationApplyList" parameterType="Map" resultType="caseMap">
+			select
+			  b.seq_id
+			  ,b.user_ci
+			  ,b.edu_gb
+			  ,(select code_nm from t_code where gubun = 'EDU_GUBUN' and code = b.edu_gb) as edu_gb_nm
+			  ,a.seq
+			  ,concat(date_format(STR_TO_DATE(a.apply_strdt,'%Y%m%d%H%i%s'),'%Y-%m-%d'),'~',date_format(STR_TO_DATE(a.apply_enddt,'%Y%m%d%H%i%s'),'%Y-%m-%d')) as apply_priod
+			  ,b.user_nm
+			  ,b.apply_status
+			  ,(select code_nm from t_code where gubun = 'EDU_APPROVAL' and code = b.apply_status) as apply_status_nm
+			  ,b.pass_status
+			  ,(case when b.pass_status = 'Y' then '합격' 
+			         when b.pass_status = 'N' then '불합격'
+			         else '-'
+			    end 
+			  ) as pass_status_nm
+			  ,b.pass_proc_date
+			  ,date_format(STR_TO_DATE(b.reg_date,'%Y%m%d%H%i%s'),'%Y-%m-%d') as reg_date
+			from t_eduseq a inner join t_eduapply b on a.seq_id = b.seq_id
+			where b.user_ci = #{user_ci}
+			order by b.reg_date desc
+	</select>
+	
+	<select id="selectEducationApply" parameterType="Map" resultType="caseMap">
+			select
+				seq_id
+				,edu_gb
+				,(select code_nm from t_code where gubun = 'EDU_GUBUN' and code = a.edu_gb) as edu_gb_nm
+				,user_nm
+				,date_format(STR_TO_DATE(birth,'%Y%m%d'),'%Y-%m-%d') as birth
+				,gender
+				,email
+				,zipcode
+				,address
+				,address2
+				,handphone
+				,telephone
+				,license_gb
+				,(select code_nm from t_code where gubun = 'LICENSE_GUBUN' and code = a.license_gb) as license_gb_nm
+				,busi_nm
+				,busi_no
+				,repre_nm
+				,busi_field
+				,date_format(STR_TO_DATE(a.busi_reg_date,'%Y%m%d%H%i%s'),'%Y-%m-%d') as busi_reg_date
+				,busi_tel
+				,fax
+				,busi_zipcode
+				,busi_address
+				,busi_address2
+				,busi_license
+				,(SELECT origin_file_nm FROM t_commonfile WHERE file_id = a.busi_license) as busi_license_nm
+				,unemp_ins_list
+				,(SELECT origin_file_nm FROM t_commonfile WHERE file_id = a.unemp_ins_list) as unemp_ins_list_nm
+				,etc_doc
+				,(SELECT origin_file_nm FROM t_commonfile WHERE file_id = a.etc_doc) as etc_doc_nm
+				,date_format(STR_TO_DATE(a.reg_date,'%Y%m%d%H%i%s'),'%Y.%m.%d') as reg_date
+				,user_ci
+				,picture
+				,(SELECT origin_file_nm FROM t_commonfile WHERE file_id = a.picture) as picture_nm
+				,apply_status
+				,(select code_nm from t_code where gubun = 'EDU_APPROVAL' and code = a.apply_status) as apply_status_nm
+				,ifnull(date_format(STR_TO_DATE(a.apply_proc_date,'%Y%m%d%H%i%s'),'%Y-%m-%d'),'-') as apply_proc_date
+				,apply_reject_reason
+				,(select code_nm from t_code where gubun = 'APPROVAL_REJECT_REASON' and code = a.apply_reject_reason) as apply_reject_reason_nm
+				,pass_status
+				,(case when a.pass_status = 'Y' then '합격' 
+			         when a.pass_status = 'N' then '불합격'
+			         else '-'
+				    end 
+				  ) as pass_status_nm
+				,ifnull(date_format(STR_TO_DATE(a.pass_proc_date,'%Y%m%d%H%i%s'),'%Y-%m-%d'),'-') as pass_proc_date
+				,pass_reject_reason
+				,(select code_nm from t_code where gubun = 'PASS_REJECT_REASON' and code = a.pass_reject_reason) as pass_reject_reason_nm
+				,memo
+				,(select edu_stat from t_eduseq where seq_id = a.seq_id) as edu_stat			
+            from t_eduapply a
+			where a.seq_id = #{seq_id} and a.user_ci = #{user_ci}
+	</select>
+	
+    <select id="selectYearBusiStat" parameterType="Map" resultType="caseMap">  	
+		select 
+		   a.region_cd,
+		   cast(sum(amt) as char(11)) as amt_tot,
+		   cast(sum(house_num) as char(11)) as house_tot
+		from (
+		  select 
+		        case when region_cd = '11' then '11' 
+		             when region_cd = '26' or region_cd = '27' or region_cd = '31' or region_cd = '47' or region_cd = '48' then '26'
+		             when region_cd = '28' or region_cd = '41' then '28'
+		             when region_cd = '29' or region_cd = '45' or region_cd = '46' then '29'
+		             when region_cd = '30' or region_cd = '36' or region_cd = '43' or region_cd = '44' then '30'
+		             when region_cd = '42' then '42' 
+		             when region_cd = '50' then '50'
+		             end as region_cd,
+		        amt,
+		        house_num     
+		  from t_supportbusi_stat
+		  where year = date_format(now(),'%Y') 
+		  and region_cd in (
+		  '11',
+		  '26','27','31','47','48',
+		  '28','41',
+		  '29','45','46',
+		  '30','36','43','44',
+		  '42','50')
+		) a group by a.region_cd
+	</select>
+		
+    <select id="selectYearFundStat" parameterType="Map" resultType="caseMap">  	
+		  select
+	       y.rnum, x.year, format(x.amt,0) as amt
+	      from (
+	        select (@RN := @RN+1)AS RNUM
+	               ,year
+	               ,amt
+	        from (
+	          select year, amt
+	    			from t_supportfund_stat
+	    			where use_yn = 'Y'  
+	    			<![CDATA[ and year < date_format(now(),'%Y') ]]>
+	    			order by year desc
+	         ) a, (SELECT @RN := 0) VARS 
+	       ) x right outer join 
+	       ( select 1 as RNUM 
+	         union select 2 as RNUM 
+	         union select 3 as RNUM 
+	         union select 4 as RNUM 
+	         union select 5 as RNUM 
+	         ) y on x.RNUM = y.RNUM
+	</select>
+			
+</mapper>

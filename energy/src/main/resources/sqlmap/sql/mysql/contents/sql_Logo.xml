@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="LogoDao">
+ 
+	<select id="selectLogo" parameterType="Map" resultType="caseMap">
+		SELECT 
+			logo_id
+			, front_top
+			, (SELECT origin_file_nm FROM T_COMMONFILE WHERE file_id = a.front_top) AS front_top_nm
+			, (SELECT file_nm FROM T_COMMONFILE WHERE file_id = a.front_top) AS front_top_file_nm
+			, front_bottom
+			, (SELECT origin_file_nm FROM T_COMMONFILE WHERE file_id = a.front_bottom) AS front_bottom_nm
+			, (SELECT file_nm FROM T_COMMONFILE WHERE file_id = a.front_bottom) AS front_bottom_file_nm
+			, back_title
+			, back_top
+			, (SELECT origin_file_nm FROM T_COMMONFILE WHERE file_id = a.back_top) AS back_top_nm
+			, (SELECT file_nm FROM T_COMMONFILE WHERE file_id = a.back_top) AS back_top_file_nm
+			, back_refer
+			, backsub_title
+			, backsub_top
+			, (SELECT origin_file_nm FROM T_COMMONFILE WHERE file_id = a.backsub_top) AS backsub_top_nm
+			,( SELECT file_nm FROM T_COMMONFILE WHERE file_id = a.backsub_top) AS backsub_top_file_nm
+			,reg_userno
+			,reg_date
+		FROM T_LOGO a
+	</select>
+	
+	<!-- PK 중복이 없을 경우 INSERT, PK 중복일 경우 UPDATE 실행  -->
+	<update id="insertLogo" parameterType="Map" >
+		INSERT INTO T_LOGO (
+			logo_id
+			, front_top
+			, front_bottom
+			, back_title
+			, back_top
+			, back_refer
+			, backsub_title
+			, backsub_top
+			, reg_userno
+			, reg_date
+		) VALUES ( 
+			1
+			, #{front_top}
+			, #{front_bottom}
+			, #{back_title}
+			, #{back_top}
+			, #{back_refer}
+			, #{backsub_title}
+			, #{backsub_top}
+			, #{s_user_no}
+			, DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s')
+		)
+		ON DUPLICATE KEY 
+		UPDATE 
+			logo_id= 1
+			, front_top = #{front_top}
+			, front_bottom = #{front_bottom}
+			, back_title = #{back_title}
+			, back_top = #{back_top}
+			, back_refer = #{back_refer}
+			, backsub_title = #{backsub_title}
+			, backsub_top = #{backsub_top}
+			, reg_userno = #{s_user_no}
+			, reg_date = DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s')
+	</update>
+
+</mapper>

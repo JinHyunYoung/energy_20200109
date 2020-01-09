@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+
+	<!--공통-->
+	<definition name="blank_layout" template="/WEB-INF/jsp/templates/Blank.jsp">
+		<put-attribute name="body" value=""/>
+	</definition>
+
+	<definition name="sub_layout" template="/WEB-INF/jsp/templates/web/sub_layout.jsp">
+		<put-attribute name="header" value="/WEB-INF/jsp/templates/web/sub_header.jsp"/>
+		<put-attribute name="content" value=""/>
+		<put-attribute name="footer" value="/WEB-INF/jsp/templates/web/sub_footer.jsp"/>
+	</definition>
+	<definition name="main_layout" template="/WEB-INF/jsp/templates/web/main_layout.jsp">
+		<!--<put-attribute name="header" value="/WEB-INF/jsp/layout/sub_header.jsp"/>-->
+		<put-attribute name="content" value=""/>
+		<!--<put-attribute name="footer" value="/WEB-INF/jsp/layout/sub_footer.jsp"/>-->
+	</definition>
+	<definition name="slider" template="/WEB-INF/jsp/user/slider.jsp">
+		<put-attribute name="content" value=""/>
+	</definition>
+
+	<!--메인 페이지-->
+	<definition name="/sub/web/user/main" extends="main_layout">
+		<put-attribute name="content" value="/WEB-INF/jsp/user/main.jsp"/>
+	</definition>
+	<!--서브페이지-->
+	<definition name="/web/*/*" extends="sub_layout">
+		<put-attribute name="content" value="/WEB-INF/jsp/{1}/{2}.jsp"/>
+	</definition>
+	<!--인증-->
+	<definition name="/web/cert/*" extends="blank_layout">
+		<put-attribute name="body" value="/WEB-INF/jsp/cert/{1}.jsp"/>
+	</definition>
+	<!--사이트맵-->
+	<definition name="/web/integration/siteMapShow" extends="blank_layout">
+		<put-attribute name="body" value="/WEB-INF/jsp/integration/siteMapShow.jsp"/>
+	</definition>
+	<!--서브페이지-->
+	<definition name="/sub/web/*/*" extends="blank_layout">
+		<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}.jsp"/>
+	</definition>
+	<!--슬라이더-->
+	<definition name="/web/user/slider" extends="slider">
+		<put-attribute name="content" value="/WEB-INF/jsp/{1}/{2}.jsp"/>
+	</definition>
+
+	 <!--포탈 화면 레이아웃 -->
+	<definition name="web_layout" template="/WEB-INF/jsp/templates/web/Frame.jsp">
+	<put-attribute name="header" value="/WEB-INF/jsp/templates/web/Header.jsp"/>
+	<put-attribute name="body" value="/WEB-INF/jsp/templates/web/Body.jsp"/>
+	<put-attribute name="footer" value="/WEB-INF/jsp/templates/web/Footer.jsp"/>
+	</definition>
+
+	<definition name="popup_web_layout" template="/WEB-INF/jsp/templates/web/Popup.jsp">
+	<put-attribute name="body" value="/WEB-INF/jsp/templates/web/Body.jsp"/>
+	</definition>
+
+	<!--<definition name="/web/*/*" extends="web_layout">-->
+	<!--<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}.jsp"/>-->
+	<!--</definition>-->
+
+	<!--<definition name="/web/*/*/*" extends="sub_layout">-->
+		<!--<put-attribute name="content" value="/WEB-INF/jsp/{1}/{2}/{3}.jsp"/>-->
+	<!--</definition>-->
+
+	<!--<definition name="/web/*/*/*/*" extends="web_layout">-->
+	<!--<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}.jsp"/>-->
+	<!--</definition>-->
+
+	<!--<definition name="/web/*/*/*/*/*" extends="web_layout">-->
+	<!--<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}.jsp"/>-->
+	<!--</definition>-->
+
+	<!--<definition name="/sub/web/*/*" extends="blank_layout">-->
+	<!--<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}.jsp"/>-->
+	<!--</definition>-->
+
+	<!--<definition name="/sub/web/*/*/*" extends="blank_layout">-->
+	<!--<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}.jsp"/>-->
+	<!--</definition>-->
+
+	<!--<definition name="/sub/web/*/*/*/*" extends="blank_layout">-->
+	<!--<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}.jsp"/>-->
+	<!--</definition>-->
+
+	<!--<definition name="/sub/web/*/*/*/*/*" extends="blank_layout">-->
+	<!--<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}.jsp"/>-->
+	<!--</definition>-->
+
+	<!--<definition name="/popup/web/*/*" extends="popup_web_layout">-->
+	<!--<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}.jsp"/>-->
+	<!--</definition>-->
+
+	<!--<definition name="/popup/web/*/*/*" extends="popup_web_layout">-->
+	<!--<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}.jsp"/>-->
+	<!--</definition>-->
+
+	<!--<definition name="/popup/web/*/*/*/*" extends="popup_web_layout">-->
+	<!--<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}.jsp"/>-->
+	<!--</definition>-->
+
+	<!--<definition name="/popup/web/*/*/*/*/*" extends="popup_web_layout">-->
+	<!--<put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}.jsp"/>-->
+	<!--</definition>-->
+
+
+
+	<!-- 관리자 화면 레이아웃 -->
+	<definition name="admin_layout" template="/WEB-INF/jsp/templates/admin/Frame.jsp">
+		<put-attribute name="header" value="/WEB-INF/jsp/templates/admin/Header.jsp"/>
+		<put-attribute name="body" value="/WEB-INF/jsp/templates/admin/Body.jsp"/>
+		<put-attribute name="footer" value="/WEB-INF/jsp/templates/admin/Footer.jsp"/>
+	</definition>
+
+	<definition name="popup_admin_layout" template="/WEB-INF/jsp/templates/admin/Popup.jsp">
+		<put-attribute name="body" value="/WEB-INF/jsp/templates/admin/Body.jsp"/>
+	</definition>
+
+	<definition name="/admin/*/*" extends="admin_layout">
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/{1}/{2}.jsp"/>
+	</definition>
+
+	<definition name="/admin/*/*/*" extends="admin_layout">
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/{1}/{2}/{3}.jsp"/>
+	</definition>
+
+	<definition name="/admin/*/*/*/*" extends="admin_layout">
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/{1}/{2}/{3}/{4}.jsp"/>
+	</definition>
+
+	<definition name="/admin/*/*/*/*/*" extends="admin_layout">
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/{1}/{2}/{3}/{4}/{5}.jsp"/>
+	</definition>
+
+	<definition name="/sub/admin/*/*" extends="blank_layout">
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/{1}/{2}.jsp"/>
+	</definition>
+
+	<definition name="/sub/admin/*/*/*" extends="blank_layout">
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/{1}/{2}/{3}.jsp"/>
+	</definition>
+
+	<definition name="/sub/admin/*/*/*/*" extends="blank_layout">
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/{1}/{2}/{3}/{4}.jsp"/>
+	</definition>
+
+	<definition name="/sub/admin/*/*/*/*/*" extends="blank_layout">
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/{1}/{2}/{3}/{4}/{5}.jsp"/>
+	</definition>
+
+	<definition name="/popup/admin/*/*/*/*/*" extends="popup_admin_layout">
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/{1}/{2}/{3}/{4}/{5}.jsp"/>
+	</definition>
+
+	<definition name="/popup/admin/*/*/*/*" extends="popup_admin_layout">
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/{1}/{2}/{3}/{4}.jsp"/>
+	</definition>
+
+	<definition name="/popup/admin/*/*/*" extends="popup_admin_layout">
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/{1}/{2}/{3}.jsp"/>
+	</definition>
+
+	<definition name="/popup/admin/*/*" extends="popup_admin_layout">
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/{1}/{2}.jsp"/>
+	</definition>
+
+
+	<!-- Root 레이아웃 -->
+	<definition name="/root/*/*/*" extends="blank_layout">
+		<put-attribute name="body" value="/{1}/{2}/{3}.jsp"/>
+	</definition>
+
+	<definition name="/root/*/*" extends="blank_layout">
+		<put-attribute name="body" value="/{1}/{2}.jsp"/>
+	</definition>
+
+	<definition name="/root/*" extends="blank_layout">
+		<put-attribute name="body" value="/{1}.jsp"/>
+	</definition>
+
+</tiles-definitions>

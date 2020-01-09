@@ -1,0 +1,127 @@
+@charset "utf-8";
+
+
+body {}
+
+/* layout */
+#wrap {overflow: hidden;}
+#pop_header {overflow: hidden; position: relative; margin: 0; padding: 20px 0 15px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; color: #ffffff; background: url('/images/admin/common/bg_gnb_on.png') repeat 0 0;}
+	a.pop_close {position: absolute; top: 23px; right: 15px; width: 20px; height: 19px; background: url('/images/admin/popup/btn_delete.png') no-repeat 0 0;}
+	a.pop_close span {display: block; position: absolute; top: -999999px; right: -999999px;}
+
+#pop_container {overflow: hidden;}
+	.pop_content_area {overflow: hidden;}
+	    #pop_content {overflow: hidden; padding: 40px 15px 50px;}
+
+
+/* title */
+.title_area {overflow: hidden; margin-bottom: 20px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+.title_area.marginb8 {margin-bottom: 8px;}
+	h1.pop_title {float: left; margin: 0 35px 0 0; padding-left: 37px; font-size: 18px; font-weight: bold; color: #ffffff; line-height: 1.4em; background: url('/images/admin/popup/bullet_title_01.png') no-repeat 15px 6px;}
+	h2.pop_title {padding-left: 22px; font-weight: bold; font-size: 16px; color: #4d4d4d; background: url('/images/admin/common/bullet_title_01.png') no-repeat 0 2px;}
+	h3.pop_title {padding-left: 18px; font-weight: bold; font-size: 16px; color: #4d4d4d; background: url('/images/admin/common/bullet_title_03.png') no-repeat 5px 6px;}
+
+
+/* tab_area */
+.tab_area {overflow: hidden; margin-bottom: 30px; background: url('/images/admin/common/bg_tab_underline.png') repeat-x 0 bottom;}
+	ul.tablist {font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+		ul.tablist li {display: block; float: left; list-style: none;}
+		ul.tablist li a {display: block; height: 39px; padding: 0 20px; margin-bottom: 1px; border: 1px solid #dfdfdf; border-bottom: 0; font-weight: bold; font-size: 13px; color: #6e6e6e; line-height: 39px; letter-spacing: -0.02em; background-color: #f4f4f4;
+			border-top-left-radius: 8px;
+			border-top-right-radius: 8px;
+			-webkit-border-top-left-radius: 8px;
+			-webkit-border-top-right-radius: 8px;
+			-moz-border-top-left-radius: 8px;
+			-moz-border-top-right-radius: 8px;
+			}
+		ul.tablist li.on a {height: 38px; margin-bottom: 0px; border: 2px solid #0060af; border-bottom: 1px solid #ffffff; color: #3f3f3f; line-height: 39px; background-color: #ffffff;}
+		ul.tablist li.on a:hover {text-decoration: none;}
+
+
+/* table_search_area */
+.table_search_area {overflow: hidden; margin-bottom: 8px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+	.table_search_area.float_left {text-align: left; vertical-align: bottom;}
+	.table_search_area.float_right {text-align: right; vertical-align: bottom;}
+
+
+/* satisfy_area */
+.satisfy_area {overflow: hidden; padding: 20px 24px 15px; border: 1px solid #dee0e3;}
+	dl.satisfy {overflow: hidden; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+		dl.satisfy > dt.satidt {padding: 0 0 10px 5px; border-bottom: 1px solid #dee0e3; font-size: 1em; font-weight: bold; color: #333333;}
+		dl.satisfy > dd.satidd {overflow: hidden; padding-top: 10px;}
+		
+		dl.satisfy > dd.satidd ul.select_satisfy {overflow: hidden; color: #4d4d4d;}
+		dl.satisfy > dd.satidd ul.select_satisfy li {float: left; padding-left: 25px; margin-right: 16px; font-size: 0.94em; list-style: none;}
+
+
+
+/*
+ * content
+ */
+.text_area {overflow: hidden; padding: 26px 20px 25px; border-top: 3px double #dddddd; border-bottom: 3px double #dddddd; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-weight: normal; font-size: 14px; color: #333333; line-height: 1.5em;}
+
+
+/* icon_choice */
+ul.icon_choice {overflow: hidden; padding: 1px 0 0 2px;}
+	ul.icon_choice li {float: left; width: 25%; list-style: none; margin: 5px 0; }
+	ul.icon_choice li .icon_box {overflow: hidden; padding: 10px 15px;}
+	ul.icon_choice li .icon_box input {display: inline; display: inline-block; vertical-align: top;}
+	ul.icon_choice li .icon_box img {
+		display: inline; display: inline-block; padding: 25px 21px; vertical-align: top; margin-left: 10px; background-color: #b6b6b6;
+		border-radius: 50px;
+		-webkit-border-radius: 50px;
+		-moz-border-radius: 50px;
+		}
+
+
+/* sms */
+.sms_area { overflow: hidden; padding: 18px 15px 5px; border: 1px solid #d7d7d7; font-size: 13px; }
+a.btn.sms_add { height: 25px; padding: 0 20px; border-radius: 0; font-size: 13px; line-height: 25px; }
+.box { display: inline-block; width: 220px; }
+.sms_list { width: 209px; height: 88px; border: 1px solid #969696; overflow-y: scroll; }
+.sms_list ul li { padding-left: 10px; font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 12px; line-height: 2.5em; list-style: none; }
+.sms_list ul li.on { background-color: #d7f2fc; }
+.sms_list ul li.off { background-color: none; }
+.sms_area .txt { padding-top: 39px; }
+.sms_content { font-size: 13px; }
+.tem_tbl_box { height: 500px; max-height: 500px; border-bottom: 2px solid #b6b6b6; overflow-y: auto; }
+.tem_m_tbl_box { height: 463px; max-height: 463px; border-bottom: 2px solid #b6b6b6; overflow-y: auto; }
+
+
+/* information */
+.information_area {overflow: hidden; margin: 20px 0 30px 0; padding: 20px; border: 1px solid #0c6fbc; font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 12px; color: #686868;
+	border-radius: 8px;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	}
+	h5.infor_title {padding-left: 16px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-weight: bold; font-size: 14px; color: #4d4d4d; background: url('/images/admin/common/bullet_title_02.png') no-repeat 0 3px;}
+	ul.information {overflow: hidden;}
+		ul.information li {overflow: hidden; margin-top: 9px; padding-left: 15px; list-style: none; line-height: 1.5em;}
+		ul.information li:first-child {margin-top: 13px;}
+		ul.information li strong.title {display: block; float: left; margin-right: 5px; padding-right: 10px; background: url('/images/admin/common/bullet_lnb_01.png') no-repeat right 8px;}
+		ul.information li span {overflow: hidden; display: block;}
+		
+	
+/* phone_area */
+.phone_area {overflow: hidden; width: 247px; margin: 0 auto;}
+.phone_box {overflow: hidden; width: 247px;}
+    .phone_box .phoneb {overflow: hidden; padding: 0 0 30px; margin: 0; background: url("/images/admin/common/bg_phoneb.png") no-repeat 0 bottom;}
+    .phone_box .phonet {overflow: hidden; padding: 30px 0 0; margin: 0; background: url("/images/admin/common/bg_phonet.png") no-repeat 0 0;}
+    .phone_box .phonem {overflow: hidden; padding: 0 15px; margin: 0; background: url("/images/admin/common/bg_phonem.png") repeat-y 0 0;}
+        .phone_text {overflow: hidden; padding: 40px 18px 25px; margin-top: 13px; border: 1px solid #3e3e3e; background: url("/images/admin/common/bg_phonetop.png") no-repeat center 9px #171717;}
+        .phone_text textarea.letter {width: 100%; height: 140px; border: 0; color: #c8c8c8; background-color: #171717;}
+        
+        .number_area {overflow: hidden; margin: 15px 10px 5px;}
+        .number_area strong.title {display: inline-block; height: 20px; margin-right: 5px; padding-left: 9px; font-weight: bold; line-height: 20px; vertical-align: middle; background: url("/images/admin/common/bullet_01.png") no-repeat 3px 7px;}
+        .number_area input[type=text] {height: 18px;}
+        
+/* search area */
+.pop_search_areabox {overflow: hidden; position: relative; padding: 12px 10px 10px; margin-bottom: 20px; border: 1px solid #dddddd;}
+    dl.pop_search_dl {overflow: hidden;}
+    dl.pop_search_dl dt, dd {float: left; height: 27px; line-height: 27px; vertical-align: top;}
+    dl.pop_search_dl + dl.pop_search_dl {margin-top: 10px;}
+    dl.pop_search_dl dt {padding-right: 8px; background: url('/images/admin/common/bullet_05.png') no-repeat right 6px;}
+    dl.pop_search_dl dt span {display: block; height: 27px; padding-left: 10px; font-size: 12px; line-height: 27px; font-weight: bold; background: url('/images/admin/common/bullet_lnb_01.png') no-repeat 2px 12px;}
+    dl.pop_search_dl dd {display: block; padding-left: 5px; height: 27px; line-height: 27px; font-size: 13px;}
+	dl.pop_search_dl dd a {vertical-align: middle;}
+

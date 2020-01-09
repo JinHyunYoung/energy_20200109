@@ -1,0 +1,1361 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BoardDao">
+
+	<resultMap id="boardMap" type="Map">
+		<result property="contents_id" column="contents_id" />
+		<result property="board_id" column="board_id" />
+		<result property="title" column="title" />
+		<result property="contents" column="contents" javaType="java.lang.String" jdbcType="CLOB"/>
+		<result property="ref_seq" column="ref_seq" />
+		<result property="restep_seq" column="restep_seq" />
+		<result property="relevel_seq" column="relevel_seq" />
+		<result property="title_link" column="title_link" />
+		<result property="name" column="name" />
+		<result property="handphone" column="handphone" />
+		<result property="sms_recv" column="sms_recv" />
+		<result property="email" column="email" />
+		<result property="email_recv_yn" column="email_recv_yn" />
+		<result property="url_title" column="url_title" />
+		<result property="url_link" column="url_link" />
+		<result property="origin" column="origin" />
+		<result property="satisfy" column="satisfy" />
+		<result property="noti" column="noti" />
+		<result property="secret" column="secret" />
+		<result property="satisfy" column="satisfy" />
+		<result property="image_file_id" column="image_file_id" />
+		<result property="image_file_nm" column="image_file_nm" />
+		<result property="group_id" column="group_id" />
+		<result property="reservation" column="reservation" />
+		<result property="reservation_date" column="reservation_date" />
+		<result property="reg_date" column="reg_date" />
+		<result property="cate_id" column="cate_id" />
+		<result property="cate_nm" column="cate_nm" />
+		<result property="hits" column="hits" />
+		<result property="ip_addr" column="ip_addr" />
+		<result property="domestic_yn" column="domestic_yn" javaType="java.lang.String"/>
+		<result property="country" column="country" />
+		<result property="etc" column="etc" />
+		<result property="cpr_use_yn" column="cpr_use_yn" />
+		<result property="cpr_cmrc_use_yn" column="cpr_cmrc_use_yn" />
+		<result property="cpr_chng_use_yn" column="cpr_chng_use_yn" />
+		<result property="charge_info" column="charge_info" />
+		<result property="contents_date" column="contents_date" />
+		<result property="contents_txt" column="contents_txt" />
+		<result property="contents_date" column="contents_date" />
+		<result property="reply_yn" column="reply_yn" />
+		<result property="comment_cnt" column="comment_cnt" />
+		<result property="satisfy" column="satisfy" />
+		<result property="recommend" column="recommend" />
+		<result property="file_id" column="file_id" />
+		<result property="pass_yn" column="pass_yn" />
+		<result property="satisfy_yn" column="satisfy_yn" />
+		<result property="total_cnt" column="total_cnt" />
+		<result property="rnum" column="rnum" />
+	</resultMap>
+	 
+	<select id="selectBoardPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		
+		SELECT 
+			board_id
+			, title
+			, board_type
+			, contents
+			, detail_yn
+			, grant_write
+			, grant_reply
+			, item_use
+			, item_required
+			, view_print
+			, view_size
+			, view_sort
+			, noti_num
+			, attach_num
+			, tabmenu_use_yn
+			, etc_label_nm
+			, contents_date_label_nm
+			, cpr_use_yn
+			, charge_info_use_yn
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+			, use_yn
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'USE_YN' AND code = tb.detail_yn) AS detail_yn_nm
+			, (SELECT code_nm FROM T_CODE tc WHERE gubun = 'USE_YN' AND tc.code = tb.use_yn) AS use_yn_nm
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'BOARD_TYPE' AND code = tb.board_type) AS board_type_nm
+			, (SELECT count(1) FROM T_BOARDCONTENTS tbc WHERE tbc.board_id = tb.board_id) AS write_cnt
+			, CASE 
+				WHEN IFNULL(instr(item_use, 'cate'),0) <![CDATA[>]]> 0 THEN 'Y' 
+				ELSE 'N' 
+			END AS cate_yn
+		FROM T_BOARD tb
+		WHERE 
+			del_yn != 'Y'
+			<if test='searchtype != null and !searchtype.equals("")' >
+			   AND board_type = #{searchtype}
+			</if>
+			<if test='searchtxt != null and searchkey.equals("NM")' > 
+			   AND (UPPER(title) LIKE CONCAT('%', UPPER(#{searchtxt}), '%') OR INSTR(contents, UPPER(#{searchtxt})) > 0 OR INSTR(contents, LOWER(#{searchtxt})) > 0 )
+			</if>
+			<if test='searchtxt != null and searchkey.equals("CD")' >
+			   AND board_id = #{searchtxt}
+			</if>
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="selectBoardList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			(@RN := @RN+1)AS RNUM
+			, board_id
+			, title
+			, board_type
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'BOARD_TYPE' AND code = a.board_type) AS board_type_nm
+			, detail_yn
+			, grant_write
+			, grant_reply
+			, item_use
+			, item_required
+			, view_print
+			, view_size
+			, view_sort
+			, noti_num
+			, attach_num
+			, tabmenu_use_yn
+			, etc_label_nm
+			, contents_date_label_nm
+			, cpr_use_yn
+			, charge_info_use_yn
+			, reg_userno
+			, (SELECT user_nm FROM T_USER tu WHERE tu.user_no = a.reg_userno) AS reg_usernm
+			, reg_date
+			, GET_DATEFORMAT(reg_date) AS reg_date2
+			, upd_userno
+			, upd_date
+		FROM T_BOARD a, (SELECT @RN := 0) VARS
+		WHERE 
+			  a.del_yn != 'Y'
+		ORDER BY cast(board_id AS UNSIGNED) DESC		
+	</select>
+	
+	<select id="selectBoard" parameterType="Map" resultType="caseMap">
+		SELECT 
+			board_id
+			, title
+			, board_type
+			, contents
+			, detail_yn
+			, grant_write
+			, grant_reply
+			, item_use
+			, item_required
+			, view_print
+			, view_size
+			, view_sort
+			, noti_num
+			, attach_num
+			, tabmenu_use_yn
+			, etc_label_nm
+			, contents_date_label_nm
+			, cpr_use_yn
+			, charge_info_use_yn
+			, reg_userno
+			, (SELECT user_nm FROM T_USER tu WHERE tu.user_no = a.reg_userno) AS reg_usernm
+			, reg_date
+			, upd_userno
+			, upd_date
+		FROM T_BOARD a
+		WHERE 1 = 1  			
+	     	<if test='board_id != null and !board_id.equals("")' >
+				AND board_id = #{board_id}
+			</if>
+			<if test='title != null and !title.equals("")' >
+				AND title = #{title}
+			</if>
+			<if test='board_type != null and !board_type.equals("")' >
+			   AND board_type = #{board_type}
+			</if>
+			<if test='contents != null and !contents.equals("")' >
+			   AND contents = #{contents}
+			</if>
+			<if test='detail_yn != null and !detail_yn.equals("")' >
+			   AND detail_yn = #{detail_yn}
+			</if>
+			<if test='grant_write != null and !grant_write.equals("")' >
+			   AND grant_write = #{grant_write}
+			</if>
+			<if test='grant_reply != null and !grant_reply.equals("")' >
+			   AND grant_reply = #{grant_reply}
+			</if>
+			<if test='item_use != null and !item_use.equals("")' >
+			   AND item_use = #{item_use}
+			</if>
+			<if test='item_required != null and !item_required.equals("")' >
+			   AND item_required = #{item_required}
+			</if>
+			<if test='view_print != null and !view_print.equals("")' >
+			   AND view_print = #{view_print}
+			</if>
+			<if test='view_size != null and !view_size.equals("")' >
+			   AND view_size = #{view_size}
+			</if>
+			<if test='view_sort != null and !view_sort.equals("")' >
+			   AND view_sort = #{view_sort}
+			</if>
+			<if test='noti_num != null and !noti_num.equals("")' >
+			   AND noti_num = #{noti_num}
+			</if>
+			<if test='attach_num != null and !attach_num.equals("")' >
+			   AND attach_num = #{attach_num}
+			</if>
+			<if test='tabmenu_use_yn != null and !tabmenu_use_yn.equals("")' >
+			   AND tabmenu_use_yn = #{tabmenu_use_yn}
+			</if>
+			<if test='etc_label_nm != null and !etc_label_nm.equals("")' >
+			   AND etc_label_nm = #{etc_label_nm}
+			</if>
+			<if test='contents_date_label_nm != null and !contents_date_label_nm.equals("")' >
+			   AND contents_date_label_nm = #{contents_date_label_nm}
+			</if>
+			<if test='cpr_use_yn != null and !cpr_use_yn.equals("")' >
+			   AND cpr_use_yn = #{cpr_use_yn}
+			</if>
+			<if test='charge_info_use_yn != null and !charge_info_use_yn.equals("")' >
+			   AND charge_info_use_yn = #{charge_info_use_yn}
+			</if>
+			<if test='reg_userno != null and !reg_userno.equals("")' >
+			   AND reg_userno = #{reg_userno}
+			</if>
+			<if test='reg_date != null and !reg_date.equals("")' >
+			   AND reg_date = #{reg_date}
+			</if>
+			<if test='upd_userno != null and !upd_userno.equals("")' >
+			   AND upd_userno = #{upd_userno}
+			</if>
+			<if test='upd_datee != null and !upd_datee.equals("")' >
+			   AND upd_datee = #{upd_date}
+			</if>
+	</select>
+	
+	<select id="selectBoardExist" parameterType="Map" resultType="integer">
+			SELECT 
+				  count(*)
+			FROM T_BOARD
+			WHERE 
+				board_id = #{board_id}
+			
+	</select>
+	
+	<!-- 게시판 등록  -->
+	<update id="insertBoard" parameterType="Map" >
+		<selectKey resultType="String" keyProperty="board_id" order="BEFORE">
+        	(SELECT IFNULL(MAX(CAST(board_id AS UNSIGNED)),0)+1 FROM T_BOARD)
+		</selectKey>
+
+		INSERT INTO T_BOARD (
+			board_id
+			, title
+			, board_type
+			, contents
+			, detail_yn
+			, grant_write
+			, grant_reply
+			, item_use
+			, item_required
+			, view_print
+			, view_size
+			, view_sort
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+			, use_yn
+		) VALUES ( 
+			#{board_id}
+			, #{title}
+			, #{board_type}
+			, #{contents}
+			, #{detail_yn}
+			, #{grant_write}
+			, #{grant_reply}
+			, #{item_use}
+			, #{item_required}
+			, #{view_print}
+			, #{view_size}
+			, #{view_sort}
+			, #{reg_userno}
+			, DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s')
+			, #{reg_userno}
+			, DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s')
+			, #{use_yn}
+		)
+	</update>
+	
+	<!-- 게시판 기본정보  -->
+	<update id="updateBoard" parameterType="Map" >
+	    UPDATE T_BOARD
+		SET
+			title = #{title}
+			, contents = #{contents}
+			, detail_yn = #{detail_yn}
+			, grant_write = #{grant_write}
+			, grant_reply = #{grant_reply}
+			, upd_userno = #{reg_userno}
+			, upd_date = DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s')
+			, use_yn = #{use_yn}
+		WHERE  
+			board_id = #{board_id}
+	</update>
+	
+	<!-- 게시판 항목설정  -->
+	<update id="updateBoardItemSet" parameterType="Map" >
+	    UPDATE T_BOARD
+		SET
+			item_use = #{item_use}
+			, item_required = #{item_required}
+			, noti_num = #{noti_num}
+			, attach_num = #{attach_num}
+			, tabmenu_use_yn = #{tabmenu_use_yn}
+			, etc_label_nm = #{etc_label_nm}
+			, contents_date_label_nm = #{contents_date_label_nm}
+			, cpr_use_yn = #{cpr_use_yn}
+			, charge_info_use_yn = #{charge_info_use_yn}
+			, upd_userno = #{reg_userno}
+			, upd_date = DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s')
+		WHERE 
+			board_id = #{board_id}
+	</update>
+	
+	<!-- 게시판 목록뷰설정  -->
+	<update id="updateBoardViewSet" parameterType="Map" >
+	    UPDATE T_BOARD
+		SET
+			view_print = #{view_print}
+			, view_size = #{view_size}
+			, view_sort = #{view_sort}
+			, upd_userno = #{reg_userno}
+			, upd_date = DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s')
+		WHERE 
+			board_id = #{board_id}
+	</update>
+	
+	<!-- 게시판 삭제  -->
+	<update id="deleteBoard" parameterType="Map" >
+	 	UPDATE T_BOARD
+		SET
+			del_yn = 'Y'
+		WHERE
+			board_id = #{board_id}
+	</update>
+	
+	<!-- 게시판 상세정보 -->
+	<select id="selectBoardDetail" parameterType="Map" resultType="caseMap">
+		SELECT 
+			a.board_id
+			, a.title
+			, a.board_type
+			, a.contents
+			, a.detail_yn
+			, a.grant_write
+			, a.grant_reply
+			, a.item_use
+			, a.item_required
+			, a.view_print
+			, a.view_size
+			, a.view_sort
+			, a.noti_num
+			, a.attach_num
+			, a.tabmenu_use_yn
+			, a.etc_label_nm
+			, a.contents_date_label_nm
+			, a.cpr_use_yn
+			, a.charge_info_use_yn
+			, a.reg_userno
+			, (SELECT user_nm FROM T_USER tu WHERE tu.user_no = a.reg_userno) AS reg_usernm
+			, a.upd_userno
+			, a.upd_date
+			, a.use_yn
+			, GET_DATEFORMAT(a.reg_date) as reg_date
+			, CASE 
+				WHEN ifnull(instr(a.item_use, 'cate'),0) <![CDATA[>]]> 0 THEN 'Y' 
+				ELSE 'N' 
+			END AS cate_yn
+			, (SELECT COUNT(1) FROM T_BOARDCONTENTS tb WHERE tb.board_id = a.board_id AND tb.NOTI = 'Y') AS noti_cnt
+		FROM T_BOARD a
+		WHERE 
+			a.board_id = #{board_id}
+	</select>
+	
+	<!-- 게시판 카테고리 리스트 -->
+	<select id="selectBoardCategoryList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			cate_id
+			, board_id
+			, sort
+			, use_yn
+			, title
+			, (SELECT code_nm from T_CODE WHERE gubun = 'USE_YN' AND code = tb.use_yn) AS use_yn_nm
+		FROM T_BOARDCATEGORY tb
+		WHERE 
+			tb.board_id = #{board_id}
+		ORDER BY sort		
+	</select>
+	
+	<!-- 게시판 카테고리 -->
+	<select id="selectBoardCategoryDetail" parameterType="Map" resultType="caseMap">
+		SELECT 
+			cate_id
+			, board_id
+			, sort
+			, use_yn
+			, title
+			, reg_userno
+			, (SELECT user_nm FROM T_USER tu WHERE tu.user_no = a.reg_userno) AS reg_usernm
+			, GET_DATEFORMAT(reg_date) AS reg_date
+		FROM T_BOARDCATEGORY a
+		WHERE  
+			board_id = #{board_id}
+			AND cate_id = #{cate_id}
+		ORDER BY sort		
+	</select>
+	
+	<!-- 게시판 카테고리 등록 -->
+	<update id="insertBoardCategory" parameterType="Map" >
+		<selectKey resultType="String" keyProperty="sort" order="BEFORE">
+        	SELECT IFNULL(MAX(sort),0)+1 FROM T_BOARDCATEGORY WHERE board_id = #{board_id}
+		</selectKey>
+		INSERT INTO T_BOARDCATEGORY (
+			cate_id
+			, board_id
+			, sort
+			, use_yn
+			, title
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			#{cate_id}
+			, #{board_id}
+			, #{sort}
+			, #{use_yn}
+			, #{title}
+			, #{reg_userno}
+			, date_format(sysdate(),'%Y%m%d%H%i%s')
+			, #{reg_userno}
+			, date_format(sysdate(),'%Y%m%d%H%i%s')
+		)
+	</update>
+	
+	<!-- 게시판 카테고리 수정 -->
+	<update id="updateBoardCategory" parameterType="Map" >
+	    UPDATE T_BOARDCATEGORY
+		SET
+			title = #{title}
+			, sort = #{sort}
+			, use_yn = #{use_yn}
+			, upd_userno = #{reg_userno}
+			, upd_date = DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s')
+		WHERE 
+			board_id = #{board_id}
+		    AND cate_id = #{cate_id}
+	</update>
+	
+	<!-- 게시판 카테고리 삭제 -->
+	<delete id="deleteBoardCategory" parameterType="Map" >
+	 	DELETE FROM T_BOARDCATEGORY 
+		WHERE  
+			board_id = #{board_id}
+			AND cate_id = #{cate_id}
+	</delete>
+	
+	<!-- 메뉴 매핑여부 확인 -->
+	<select id="chkBoardMapp" parameterType="Map" resultType="Integer">
+		SELECT
+			COUNT(board) AS cnt
+		FROM T_MENU
+		WHERE 
+			board = #{board_id}
+	</select>
+	
+	<!-- 게시물 등록 -->
+	<update id="insertBoardContents" parameterType="Map" >
+		<selectKey resultType="String" keyProperty="ref_seqw" order="BEFORE">
+        	SELECT IFNULL(MAX(ref_seq),0)+1 FROM T_BOARDCONTENTS WHERE board_id = #{board_id}
+		</selectKey>
+
+		INSERT INTO T_BOARDCONTENTS (
+			contents_id
+			, board_id
+			, cate_id
+			, title
+			, contents
+			, ref_seq
+			, relevel_seq
+			, restep_seq
+			, title_link
+			, name
+			, handphone
+			, sms_recv
+			, email
+			, email_recv_yn
+			, url_title
+			, url_link
+			, origin
+			, noti
+			, secret
+			, image_file_id
+			, group_id
+			, reservation
+			, pass
+			, reservation_date
+			, ip_addr
+			, domestic_yn
+			, country
+			, etc
+			, contents_date
+			, cpr_use_yn
+			, cpr_cmrc_use_yn
+			, cpr_chng_use_yn
+			, charge_info
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			#{contents_id}
+			, #{board_id}
+			, #{cate_id}
+			, #{title}
+			, #{contents}
+			<if test='mode != null and mode.equals("W")' >
+			, #{ref_seqw}
+			</if>
+			<if test='mode != null and mode.equals("R")' >
+			, #{ref_seq}
+			</if>
+			, #{relevel_seq}
+			, #{restep_seq}
+			, #{title_link}
+			, #{name}
+			, #{handphone}
+			, #{sms_recv}
+			, #{email}
+			, #{email_recv_yn}
+			, #{url_title}
+			, #{url_link}
+			, #{origin}
+			<if test='noti != null and noti != ""' >
+			, #{noti}
+			</if>
+			<if test='noti == null or noti == ""' >
+			, 'N'
+			</if>
+			, #{secret}
+			, #{image_file_id}
+			, #{group_id}
+			, #{reservation}
+			, #{pass}
+			<if test='reservation_date != null and reservation_date != ""' >
+			, REPLACE(#{reservation_date},'-','')
+			</if>
+			<if test='reservation_date == null or reservation_date == ""' >
+			, DATE_FORMAT(SYSDATE(),'%Y%m%d')
+			</if>
+			, #{s_userip}
+			, #{domestic_yn}
+			, #{country}
+			, #{etc}
+			, #{contents_date}
+			, #{cpr_use_yn}
+			, #{cpr_cmrc_use_yn}
+			, #{cpr_chng_use_yn}
+			, #{charge_info}
+			, #{reg_userno}
+			, DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s')
+			, #{reg_userno}
+			, DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s')
+		)
+	</update>
+	
+	<!-- 게시물 수정 -->
+	<update id="updateBoardContents" parameterType="Map" >
+	    UPDATE T_BOARDCONTENTS
+		SET
+			cate_id = #{cate_id}
+			, title = #{title}
+			, contents = #{contents}
+			, title_link = #{title_link}
+			, name = #{name}
+			, handphone = #{handphone}
+			, sms_recv = #{sms_recv}
+			, email = #{email}
+			, email_recv_yn = #{email_recv_yn}
+			, url_title = #{url_title}
+			, url_link = #{url_link}
+			, origin = #{origin}
+			<if test='noti != null and noti != ""' >
+			, noti = #{noti}
+			</if>
+			, secret = #{secret}
+			, image_file_id = #{image_file_id}
+			, group_id = #{group_id}
+			, reservation = #{reservation}
+			, pass = #{pass}
+			<if test='reservation_date != null and reservation_date != ""' >
+			, reservation_date = REPLACE(#{reservation_date},'-','')
+			</if>
+			, ip_addr = #{s_userip}
+			, domestic_yn = #{domestic_yn}
+			, country = #{country}
+			, etc = #{etc}
+			, contents_date = #{contents_date}
+			, cpr_use_yn = #{cpr_use_yn}
+			, cpr_cmrc_use_yn = #{cpr_cmrc_use_yn}
+			, cpr_chng_use_yn = #{cpr_chng_use_yn}
+			, charge_info = #{charge_info}
+			, upd_userno = #{reg_userno}
+			, upd_date = DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s')
+		WHERE
+			board_id = #{board_id}
+			AND contents_id = #{contents_id}
+	</update>
+	
+	<!-- 답변게시물여부를 확인 -->
+	<select id="chkBoardChildContents" parameterType="Map" resultType="Integer">
+		SELECT 
+				COUNT(1) AS cnt
+		FROM
+	    (
+	   		SELECT 
+		        ref_seq
+		        , restep_seq
+		        , board_id
+	    	FROM T_BOARDCONTENTS
+	    	WHERE 
+				(del_yn is null or del_yn != 'Y') 
+	        	AND	board_id = #{board_id}
+	        	AND contents_id = #{contents_id}
+	    ) A
+	    , T_BOARDCONTENTS B
+		WHERE 
+			A.board_id = B.board_id
+			AND A.ref_seq = B.ref_seq
+	    	AND B.restep_seq > A.restep_seq 
+			AND	(B.del_yn is null or B.del_yn != 'Y') 
+	    	
+	</select>
+	
+	<!-- 게시물 패스워드 확인 -->
+	<select id="chkBoardPass" parameterType="Map" resultType="Integer">
+		SELECT 
+			COUNT(1) AS cnt
+		FROM T_BOARDCONTENTS
+		WHERE 
+			board_id = #{board_id}
+	        AND contents_id = #{contents_id}
+	        AND pass = #{pass}
+	</select>
+	
+	<!-- 게시물 삭제 -->
+	<update id="deleteBoardContents" parameterType="Map" >
+	    UPDATE T_BOARDCONTENTS
+		SET
+			del_yn = 'Y'
+		WHERE
+			board_id = #{board_id}
+			AND contents_id = #{contents_id}
+	</update>
+	
+	<!-- 게시물 재정렬 -->
+	<update id="updateBoardContentsReorder" parameterType="Map" >
+	    UPDATE T_BOARDCONTENTS
+		SET
+			restep_seq = restep_seq + 1
+		WHERE
+			board_id = #{board_id} 
+			AND ref_seq = #{ref_seq} 
+			AND restep_seq > #{restep_seq}  
+	</update>
+	
+	<!-- 조회수 증가 -->
+	<update id="updateBoardContentsHits" parameterType="Map" >
+	    UPDATE T_BOARDCONTENTS
+		SET
+			hits = hits + 1
+		WHERE
+			board_id = #{board_id} 
+			AND contents_id = #{contents_id}
+	</update>
+	
+	<!-- 게시판 설정 리스트 -->
+	<select id="selectBoardViewSortList" parameterType="Map" resultType="Map">
+  
+		SELECT
+			   view_print AS v_print
+			  , view_size AS v_size
+			  , view_sort AS v_sort
+		FROM
+		  T_BOARD
+		WHERE
+		  board_id = #{board_id} 
+	</select>
+	
+	<!-- 게시판 리스트 페이지 -->
+	<select id="selectBoardContentsPageList" parameterType="Map" resultMap="boardMap">
+	
+	select 
+	    tc.* 
+	    , ta.contents AS contents_txt
+	    , CASE WHEN (ta.contents is null or ta.contents = '' ) THEN 'N' ELSE 'Y' END AS reply_yn
+	    , tf.file_id AS file_id
+	    , tf2.file_nm AS image_file_nm
+	    , tbcate.title AS cate_nm
+	    , (SELECT COUNT(1) FROM T_BOARDCOMMENT WHERE contents_id = tc.contents_id) AS comment_cnt
+		, (SELECT ROUND(AVG(point),1) FROM T_SATISFY ts WHERE ts.contents_id = tc.contents_id) AS satisfy
+		, (SELECT COUNT(1) AS recommend FROM T_BOARDRECOMM tbr WHERE tbr.contents_id = tc.contents_id AND tbr.updown = 'Y') AS recommend
+	from 
+	(
+
+		<include refid="CommonSql.pageingTop"/>
+		
+		SELECT 
+			tbc.contents_id
+			, tbc.board_id
+			, tbc.cate_id
+			, tbc.title
+			, tbc.contents
+			, tbc.ref_seq
+			, tbc.restep_seq
+			, tbc.relevel_seq
+			, tbc.title_link
+			, tbc.name
+			, tbc.handphone
+			, tbc.sms_recv
+			, tbc.email
+			, tbc.email_recv_yn
+			, tbc.url_title
+			, tbc.url_link
+			, tbc.origin
+			, tbc.noti
+			, tbc.secret
+			, tbc.image_file_id
+			, tbc.group_id
+			, tbc.reservation
+			, tbc.pass
+			, tbc.etc1
+			, tbc.etc2
+			, tbc.etc3
+			, tbc.etc4
+			, tbc.etc5
+			, tbc.reg_userno
+			, tbc.reg_date
+			, tbc.upd_userno
+			, tbc.upd_date
+			, tbc.hits 
+			, tbc.ip_addr
+			, tbc.domestic_yn
+			, tbc.country
+			, tbc.etc
+			, tbc.contents_date
+			, tbc.cpr_use_yn
+			, tbc.cpr_cmrc_use_yn
+			, tbc.cpr_chng_use_yn
+			, tbc.charge_info
+			, (SELECT title FROM T_BOARDCATEGORY tbcate WHERE tbcate.board_id = tbc.board_id AND tbcate.cate_id = tbc.cate_id) AS cate_nm
+			, GET_DATEFORMAT(tbc.reservation_date) AS reservation_date
+		FROM T_BOARDCONTENTS tbc		
+		WHERE 
+			tbc.board_id = #{board_id}
+			AND (tbc.del_yn is null or tbc.del_yn = 'N')
+			<if test='backyn != null and !backyn.equals("B")' >
+			AND DATE_FORMAT(SYSDATE(),'%Y%m%d') <![CDATA[ >= ]]> tbc.reservation_date
+			</if>
+			<if test='domestic_yn != null and !domestic_yn.equals("")' >
+				AND tbc.domestic_yn = #{domestic_yn}
+			</if>
+			<if test='cate_id != null and !cate_id.equals("")' >
+				AND tbc.cate_id = #{cate_id}
+			</if>
+			<if test='searchtxt != null and searchkey.equals("T")' >
+				AND (UPPER(tbc.title) LIKE CONCAT('%', UPPER(#{searchtxt}), '%'))
+			</if>
+			<if test='searchtxt != null and searchkey.equals("C")' > 
+				AND (UPPER(tbc.title) LIKE CONCAT('%', UPPER(#{searchtxt}), '%') OR INSTR(tbc.contents, UPPER(#{searchtxt})) > 0 OR INSTR(tbc.contents, LOWER(#{searchtxt})) > 0 )
+			</if>
+			<if test='searchtxt != null and searchkey.equals("U")' > 
+				AND (UPPER(tbc.name) LIKE CONCAT('%', UPPER(#{searchtxt}),'%'))
+			</if>
+			<if test='reply_ststus != null and reply_ststus.equals("W")' > 
+				AND tba.contents is null
+			</if>
+			<if test='reply_ststus != null and reply_ststus.equals("S")' > 
+				AND tba.contents is not null
+			</if>
+			
+		   <include refid="CommonSql.pageingBottom"/>
+		
+	) tc
+	left outer join T_BOARDANSWER ta ON(ta.contents_id = tc.contents_id)
+	left outer join (
+	    SELECT
+		    group_id
+		    , file_id
+		FROM(
+		    SELECT
+		        group_id
+		        , file_id
+		        , (SELECT COUNT(group_id) FROM T_COMMONFILE WHERE group_id = b.group_id group by group_id) AS cnt
+	        FROM T_COMMONFILE b
+		    ) tcm
+	    WHERE cnt = 1
+		) tf ON (tc.group_id = tf.group_id)
+	LEFT OUTER JOIN t_commonfile tf2 ON (tc.image_file_id = tf2.file_id)
+	LEFT OUTER JOIN t_boardcategory tbcate ON (tc.board_id = tbcate.BOARD_ID)
+	
+	<include refid="CommonSql.orderbyBottom"/>
+	
+	</select>
+	
+	<!-- 게시판 리스트 페이지 -->
+	<select id="selectBoardContentsPageList222" parameterType="Map" resultMap="boardMap">
+		<include refid="CommonSql.pageingTop"/>
+		
+		SELECT 
+			tbc.contents_id
+			, tbc.board_id
+			, tbc.cate_id
+			, tbc.title
+			, tbc.contents
+			, tbc.ref_seq
+			, tbc.restep_seq
+			, tbc.relevel_seq
+			, tbc.title_link
+			, tbc.name
+			, tbc.handphone
+			, tbc.sms_recv
+			, tbc.email
+			, tbc.email_recv_yn
+			, tbc.url_title
+			, tbc.url_link
+			, tbc.origin
+			, tbc.noti
+			, tbc.secret
+			, tbc.image_file_id
+			, (SELECT file_nm FROM T_COMMONFILE WHERE file_id = tbc.image_file_id) AS image_file_nm
+			, tbc.group_id
+			, tbc.reservation
+			, tbc.pass
+			, tbc.etc1
+			, tbc.etc2
+			, tbc.etc3
+			, tbc.etc4
+			, tbc.etc5
+			, tbc.reg_userno
+			, tbc.reg_date
+			, tbc.upd_userno
+			, tbc.upd_date
+			, tbc.hits 
+			, tbc.ip_addr
+			, tbc.domestic_yn
+			, tbc.country
+			, tbc.etc
+			, tbc.contents_date
+			, tbc.cpr_use_yn
+			, tbc.cpr_cmrc_use_yn
+			, tbc.cpr_chng_use_yn
+			, tbc.charge_info
+			, (SELECT title FROM T_BOARDCATEGORY tbcate WHERE tbcate.board_id = tbc.board_id AND tbcate.cate_id = tbc.cate_id) AS cate_nm
+			, GET_DATEFORMAT(tbc.reservation_date) AS reservation_date
+			, tba.contents AS contents_txt 
+			, CASE 
+				WHEN (tba.contents is null or tba.contents = '' ) THEN 'N' 
+				ELSE 'Y' 
+			END reply_yn
+			, (SELECT COUNT(1) FROM T_BOARDCOMMENT WHERE contents_id = tbc.contents_id) AS comment_cnt
+			, (SELECT ROUND(AVG(point),1) FROM T_SATISFY ts WHERE ts.contents_id = tbc.contents_id) AS satisfy
+			, (SELECT COUNT(1) AS recommend FROM T_BOARDRECOMM tbr WHERE tbr.contents_id = tbc.contents_id AND tbr.updown = 'Y') AS recommend
+			, tcf.file_id
+		FROM T_BOARDCONTENTS tbc
+		LEFT OUTER JOIN T_BOARDANSWER tba 
+		ON(tba.contents_id = tbc.contents_id)
+		LEFT OUTER JOIN (
+	        SELECT 
+	            group_id
+	            , file_id
+	        FROM(
+	            SELECT 
+	                group_id
+	                , file_id
+	                , (SELECT COUNT(group_id) FROM T_COMMONFILE WHERE group_id = b.group_id group by group_id) AS cnt
+	            FROM T_COMMONFILE b
+	        ) tcm
+	        WHERE cnt = 1
+	    ) tcf
+		ON (tbc.group_id = tcf.group_id)
+		WHERE 
+			tbc.board_id = #{board_id}
+			AND (tbc.del_yn is null or tbc.del_yn = 'N')
+			<if test='backyn != null and !backyn.equals("B")' >
+			AND DATE_FORMAT(SYSDATE(),'%Y%m%d') <![CDATA[ >= ]]> tbc.reservation_date
+			</if>
+			<if test='domestic_yn != null and !domestic_yn.equals("")' >
+				AND tbc.domestic_yn = #{domestic_yn}
+			</if>
+			<if test='cate_id != null and !cate_id.equals("")' >
+				AND tbc.cate_id = #{cate_id}
+			</if>
+			<if test='searchtxt != null and searchkey.equals("T")' >
+				AND (UPPER(tbc.title) LIKE CONCAT('%', UPPER(#{searchtxt}), '%'))
+			</if>
+			<if test='searchtxt != null and searchkey.equals("C")' > 
+				AND (UPPER(tbc.title) LIKE CONCAT('%', UPPER(#{searchtxt}), '%') OR INSTR(tbc.contents, UPPER(#{searchtxt})) > 0 OR INSTR(tbc.contents, LOWER(#{searchtxt})) > 0 )
+			</if>
+			<if test='searchtxt != null and searchkey.equals("U")' > 
+				AND (UPPER(tbc.name) LIKE CONCAT('%', UPPER(#{searchtxt}),'%'))
+			</if>
+			<if test='reply_ststus != null and reply_ststus.equals("W")' > 
+				AND tba.contents is null
+			</if>
+			<if test='reply_ststus != null and reply_ststus.equals("S")' > 
+				AND tba.contents is not null
+			</if>
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<!-- 게시물 상세정보 -->
+	<select id="selectContentsDetail" parameterType="Map" resultMap="boardMap">
+		SELECT 
+			tbc.contents_id
+			, tbc.board_id
+			, tbc.cate_id
+			, tbc.title
+			, tbc.contents
+			, tbc.ref_seq
+			, tbc.restep_seq
+			, tbc.relevel_seq
+			, tbc.title_link
+			, tbc.name
+			, tbc.handphone
+			, tbc.sms_recv
+			, tbc.email
+			, tbc.email_recv_yn
+			, tbc.url_title
+			, tbc.url_link
+			, tbc.origin
+			, tbc.satisfy
+			, tbc.noti
+			, tbc.secret
+			, tbc.image_file_id
+			, (SELECT origin_file_nm FROM T_COMMONFILE WHERE file_id = tbc.image_file_id) AS image_file_nm
+			, tbc.group_id
+			, tbc.reservation
+			, tbc.pass
+			, tbc.etc1
+			, tbc.etc2
+			, tbc.etc3
+			, tbc.etc4
+			, tbc.etc5
+			, tbc.reg_userno
+			, (SELECT user_nm FROM T_USER tu WHERE tu.user_no = tbc.reg_userno) AS reg_usernm
+			, tbc.reg_date
+			, tbc.upd_userno
+			, tbc.upd_date
+			, tbc.hits 
+			, tbc.ip_addr
+			, tbc.domestic_yn
+			, tbc.country
+			, tbc.etc
+			, tbc.contents_date
+			, tbc.cpr_use_yn
+			, tbc.cpr_cmrc_use_yn
+			, tbc.cpr_chng_use_yn
+			, tbc.charge_info
+			, (SELECT title FROM T_BOARDCATEGORY tbcate WHERE tbcate.board_id = tbc.board_id AND tbcate.cate_id = tbc.cate_id) AS cate_nm
+			, GET_DATEFORMAT(reservation_date) AS reservation_date
+			, CASE 
+				WHEN (tbc.pass IS NULL OR tbc.pass = '') THEN 'N' 
+				ELSE 'Y' 
+			END pass_yn  
+			, tba.contents AS contents_txt 
+			, GET_DATEFORMAT(tba.reg_date) AS contents_date
+			, CASE 
+				WHEN (SELECT COUNT(1) FROM T_SATISFY ts WHERE ts.contents_id = tbc.contents_id AND reg_userno = #{reg_userno}) > 0 THEN 'Y' 
+				ELSE 'N' 
+			END satisfy_yn
+		FROM T_BOARDCONTENTS tbc
+		LEFT OUTER JOIN T_BOARDANSWER tba 
+		ON (tba.contents_id = tbc.contents_id)
+		WHERE
+			(tbc.del_yn is null or tbc.del_yn = 'N')
+			<if test='board_id != null and !board_id.equals("")' >
+				AND	tbc.board_id = #{board_id}
+			</if>
+				AND tbc.contents_id = #{contents_id}
+	</select>
+	
+	<!-- 게시물 이전글 다음글 -->
+	<select id="selectPreNextContents" parameterType="Map" resultType="caseMap">
+		SELECT  a.board_id
+	          , a.ref_seq
+	          , a.contents_id
+	          , a.next_id
+	          , ifnull(a.next_title,'다음글') as next_title
+	          , a.pre_id
+	          , ifnull(a.pre_title, '이전글') as pre_title
+	          , reservation_date
+			FROM ( 
+				SELECT 
+					b.board_id
+					, b.ref_seq
+					, b.contents_id
+			        , (SELECT contents_id FROM T_BOARDCONTENTS a WHERE a.board_id = b.board_id AND a.REF_SEQ <![CDATA[>]]> b.REF_SEQ AND (a.del_yn is null or a.del_yn = 'N') ORDER BY a.REF_SEQ LIMIT 1) AS next_id
+					, (SELECT title       FROM T_BOARDCONTENTS a WHERE a.board_id = b.board_id AND a.REF_SEQ <![CDATA[>]]> b.REF_SEQ AND (a.del_yn is null or a.del_yn = 'N') ORDER BY a.REF_SEQ LIMIT 1) AS  next_title
+			        , (SELECT contents_id FROM T_BOARDCONTENTS a WHERE a.board_id = b.board_id AND a.REF_SEQ <![CDATA[<]]> b.REF_SEQ AND (a.del_yn is null or a.del_yn = 'N') ORDER BY a.REF_SEQ DESC LIMIT 1) AS pre_id
+					, (SELECT title       FROM T_BOARDCONTENTS a WHERE a.board_id = b.board_id AND a.REF_SEQ <![CDATA[<]]> b.REF_SEQ AND (a.del_yn is null or a.del_yn = 'N') ORDER BY a.REF_SEQ DESC LIMIT 1) AS  pre_title
+			        , b.reservation_date
+			    FROM T_BOARDCONTENTS b
+				WHERE 
+					b.board_id = #{board_id}
+					AND b.contents_id =  #{contents_id}
+					AND (b.del_yn is null or b.del_yn = 'N')
+					AND DATE_FORMAT(SYSDATE(),'%Y%m%d') <![CDATA[>=]]> reservation_date
+	        ORDER BY b.REF_SEQ
+			) a			
+	
+	</select>
+	
+	<!-- 게시물 이전글 다음글 -->
+	<select id="selectPreNextContents222" parameterType="Map" resultType="caseMap">
+		SELECT  a.board_id
+	          , a.ref_seq
+	          , a.contents_id
+	          , a.next_id
+	          , ifnull(a.next_title,'다음글') as next_title
+	          , a.pre_id
+	          , ifnull(a.pre_title, '이전글') as pre_title
+	          , reservation_date
+			FROM ( 
+				SELECT 
+					b.board_id
+					, b.ref_seq
+					, b.contents_id
+			        , (SELECT contents_id FROM T_BOARDCONTENTS a WHERE a.board_id = b.board_id AND a.REF_SEQ <![CDATA[>]]> b.REF_SEQ AND (a.del_yn is null or a.del_yn = 'N') ORDER BY a.REF_SEQ LIMIT 1) AS next_id
+					, (SELECT title       FROM T_BOARDCONTENTS a WHERE a.board_id = b.board_id AND a.REF_SEQ <![CDATA[>]]> b.REF_SEQ AND (a.del_yn is null or a.del_yn = 'N') ORDER BY a.REF_SEQ LIMIT 1) AS  next_title
+			        , (SELECT contents_id FROM T_BOARDCONTENTS a WHERE a.board_id = b.board_id AND a.REF_SEQ <![CDATA[<]]> b.REF_SEQ AND (a.del_yn is null or a.del_yn = 'N') ORDER BY a.REF_SEQ DESC LIMIT 1) AS pre_id
+					, (SELECT title       FROM T_BOARDCONTENTS a WHERE a.board_id = b.board_id AND a.REF_SEQ <![CDATA[<]]> b.REF_SEQ AND (a.del_yn is null or a.del_yn = 'N') ORDER BY a.REF_SEQ DESC LIMIT 1) AS  pre_title
+			        , b.reservation_date
+			    FROM T_BOARDCONTENTS b
+				WHERE 
+					b.board_id = #{board_id}
+					AND (b.del_yn is null or b.del_yn = 'N')
+					AND DATE_FORMAT(SYSDATE(),'%Y%m%d') <![CDATA[>=]]> reservation_date
+	        ORDER BY b.REF_SEQ
+			) a
+			WHERE contents_id =  #{contents_id}
+	
+	</select>
+	
+	<!-- 답변 저장 -->
+	<update id="saveBoardContentsAnswer" parameterType="Map" >
+			INSERT INTO T_BOARDANSWER (
+				contents_id
+				, contents
+				, reg_userno
+				, reg_date
+			) VALUES (
+				#{contents_id}
+				, #{contents_txt}
+				, #{reg_userno}
+				, DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s')
+			)
+			ON DUPLICATE KEY 
+			UPDATE 
+				contents = #{contents_txt}
+				, reg_userno = #{reg_userno}
+				, reg_date = DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s')
+
+	</update>
+	
+	<!--  댓글 패스워드 확인 -->
+	<select id="chkComment" parameterType="Map" resultType="Integer">
+		SELECT 
+			COUNT(1) AS cnt
+		FROM T_BOARDCOMMENT
+		WHERE 
+			contents_id = #{contents_id}
+	        AND comment_id = #{comment_id}
+	        AND pass = #{pass}
+	</select>
+	
+	<!-- 댓글 리스트 -->
+	<select id="selectBoardCommentList" parameterType="Map" resultType="caseMap">
+		SELECT
+			(SELECT COUNT(comment_id) FROM T_BOARDCOMMENT a WHERE a.contents_id = b.contents_id) AS total_cnt
+		    , comment_id
+		    , contents_id
+		    , contents
+		    , grp
+		    , sort
+		    , name
+		    , CASE 
+		    	WHEN (pass IS NULL OR pass = '') THEN 'N' 
+		    	ELSE 'Y' 
+		    END pass_yn  
+		    , depth
+		    , reg_userno
+		    , GET_DATEFORMAT(reg_date) AS reg_date
+		    , CONCAT(SUBSTR(reg_date, 9,2), ':', SUBSTR(reg_date, 11,2),':',SUBSTR(reg_date, 13,2)) AS reg_time
+		FROM T_BOARDCOMMENT b
+		WHERE 
+			contents_id = #{contents_id}
+		ORDER BY grp DESC, sort ASC
+	</select>
+	
+	<!-- 댓글 저장 -->
+	<update id="saveComment" parameterType="Map" >
+		<selectKey resultType="String" keyProperty="grpw" order="BEFORE">
+        	SELECT IFNULL(MAX(grp),0)+1 FROM T_BOARDCOMMENT WHERE contents_id = #{contents_id} 
+		</selectKey>
+
+		INSERT INTO T_BOARDCOMMENT (
+			comment_id
+			, contents_id
+			, contents
+			<if test='grp != null and grp == 0' >
+			, grp
+			</if>
+			<if test='grp != null and grp != 0' >
+			, grp
+			</if>
+			, sort
+			, name
+			, pass
+			, depth
+			, reg_userno
+			, reg_date
+		) VALUES ( 
+			#{comment_id}
+			, #{contents_id}
+			, #{contents}
+			<if test='grp != null and grp == 0' >
+			, #{grpw}
+			</if>
+			<if test='grp != null and grp != 0' >
+			, #{grp}
+			</if>
+			, #{sort}
+			, #{name}
+			, #{pass}
+			, #{depth}
+			, #{reg_userno}
+			, DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s')
+		)
+	</update>
+	
+	<!-- 댓글 수정 -->
+	<update id="updateComment" parameterType="Map" >
+	    UPDATE T_BOARDCOMMENT
+		SET
+			contents = #{contents}
+			, reg_date = DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s')
+		WHERE 
+			contents_id = #{contents_id}
+			AND comment_id = #{comment_id}
+	</update>
+	
+	<!-- 댓글 삭제 -->
+	<delete id="deleteComment" parameterType="Map" >
+	 	DELETE FROM T_BOARDCOMMENT 
+		WHERE
+			contents_id = #{contents_id}
+			AND comment_id = #{comment_id}
+	</delete>
+	
+	<!-- 댓글 재정렬 -->
+	<update id="updateCommentReorder" parameterType="Map" >
+	    UPDATE  T_BOARDCOMMENT
+		SET
+			sort = sort + 1
+		WHERE  
+			contents_id = #{contents_id} 
+			AND comment_id = #{comment_id} 
+			AND grp = #{grp}
+			AND sort > #{sort}  
+	</update>
+	
+	<!-- 만족도 저장 -->
+	<update id="saveSatisfy" parameterType="Map" >
+		INSERT INTO T_SATISFY (
+			satisfy_id
+			, contents_id
+			, ip
+			, point
+			, reg_userno
+			, reg_date
+		) VALUES ( 
+			#{satisfy_id}
+			, #{contents_id}
+			, #{s_userip}
+			, #{point}
+			<if test="reg_userno == null">
+			, #{s_userip}
+			</if>
+			<if test="reg_userno != null">
+			, #{reg_userno}
+			</if>
+			, DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s')
+		)
+	</update>
+	
+	<!-- 추천 저장 -->
+	<update id="saveRecommend" parameterType="Map" >
+			INSERT  INTO T_BOARDRECOMM (
+				contents_id
+				, user_no
+				, updown
+				, reg_userno
+				, reg_date
+			) VALUES (
+				#{contents_id}
+				<if test="reg_userno == null">
+				, #{s_userip} as user_no
+				</if>
+				<if test="reg_userno != null">
+				, #{reg_userno} as user_no
+				</if>
+				, updown
+				, user_no
+				, DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s')
+			)
+			ON DUPLICATE KEY 
+			UPDATE 
+				A.updown = B.updown
+				<if test="reg_userno == null">
+				, reg_userno = #{s_userip}
+				</if>
+				<if test="reg_userno != null">
+				, reg_userno = #{reg_userno}
+				</if>
+				, reg_date = DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s')
+	</update>
+	
+	<!-- 추천 정보 -->
+	<select id="selectRecommend" parameterType="Map" resultType="caseMap">
+		SELECT
+			(SELECT COUNT(*) FROM T_BOARDRECOMM a WHERE a.contents_id = b.contents_id and a.updown = b.updown)  AS total_cnt
+			, CASE 
+	        	WHEN USER_NO = #{reg_userno} THEN 'Y' 
+	        	ELSE 'N' 
+	        END AS recommend_yn
+		FROM T_BOARDRECOMM b
+		WHERE 
+			contents_id = #{contents_id}
+	        AND updown = 'Y'
+	</select>
+	
+	<!-- 답신여부 확인 -->
+	<select id="chkSmsRecv" parameterType="Map" resultType="caseMap">
+		SELECT
+	        handphone
+		FROM T_BOARDCONTENTS
+		WHERE 
+			board_id = #{board_id} 
+			AND contents_id = #{contents_id}
+	        AND sms_recv = 'Y'
+	</select>
+	
+	<!-- 답신여부 확인 -->
+	<select id="chkEmailRecv" parameterType="Map" resultType="caseMap">
+		SELECT
+	        email
+	        , email_recv_yn
+		FROM T_BOARDCONTENTS
+		WHERE 
+			board_id = #{board_id} 
+			AND contents_id = #{contents_id}
+	        AND email_recv_yn = 'Y'
+	</select>
+	
+	<!-- 게시판 메인 출력용 게시물 -->
+	<select id="selectLoadMainBoard" parameterType="kr.or.wabis.board.vo.BoardVo" resultType="caseMap" resultMap="boardMap">
+	SELECT -- tobe BoardDao.selectLoadMainBoard 
+	            a.rownum
+				, b.contents_id
+				, b.board_id
+				, b.cate_id
+				, b.title
+				, b.contents
+				, b.ref_seq
+				, b.restep_seq
+				, b.relevel_seq
+				, b.title_link
+				, b.name
+				, b.etc
+				, b.image_file_id
+				, (SELECT file_nm FROM T_COMMONFILE WHERE file_id = b.image_file_id) AS image_file_nm
+				, GET_DATEFORMAT(b.reservation_date) AS reg_date
+	from 
+	(   
+		SELECT 
+			T.*
+		FROM (
+			SELECT 
+				tbc.contents_id
+				, tbc.board_id
+				, (@RN := @RN +1) AS ROWNUM
+			FROM T_BOARDCONTENTS tbc,
+			     (SELECT @RN := 0) vars
+			WHERE 
+				(tbc.del_yn is null or tbc.del_yn = 'N')
+				AND	tbc.board_id = #{board_id}
+				AND DATE_FORMAT(SYSDATE(),'%Y%m%d') <![CDATA[ >= ]]> tbc.reservation_date
+			<if test='domestic_yn != null and !domestic_yn.equals("")' >
+				AND tbc.domestic_yn = #{domestic_yn}
+			</if>
+				ORDER BY tbc.ref_seq DESC
+		) T
+		WHERE 
+			ROWNUM <![CDATA[ < ]]> CAST(#{size} AS UNSIGNED)+1
+	) a
+	LEFT OUTER JOIN T_BOARDCONTENTS b ON (a.board_id = b.board_id and a.contents_id = b.contents_id )
+	</select>
+	
+	<!-- 게시판 메인 출력용 게시물 -->
+	<select id="selectLoadMainBoard222" parameterType="kr.or.wabis.board.vo.BoardVo" resultType="caseMap" resultMap="boardMap">
+		SELECT 
+			T.*
+		FROM (
+			SELECT 
+				tbc.contents_id
+				, tbc.board_id
+				, tbc.cate_id
+				, tbc.title
+				, tbc.contents
+				, tbc.ref_seq
+				, tbc.restep_seq
+				, tbc.relevel_seq
+				, tbc.title_link
+				, tbc.name
+				, tbc.etc
+				, tbc.image_file_id
+				, (SELECT file_nm FROM T_COMMONFILE WHERE file_id = tbc.image_file_id) AS image_file_nm
+				, GET_DATEFORMAT(tbc.reservation_date) AS reg_date
+				, (@RN := @RN +1) AS ROWNUM
+			FROM T_BOARDCONTENTS tbc,
+			     (SELECT @RN := 0) vars
+			WHERE 
+				(tbc.del_yn is null or tbc.del_yn = 'N')
+				AND	tbc.board_id = #{board_id}
+				AND DATE_FORMAT(SYSDATE(),'%Y%m%d') <![CDATA[ >= ]]> tbc.reservation_date
+			<if test='domestic_yn != null and !domestic_yn.equals("")' >
+				AND tbc.domestic_yn = #{domestic_yn}
+			</if>
+				ORDER BY tbc.ref_seq DESC
+		) T
+		WHERE 
+			ROWNUM <![CDATA[ < ]]> CAST(#{size} AS UNSIGNED)+1
+	</select>
+
+</mapper>

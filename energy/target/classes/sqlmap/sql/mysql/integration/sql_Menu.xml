@@ -1,0 +1,788 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MenuDao">
+
+	<select id="selectMenuList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			@ROWNUM := @ROWNUM + 1 AS RNUM
+			, menu_id
+			, up_menu_id
+			, sort
+			, homepage
+			, menu_nm
+			, menu_desc
+			, image
+			, (SELECT origin_file_nm FROM T_COMMONFILE WHERE file_id = a.image) AS image_nm
+			, menu_type
+			, ref_menu
+			, (SELECT menu_nm FROM T_MENU WHERE menu_id = a.ref_menu) AS ref_menu_nm
+			, contents
+			, (SELECT title FROM T_INTROPAGE WHERE page_id = a.contents) AS contents_nm 
+			, board
+			, (SELECT title FROM T_BOARD WHERE board_id = a.board) AS board_nm
+			, url
+			, gnb_use_yn
+			, footer_use_yn
+			, sitemap_use_yn
+			, https_support_yn
+			, target_set
+			, width
+			, height
+			, top
+			, `left`
+			, use_yn
+			, reg_userno
+			, reg_date
+		FROM 
+			T_MENU a
+			, (SELECT @ROWNUM := 0) R		
+		WHERE 
+			homepage = #{homepage}
+			AND ifnull(up_menu_id,'0000000000') = ifnull(#{up_menu_id},'0000000000')
+
+	    ORDER BY sort ASC
+	</select>
+	
+	<!-- 변경후 -->
+	<select id="selectMenuTreeList" parameterType="Map" resultType="caseMap">
+	
+		SELECT 
+				SORT
+		       , ID  
+		       , CASE WHEN PARENT = '1111111111' THEN '0000000000' ELSE PARENT END as PARENT
+		       , CASE 
+		               WHEN (PARENT) ='#' THEN (SELECT CODE_NM FROM T_CODE WHERE GUBUN = 'HOMEPAGE_GB' AND CODE = M.HOMEPAGE)
+		               ELSE TEXT
+		          END AS TEXT
+		       , CASE 
+	         		WHEN M.ID = '0000000000' THEN 'default' 
+	         		WHEN M.ID = '1111111111' THEN 'default' 
+	         		WHEN (SELECT COUNT(menu_id) FROM T_MENU WHERE up_menu_id = M.ID) <![CDATA[>]]> 0 THEN 'default' 
+	         		ELSE 'file' 
+	        		END as TYPE
+		  FROM (
+		         SELECT 
+		         	0 AS LVL, '0000000000' as id, '#' as parent
+		         	, (SELECT CODE_NM FROM T_CODE WHERE GUBUN = 'HOMEPAGE_GB' AND CODE = #{homepage}) AS text
+		         	, 0 AS SORT, #{homepage} AS HOMEPAGE
+		         FROM DUAL
+		         UNION
+          		 SELECT
+					     func.level AS LVL, T.MENU_ID AS ID, T.UP_MENU_ID AS PARENT
+					     , T.MENU_NM AS TEXT
+					     , T.SORT
+			         	 , T.HOMEPAGE
+				  FROM (
+				        SELECT 
+				           get_menu() AS id, @level AS level
+				           , V.MENU_ID, V.UP_MENU_ID, V.SORT, V.MENU_NM, V.HOMEPAGE
+				          FROM
+				          <if test='homepage != null and homepage.equals("F")' >
+	
+						              (select @start_with := '0000000000', @id := @start_with, @level := 0) vars
+						  	</if>			       
+				          <if test='homepage != null and homepage.equals("B")' >
+						              (select @start_with := '1111111111', @id := @start_with, @level := 0) vars
+					      	
+						  	</if>			       
+				          JOIN V_MENU_01 V
+				          WHERE @id IS NOT NULL
+				          ) func
+				  INNER JOIN V_MENU_01 T
+				  ON func.id = T.menu_id
+		  ) M
+		  ORDER BY M.LVL ASC, M.SORT ASC
+	
+	</select>
+	
+	<!-- 변경전 -->
+	<select id="selectHomepageMenuList" parameterType="Map" resultType="caseMap">
+			SELECT
+			          V.LEVEL, V.sort, V.siblingorder
+			          , V.menu_id 
+				        , ifnull(V.up_menu_id, V.menu_id) AS up_menu_id
+				        , (SELECT COUNT(menu_id) FROM T_MENU WHERE homepage='F' AND up_menu_id = V.menu_id AND use_yn = 'Y' AND gnb_use_yn = 'Y') AS sub_cnt
+				        , V.menu_nm
+				        , V.sort
+				        , V.homepage
+				        , V.menu_desc
+				        , V.image
+				        , (SELECT origin_file_nm FROM T_COMMONFILE WHERE file_id = V.image) AS image_nm
+				        , V.menu_type
+				        , V.ref_menu
+				        , ( SELECT 
+			                    CASE 
+			                        WHEN menu_type = 'F' THEN url
+			                        WHEN menu_type = 'B' THEN CONCAT('/web/board/boardContentsListPage.do?board_id=', board)
+			                        WHEN menu_type = 'C' THEN CONCAT('/web/intropage/intropageShow.do?page_id=', contents)
+			                        ELSE V.url 
+			                    END
+			              FROM T_MENU 
+			              WHERE 
+			                    menu_id = V.ref_menu
+			            ) AS ref_menu_url
+				        , V.contents	        
+			          , V.board	        
+			          , V.url	        
+			          , V.gnb_use_yn	        
+			          , V.footer_use_yn	        
+			          , V.sitemap_use_yn
+			          , V.https_support_yn
+				        , V.target_set	        
+			          , V.width	        
+			          , V.height	        
+			          , V.top	        
+			          , V.left
+			FROM  ( 
+			        SELECT
+			             func.level, d.*, 
+			             CONCAT(lpad(func.LEVEL,3,'0'), lpad(d.sort,3,'0')) as siblingorder
+			
+			          FROM (
+			                  SELECT (case @gnb when null then get_menu() else get_menu_gnb() end )AS id, @level AS level
+			                    FROM
+			                        (select @start_with := '0000000000', @id := @start_with, @level := 0, @gnb := 'Y') vars
+			                    JOIN V_MENU_01
+			                    WHERE @id IS NOT NULL
+			                ) func
+			         INNER JOIN T_MENU d
+			         ON func.id = d.menu_id
+			      ) V
+	</select>
+	
+	<select id="selectMenu" parameterType="Map" resultType="caseMap">
+		SELECT 
+	  		A.menu_id
+			, A.up_menu_id
+			, A.sort
+			, A.homepage
+			, A.menu_nm
+			, A.menu_desc
+			, A.image
+			, (SELECT origin_file_nm FROM T_COMMONFILE WHERE file_id = A.image) AS image_nm
+			, A.menu_type
+			, A.ref_menu
+			, (SELECT menu_nm FROM T_MENU WHERE menu_id = A.ref_menu) AS ref_menu_nm
+			, A.contents
+			, (SELECT title FROM T_INTROPAGE WHERE page_id = A.contents) AS contents_nm 
+			, A.board
+			, (SELECT title FROM T_BOARD WHERE board_id = A.board) AS board_nm
+			, A.url
+			, A.gnb_use_yn
+			, A.footer_use_yn
+			, A.sitemap_use_yn
+			, A.https_support_yn
+			, A.target_set
+			, A.width
+			, A.height
+			, A.top
+			, A.left
+			, A.login_yn
+			, A.use_yn
+			, A.reg_userno
+			, A.reg_date
+    		,  LEFT( A.MENU_NAVI, LOCATE('#', A.MENU_NAVI)-1) AS topmenu_nm
+	     	, (SELECT MENU_ID FROM T_MENU WHERE HOMEPAGE=#{homepage} AND UP_MENU_ID IS NULL AND MENU_NM = LEFT( A.MENU_NAVI, LOCATE('#', A.MENU_NAVI)-1) ) AS topmenu_id
+			, A.menu_navi
+		FROM (
+		        SELECT   menu_sys_connect_by_path('#', d.menu_id) as menu_navi,
+		               func.level, d.*
+		          FROM (
+		                SELECT 
+		                       get_menu() AS id, @level AS level
+		                  FROM
+					          <if test='homepage != null and homepage.equals("F")' >
+	
+						              (select @start_with := '0000000000', @id := @start_with, @level := 0) vars
+							  </if>			       
+				          	  <if test='homepage != null and homepage.equals("B")' >
+						              (select @start_with := '1111111111', @id := @start_with, @level := 0) vars
+							  </if>			       
+		                  JOIN T_MENU
+		                  WHERE @id IS NOT NULL
+		                  ) func
+		          INNER JOIN T_MENU d
+		          ON func.id = d.menu_id
+		) A
+		WHERE A.MENU_ID =#{menu_id} 
+	</select>
+	
+	<!-- 변경전 -->
+	<select id="selectFrontMenu" parameterType="Map" resultType="caseMap">
+		SELECT 
+		  		A.menu_id
+				, A.up_menu_id
+				, A.sort
+				, A.homepage
+				, A.menu_nm
+				, A.menu_desc
+				, A.image
+				, (SELECT origin_file_nm FROM T_COMMONFILE WHERE file_id = A.image) AS image_nm
+				, A.menu_type
+				, A.ref_menu
+				, (SELECT menu_nm FROM T_MENU WHERE menu_id = A.ref_menu) AS ref_menu_nm
+				, A.contents
+				, (SELECT title FROM T_INTROPAGE WHERE page_id = A.contents) AS contents_nm 
+				, A.board
+				, (SELECT title FROM T_BOARD WHERE board_id = A.board) AS board_nm
+				, A.url
+				, A.gnb_use_yn
+				, A.footer_use_yn
+				, A.sitemap_use_yn
+				, A.https_support_yn
+				, A.target_set
+				, A.width
+				, A.height
+				, A.top
+				, A.left
+				, A.login_yn
+				, A.use_yn
+				, A.reg_userno
+				, A.reg_date
+				, A.menu_navi
+				,  LEFT( A.MENU_NAVI, LOCATE('#', A.MENU_NAVI)-1) AS topmenu_nm
+				, (SELECT MENU_ID FROM T_MENU WHERE HOMEPAGE='F' AND UP_MENU_ID IS NULL AND MENU_NM = LEFT( A.MENU_NAVI, LOCATE('#', A.MENU_NAVI)-1) ) AS topmenu_id
+		  FROM (
+		        SELECT   menu_sys_connect_by_path('#', d.menu_id) as menu_navi,
+		               func.level, d.*
+		          FROM (
+		                SELECT 
+		                       get_menu() AS id, @level AS level
+		                  FROM
+		                      (select @start_with := '0000000000', @id := @start_with, @level := 0) vars
+		                  JOIN T_MENU
+		                  WHERE @id IS NOT NULL
+		                  ) func
+		          INNER JOIN T_MENU d
+		          ON func.id = d.menu_id
+		) A
+		WHERE A.MENU_ID =#{menu_id} 
+	</select>
+	
+	<select id="selectMenuExist" parameterType="Map" resultType="integer">
+			SELECT 
+				  count(*)
+			FROM T_MENU
+			WHERE 
+			menu_id = #{menu_id}
+	</select>
+	
+	<update id="insertMenu" parameterType="Map" >
+		<selectKey resultType="String" keyProperty="sort" order="BEFORE">
+				SELECT 
+					IFNULL(MAX(sort),0)+1 
+				FROM T_MENU 
+				WHERE 
+					homepage = #{homepage} 
+			      	<if test='up_menu_id == null or up_menu_id.equals("")' >
+						AND up_menu_id IS NULL
+				  	</if>			       
+			      	<if test='up_menu_id != null and !up_menu_id.equals("")' >
+						AND IFNULL(up_menu_id,'0000000000') = #{up_menu_id}
+				  	</if>			       
+		</selectKey>
+
+		INSERT INTO T_MENU (
+			menu_id
+			, up_menu_id
+			, sort
+			, homepage
+			, menu_nm
+			, menu_desc
+			, image
+			, menu_type
+			, ref_menu
+			, contents
+			, board
+			, url
+			, gnb_use_yn
+			, footer_use_yn
+			, sitemap_use_yn
+			, https_support_yn
+			, target_set
+			, width
+			, height
+			, top
+			, `left`
+			, login_yn
+			, use_yn
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			 #{menu_id}
+			, CASE 
+				WHEN #{up_menu_id} = '0000000000' THEN NULL 
+				ELSE #{up_menu_id} 
+			END
+			, #{sort}
+			, #{homepage}
+			, #{menu_nm}
+			, #{menu_desc}
+			, #{image}
+			, #{menu_type}
+			, #{ref_menu}
+			, #{contents}
+			, #{board}
+			, #{url}
+			, #{gnb_use_yn}
+			, #{footer_use_yn}
+			, #{sitemap_use_yn}
+			, #{https_support_yn}
+			, #{target_set}
+			, #{width}
+			, #{height}
+			, #{top}
+			, #{left}
+			, #{login_yn}
+			, #{use_yn}
+			, #{s_user_no}
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+			, #{s_user_no}
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+		)
+	</update>
+	
+	<update id="updateMenu" parameterType="Map" >
+	    UPDATE T_MENU
+		SET
+			menu_nm = #{menu_nm}
+			, menu_desc = #{menu_desc}
+			, image = #{image}
+			, menu_type = #{menu_type}
+			, ref_menu = #{ref_menu}
+			, contents = #{contents}
+			, board = #{board}
+			, url = #{url}
+			, gnb_use_yn = #{gnb_use_yn}
+			, footer_use_yn = #{footer_use_yn}
+			, sitemap_use_yn = #{sitemap_use_yn}
+			, https_support_yn = #{https_support_yn}
+			, target_set = #{target_set}
+			, width = #{width}
+			, height = #{height}
+			, top = #{top}
+			, `left` = #{left}
+			, login_yn = #{login_yn}
+			, use_yn = #{use_yn}
+			, upd_userno = #{upd_userno}
+			, upd_date = #{upd_date}		
+		WHERE	
+			menu_id = #{menu_id}
+	</update>
+	
+	<delete id="deleteMenu" parameterType="Map" >
+	<!--get_menu() 펑션은 자기 자신 밑에 있는 것을만 찾아옴. 따라서 자기 자신을 구해서 UNION 해줘야 함 -->
+	 	DELETE a FROM T_MENU a, 
+			 (                  
+				SELECT MENU_ID FROM T_MENU WHERE MENU_ID = #{menu_id}
+				UNION
+				SELECT
+				       func.id AS MENUID
+				  FROM (
+				        SELECT 
+				           get_menu() AS id, @level AS level
+				          FROM
+				              (select @start_with := #{menu_id}, @id := @start_with, @level := 0) vars
+				          JOIN T_MENU
+				          WHERE @id IS NOT NULL
+				          ) func
+				  INNER JOIN T_MENU d
+				  ON func.id = d.menu_id
+             ) b    
+		WHERE 
+		 a.menu_id = b.menu_id
+	</delete>
+	
+	<delete id="deleteMenuSub" parameterType="Map" >
+	 	DELETE FROM T_MENU 
+		WHERE 
+		menu_id = #{menu_id}
+	</delete>
+	
+	<update id="updateMenuSort" parameterType="Map" >
+	    UPDATE T_MENU
+	    SET 
+	    	sort = #{sort}
+	    WHERE 
+	    	menu_id = #{menu_id}
+	</update>
+	
+	<update id="deleteMenuReorder" parameterType="Map" >
+		UPDATE T_MENU a 
+		,(SELECT SORT FROM T_MENU WHERE MENU_ID =   #{menu_id} ) b
+		SET a.sort = a.sort - 1
+		WHERE a.up_menu_id =  #{up_menu_id} 
+		AND a.sort > b.sort
+	</update>
+	
+	<!-- 변경전 관리자 화면 메뉴 트리-->
+	<select id="selectManagerMenuTreeList" parameterType="Map" resultType="caseMap">
+	   SELECT 
+			'0000000000' AS id
+			, '#' AS parent
+			, #{site_name} AS text
+			, 0 AS SORT
+			, 'N' AS AUTH_YN
+			, 0 AS LVL
+		FROM DUAL
+	  UNION	
+	  SELECT 
+			ID
+			, ifnull(PARENT, '0000000000') AS PARENT
+			, TEXT
+			, SORT
+			, AUTH_YN
+			, LVL 
+		FROM (
+			SELECT  
+					B.MENU_ID AS ID
+					, B.UP_MENU_ID AS PARENT
+					, B.MENU_NM TEXT
+					, B.SORT
+					,<![CDATA[    CASE WHEN A.AUTH_ID IS NOT NULL AND (SELECT COUNT(MENU_ID) FROM T_MENU WHERE UP_MENU_ID = B.MENU_ID) < 1 THEN 'Y' ELSE 'N' END AS AUTH_YN ]]>
+	                , LEVEL AS LVL
+ 			  FROM T_AUTHMENU A 
+    		  RIGHT OUTER JOIN (
+					              SELECT
+					                     func.level, func.id, d.menu_id, d.up_menu_id, d.Menu_nm, d.sort, d.homepage
+	    		                  FROM (
+				                          SELECT  get_menu() AS id, @level AS level,v.*
+				                            FROM
+		   		                                (select @start_with := '1111111111', @id := @start_with, @level := 0) vars
+			                              JOIN V_MENU_01 v
+		 		                          WHERE @id IS NOT NULL
+				                        ) func
+					                 INNER JOIN T_MENU d
+					                 ON func.id = d.menu_id    
+               ) B
+			   ON A.MENU_ID = B.menu_id and A.auth_id =  #{auth_id}
+			WHERE 
+				B.HOMEPAGE = 'B'
+		) X     
+		ORDER BY LVL ASC, SORT ASC 
+
+	</select>
+	
+	<update id="insertAuthMenu" parameterType="Map" >
+		INSERT INTO T_AUTHMENU (
+			auth_id
+			, menu_id
+			, reg_userno
+			, reg_date
+		) VALUES ( 
+			#{auth_id}
+			, #{menu_id}
+			, #{s_user_no}
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+		)
+	</update>
+	
+	<delete id="deleteAuthMenu" parameterType="Map" >
+	 	DELETE FROM T_AUTHMENU
+		WHERE 
+			auth_id = #{auth_id}
+	</delete>
+	
+	<select id="selectAuthTopMenuList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			B.menu_id
+	        , B.up_menu_id
+			, B.sort
+			, B.homepage
+			, B.menu_nm
+	        , B.menu_desc
+	        , B.image
+	        , (SELECT origin_file_nm FROM T_COMMONFILE WHERE file_id = B.image) AS image_nm
+	        , B.menu_type
+	        , B.ref_menu
+	        , (SELECT url FROM T_MENU WHERE menu_id = B.ref_menu) AS ref_menu_url
+	        , B.contents
+	        , B.board
+	        , B.url
+	        , B.gnb_use_yn
+	        , B.footer_use_yn
+	        , B.sitemap_use_yn
+	        , CASE 
+	        	WHEN B.menu_type = 'F' THEN (SELECT https_support_yn FROM T_MENU WHERE menu_id = B.ref_menu) 
+	          	ELSE B.https_support_yn
+			END AS https_support_yn
+	        , B.target_set
+	        , B.width
+	        , B.height
+	        , B.top
+	        , B.`left`
+		FROM T_AUTHMENU A 
+		INNER JOIN T_MENU B
+			ON A.MENU_ID = B.menu_id and A.auth_id = #{auth_id}
+		WHERE 
+			B.HOMEPAGE = 'B' 
+			AND UP_MENU_ID IS NULL 
+			AND B.USE_YN  = 'Y' 
+			AND B.GNB_USE_YN = 'Y'
+		ORDER BY SORT
+
+	</select>
+	
+	<!-- 변경전 -->
+	<select id="selectAuthSubMenuList" parameterType="Map" resultType="caseMap"> 
+	
+		SELECT 
+		        X.menu_id
+		        , X.up_menu_id
+		        , X.sort
+		        , X.homepage
+		        , X.menu_nm
+		        , X.menu_desc
+		        , X.image
+		        , (SELECT origin_file_nm FROM T_COMMONFILE WHERE file_id = X.image) as image_nm
+		        , X.menu_type
+		        , X.ref_menu
+		        , (SELECT url from T_MENU where menu_id = X.ref_menu) as ref_menu_url
+		        , X.contents
+		        , X.board
+		        , X.url
+		        , X.gnb_use_yn
+		        , X.footer_use_yn
+		        , X.sitemap_use_yn
+		        , CASE 
+		          WHEN X.menu_type = 'F' THEN (SELECT https_support_yn FROM T_MENU WHERE menu_id = X.ref_menu) 
+		            ELSE X.https_support_yn
+		          END AS https_support_yn
+		        , X.target_set
+		        , X.width
+		        , X.height
+		        , X.top
+		        , X.left
+		        , level AS lvl
+		FROM (
+					SELECT  
+		            B.*
+		 			  FROM T_AUTHMENU A 
+		    		  INNER JOIN (
+							              SELECT
+							                     func.level, func.id, 
+		                               d.*
+			    		                  FROM (
+						                          SELECT  get_menu_gnb() AS id, @level AS level,v.*
+						                            FROM
+				   		                                (select @start_with := #{menu_id}, @id := @start_with, @level := 0, @gnb := 'Y') vars
+					                              JOIN V_MENU_01 v
+				 		                          WHERE @id IS NOT NULL
+						                        ) func
+							                 INNER JOIN T_MENU d
+							                 ON func.id = d.menu_id 
+		               ) B
+					   ON A.MENU_ID = B.MENU_ID 
+		         WHERE A.auth_id =  #{auth_id}
+		           AND B.USE_YN = 'Y'
+				) X   
+		
+
+	</select>
+	
+	<select id="selectMenuSearchList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			@ROWNUM := @ROWNUM + 1 AS RNUM
+    		, menu_id
+			, up_menu_id
+			, sort
+			, homepage
+			, menu_nm
+			, menu_desc
+			, image
+			, (SELECT origin_file_nm FROM T_COMMONFILE WHERE file_id = a.image) AS image_nm
+			, menu_type
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'MENU_TYPE' AND code = a.menu_type) AS menu_type_nm
+			, ref_menu
+			, (SELECT menu_nm FROM T_MENU WHERE menu_id = a.ref_menu) AS ref_menu_nm
+			, contents
+			, board
+			, url
+			, gnb_use_yn
+			, footer_use_yn
+			, sitemap_use_yn
+			, https_support_yn
+			, target_set
+			, width
+			, height
+			, top
+			, `left`
+			, use_yn
+			, reg_userno
+			, reg_date
+		FROM 
+			T_MENU a
+			, (SELECT @ROWNUM := 0) R
+		WHERE 
+			homepage = #{homepage} 
+			AND up_menu_id is not null
+	    ORDER BY menu_nm asc
+	</select>
+	
+	<!-- 변경전 -->
+	<select id="selectSitemapList" parameterType="Map" resultType="caseMap">
+		SELECT 
+	      level AS lvl
+				, B.menu_id 
+		        , IFNULL((SELECT MENU_ID FROM T_MENU WHERE HOMEPAGE='B' AND UP_MENU_ID IS NULL AND MENU_NM = LEFT( B.MENU_NAVI, LOCATE('#', B.MENU_NAVI)-1) ),B.MENU_ID) AS UP_MENU_ID
+				, (SELECT COUNT(menu_id) FROM T_MENU WHERE homepage='B' AND up_menu_id = B.menu_id) AS sub_cnt
+				, B.menu_nm
+				, B.sort
+				, B.homepage
+				, B.menu_desc
+				, B.image
+				, (SELECT origin_file_nm FROM T_COMMONFILE WHERE file_id = B.image) AS image_nm
+				, B.menu_type
+				, B.ref_menu
+				, (
+					SELECT 
+						CASE 
+							WHEN menu_type = 'F' then url
+			                WHEN menu_type = 'B' THEN CONCAT('/web/board/boardContentsListPage.do?board_id=',board)
+			                WHEN menu_type = 'C' THEN CONCAT('/admin/intropage/intropageShow.do?page_id=',contents)
+		         	        ELSE url 
+		         		END
+					FROM T_MENU 
+					WHERE 
+						menu_id = B.ref_menu
+		         ) AS ref_menu_url
+				, B.contents
+				, B.board
+				, B.url
+				, B.gnb_use_yn
+				, B.footer_use_yn
+				, B.sitemap_use_yn
+				, B.https_support_yn
+				, B.target_set
+				, B.width
+				, B.height
+				, B.top
+				, B.left
+	  FROM T_AUTHMENU A
+	  INNER JOIN 
+	      ( SELECT
+	               func.level, menu_sys_connect_by_path('#', menu_id) as menu_navi 
+	               , d.*
+	          FROM (
+	                SELECT 
+	                   get_menu_gnb() AS id, @level AS level
+	                  FROM
+	                      (select @start_with := '1111111111', @id := @start_with, @level := 0, @gnb :='Y') vars
+	                  JOIN T_MENU
+	                  WHERE @id IS NOT NULL
+	                  ) func
+	          INNER JOIN T_MENU d
+	          ON func.id = d.menu_id
+	      ) B
+	    WHERE A.MENU_ID = B.MENU_ID
+	      AND B.homepage= #{homepage}
+	      AND B.USE_YN = 'Y'
+
+	      AND B.SITEMAP_USE_YN='Y'
+	      AND A.AUTH_ID = #{s_auth_id}
+	</select>
+	
+	<!-- 변경전 -->
+	<select id="selectFrontSitemapList" parameterType="Map" resultType="caseMap">
+	SELECT 
+		    B.ROWNUM
+		    , level AS lvl
+			, B.menu_id 
+        	, IFNULL((SELECT MENU_ID FROM T_MENU WHERE HOMEPAGE='F' AND UP_MENU_ID IS NULL AND MENU_NM = LEFT( B.MENU_NAVI, LOCATE('#', B.MENU_NAVI)-1) ),B.MENU_ID) AS UP_MENU_ID
+			, (SELECT COUNT(menu_id) FROM T_MENU WHERE homepage='F' AND up_menu_id = B.menu_id) AS sub_cnt
+			, B.menu_nm
+			, B.sort
+			, B.homepage
+			, B.menu_desc
+			, B.image
+			, (SELECT origin_file_nm FROM T_COMMONFILE WHERE file_id = B.image) AS image_nm
+			, B.menu_type
+			, B.ref_menu
+			, (
+				SELECT 
+					CASE 
+						WHEN menu_type = 'F' then url
+		                WHEN menu_type = 'B' THEN CONCAT('/web/board/boardContentsListPage.do?board_id=',board)
+		                WHEN menu_type = 'C' THEN CONCAT('/web/intropage/intropageShow.do?page_id=',contents)
+	         	        ELSE url 
+	         		END
+				FROM T_MENU 
+				WHERE 
+					menu_id = B.ref_menu
+	         ) AS ref_menu_url
+			, B.contents
+			, B.board
+			, B.url
+			, B.gnb_use_yn
+			, B.footer_use_yn
+			, B.sitemap_use_yn
+			, B.https_support_yn
+			, B.target_set
+			, B.width
+			, B.height
+			, B.top
+			, B.left
+		  FROM ( SELECT
+			             func.level, menu_sys_connect_by_path('#', menu_id) as menu_navi 
+		                ,d.*, (@RN := @RN +1) AS ROWNUM
+		          FROM (
+		                SELECT 
+		                   		get_menu_gnb() AS id, @level AS level, (@RN :=0)
+		                  FROM
+		                      (select @start_with := '0000000000', @id := @start_with, @level := 0, @gnb := 'Y') vars
+		                  JOIN T_MENU
+		                  WHERE @id IS NOT NULL
+		                  ) func
+		          INNER JOIN T_MENU d
+		          ON func.id = d.menu_id
+		      ) B
+		    WHERE 
+		          B.USE_YN = 'Y'
+		      AND B.SITEMAP_USE_YN='Y'
+		ORDER BY ROWNUM
+	</select>
+	
+	<select id="selectNaviMenuList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			@ROWNUM := @ROWNUM + 1 AS RNUM
+			, menu_id
+			, up_menu_id
+			, sort
+			, homepage
+			, menu_nm
+			, menu_desc
+			, image
+			, (SELECT origin_file_nm FROM T_COMMONFILE WHERE file_id = a.image) AS image_nm
+			, menu_type
+			, ref_menu
+			, (SELECT menu_nm FROM T_MENU WHERE menu_id = a.ref_menu) AS ref_menu_nm
+			, contents
+			, (SELECT title FROM T_INTROPAGE WHERE page_id = a.contents) AS contents_nm 
+			, board
+			, (SELECT title FROM T_BOARD WHERE board_id = a.board) AS board_nm
+			, url
+			, gnb_use_yn
+			, footer_use_yn
+			, sitemap_use_yn
+			, https_support_yn
+			, target_set
+			, width
+			, height
+			, top
+			, `left`
+			, use_yn
+			, reg_userno
+			, reg_date
+		FROM 
+			T_MENU a
+      		, (SELECT @ROWNUM := 0) R
+		WHERE 
+			homepage = #{homepage}
+		 	AND use_yn = 'Y' and gnb_use_yn = 'Y'
+			AND IFNULL(up_menu_id,'0000000000') = IFNULL(#{up_menu_id},'0000000000')
+	    ORDER BY sort asc
+	</select>
+
+</mapper>

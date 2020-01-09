@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StatsInfoPageDao">
+ 
+	<resultMap id="infopageMap" type="HashMap">
+		<result property="bs_yy" column="bs_yy" />
+		<result property="stats_info_l_cd" column="stats_info_l_cd" />
+		<result property="stats_info_l_nm" column="stats_info_l_nm" />
+		<result property="stats_info_m_cd" column="stats_info_m_cd" />
+		<result property="stats_info_m_nm" column="stats_info_m_nm" />
+		<result property="contents" column="contents" javaType="java.lang.String" jdbcType="CLOB" typeHandler="org.apache.ibatis.type.ClobTypeHandler" /> 
+		<result property="reg_userno" column="reg_userno" />
+		<result property="reg_date" column="reg_date" />
+		<result property="upd_userno" column="upd_userno" />
+		<result property="upd_date" column="upd_date" />
+	</resultMap>
+	 
+	<select id="selectStatsInfopagePageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		
+		SELECT 
+  			BS_YY
+			, stats_info_l_cd
+			, (SELECT code_nm FROM T_CODE WHERE gubun="STATS_INFO_L_CD" and code = a.stats_info_l_cd ) as stats_info_l_nm
+			, stats_info_m_cd
+			, (SELECT code_nm FROM T_CODE WHERE gubun="STATS_INFO_M_CD" and code = a.stats_info_m_cd ) as stats_info_m_nm
+			, contents
+		FROM T_STATS_INFO a
+		WHERE 
+			1 = 1  			
+		<if test='bs_yy != null and !bs_yy.equals("")' >
+	      AND BS_YY = #{bs_yy}
+		</if>
+		<if test='stats_info_l_cd != null and !stats_info_l_cd.equals("")' >
+	      AND stats_info_l_cd = #{stats_info_l_cd}
+		</if>
+				
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="selectStatsInfopage" parameterType="Map" resultMap="infopageMap">
+		SELECT 
+  			BS_YY
+			, stats_info_l_cd
+			, (SELECT code_nm FROM T_CODE WHERE gubun="STATS_INFO_L_CD" and code = a.stats_info_l_cd ) as stats_info_l_nm
+			, stats_info_m_cd
+			, (SELECT code_nm FROM T_CODE WHERE gubun="STATS_INFO_M_CD" and code = a.stats_info_m_cd ) as stats_info_m_nm
+			, contents
+		FROM T_STATS_INFO a
+		WHERE 
+			1 = 1  		
+		<if test='bs_yy != null and !bs_yy.equals("")' >
+	      AND BS_YY = #{bs_yy}
+		</if>
+		<if test='stats_info_l_cd != null and !stats_info_l_cd.equals("")' >
+	      AND stats_info_l_cd = #{stats_info_l_cd}  		
+		</if>
+		<if test='stats_info_m_cd != null and !stats_info_m_cd.equals("")' >
+	      AND stats_info_m_cd = #{stats_info_m_cd}
+		</if>
+    	ORDER BY BS_YY desc, stats_info_l_cd, stats_info_m_cd
+	</select>
+	
+	<select id="selectStatsInfopageShow" parameterType="Map" resultMap="infopageMap">
+	   SELECT 
+  			BS_YY
+			, stats_info_l_cd
+			, (SELECT code_nm FROM T_CODE WHERE gubun="STATS_INFO_L_CD" and code = a.stats_info_l_cd ) as stats_info_l_nm
+			, stats_info_m_cd
+			, (SELECT code_nm FROM T_CODE WHERE gubun="STATS_INFO_M_CD" and code = a.stats_info_m_cd ) as stats_info_m_nm
+			, contents
+		FROM T_STATS_INFO
+	    WHERE 1=1
+	      AND BS_YY = #{bs_yy}
+	      AND stats_info_l_cd = #{stats_info_l_cd}  		
+	      AND stats_info_m_cd = #{stats_info_m_cd}
+	    ORDER BY BS_YY, stats_info_m_cd, stats_info_l_cd DESC
+	    LIMIT 1
+	</select>
+	
+	<insert id="insertStatsInfopage" parameterType="Map" >
+		INSERT INTO T_STATS_INFO (
+  			BS_YY
+			, stats_info_l_cd
+			, stats_info_m_cd
+			, contents
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			#{bs_yy}	
+			, #{stats_info_l_cd}
+			, #{stats_info_m_cd}
+			, #{contents}
+			, #{s_user_no}
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+			, #{s_user_no}
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+		)
+	</insert>
+	
+	<update id="updateStatsInfopage" parameterType="Map" >
+	    UPDATE T_STATS_INFO
+		SET
+			BS_YY = #{bs_yy}
+			, stats_info_l_cd = #{stats_info_l_cd}
+			, stats_info_m_cd = #{stats_info_m_cd}
+			, contents = #{contents}
+			, upd_userno = #{s_user_no}
+			, upd_date = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')	
+		WHERE  
+	          BS_YY = #{bs_yy}
+	      AND stats_info_l_cd = #{stats_info_l_cd}  		
+	      AND stats_info_m_cd = #{stats_info_m_cd}
+	</update>
+	
+	<delete id="deleteStatsInfopage" parameterType="Map" >
+	 	DELETE FROM T_STATS_INFO 
+		WHERE 
+			1 = 1
+	      AND BS_YY = #{bs_yy}
+	      AND stats_info_l_cd = #{stats_info_l_cd}  		
+	      AND stats_info_m_cd = #{stats_info_m_cd}
+	</delete>
+
+	<select id="selectCodeGubunCodeList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			code
+			, code_nm AS codenm
+		FROM T_CODE
+		WHERE  
+			use_yn = 'Y' 
+			AND gubun = #{gubun}
+			<if test='stats_info_l_cd != null and !stats_info_l_cd.equals("")' >
+			AND code like concat(#{stats_info_l_cd}, '%')
+			</if>
+		ORDER BY sort
+	</select>
+	<select id="selectStatsInfoMCodes" parameterType="Map" resultType="caseMap">
+		SELECT 
+				c.CODE
+				, c.CODE_NM AS CODENM
+				, ifnull(t.STATS_INFO_M_CD, 'N') as YN
+				
+		FROM T_CODE c 
+		LEFT JOIN (
+		        SELECT STATS_INFO_M_CD 
+		        FROM   T_STATS_INFO 
+		        WHERE BS_YY=${bs_yy}
+				<if test='stats_info_l_cd != null and !stats_info_l_cd.equals("")' >
+				AND STATS_INFO_M_CD like concat(#{stats_info_l_cd}, '%')
+				</if>
+		     ) t
+		ON c.CODE = t.STATS_INFO_M_CD   
+		WHERE  
+				c.USE_YN = 'Y' 
+		AND 	c.GUBUN = 'STATS_INFO_M_CD'
+				<if test='stats_info_l_cd != null and !stats_info_l_cd.equals("")' >
+				AND c.CODE like concat(#{stats_info_l_cd}, '%')
+				</if>
+		AND 	t.STATS_INFO_M_CD is null
+		ORDER BY c.sort
+	</select>
+	<select id="selectStatsInfoMValues" parameterType="Map" resultType="caseMap">
+        SELECT STATS_INFO_M_CD, contents
+        FROM   T_STATS_INFO 
+        WHERE BS_YY=${bs_yy}
+		<if test='stats_info_l_cd != null and !stats_info_l_cd.equals("")' >
+		AND STATS_INFO_M_CD like concat(#{stats_info_l_cd}, '%')
+		</if>
+	</select>
+</mapper>

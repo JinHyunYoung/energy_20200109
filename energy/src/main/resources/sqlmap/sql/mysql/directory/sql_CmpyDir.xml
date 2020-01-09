@@ -1,0 +1,796 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+<PRE>
+T_기업디렉토리 정보를 관리
+</PRE>
+-->
+<mapper namespace="CmpyDirDao">    
+ 
+	<resultMap id="cmpyDirMap" type="Map">
+		<result property="dir_sn" column="dir_sn"/> 
+		<result property="biz_reg_no" column="biz_reg_no"/>   	    
+		<result property="cmpy_nm" column="cmpy_nm"/>
+		<result property="cmpy_nm_en" column="cmpy_nm_en"/>  
+		<result property="map_cn" column="map_cn" javaType="java.lang.String" jdbcType="CLOB"/>	    
+		<result property="map_cn_en" column="map_cn_en" javaType="java.lang.String" jdbcType="CLOB"/>   
+		<result property="brec_cn" column="brec_cn" javaType="java.lang.String" jdbcType="CLOB"/>	    
+		<result property="brec_cn_en" column="brec_cn_en" javaType="java.lang.String" jdbcType="CLOB"/>
+		<result property="ceo_nm" column="ceo_nm"/>
+		<result property="ceo_nm_en" column="ceo_nm_en"/>
+		<result property="inds_tp_cd" column="inds_tp_cd"/> 
+		<result property="inds_tp_cd_nm" column="inds_tp_cd_nm"/>
+		<result property="wbiz_tp_l_cd" column="wbiz_tp_l_cd"/>  
+		<result property="wbiz_tp_l_cd_nm" column="wbiz_tp_l_cd_nm"/>
+		<result property="wbiz_tp_l_cd_nm_en" column="wbiz_tp_l_cd_nm_en"/>
+		<result property="wbiz_tp_m_cd" column="wbiz_tp_m_cd"/>   
+		<result property="wbiz_tp_m_cd_nm" column="wbiz_tp_m_cd_nm"/>
+		<result property="wbiz_tp_m_cd_nm_en" column="wbiz_tp_m_cd_nm_en"/>
+		<result property="wbiz_tp_s_cd" column="wbiz_tp_s_cd"/>
+		<result property="wbiz_tp_s_cd_nm" column="wbiz_tp_s_cd_nm"/>
+		<result property="wbiz_tp_s_cd_nm_en" column="wbiz_tp_s_cd_nm_en"/>
+		<result property="exp_country" column="exp_country"/>
+		<result property="exp_country_en" column="exp_country_en"/>
+		<result property="logo_file_id" column="logo_file_id"/>
+		<result property="logo_file_nm" column="logo_file_nm"/>
+		<result property="logo_file_id_en" column="logo_file_id_en"/>
+		<result property="logo_file_nm_en" column="logo_file_nm_en"/>
+		<result property="app_dt" column="app_dt"/>
+		<result property="app_stt_cd" column="app_stt_cd"/>
+		<result property="app_stt_cd_nm" column="app_stt_cd_nm"/>
+		<result property="rjt_rsn" column="rjt_rsn"/>
+		<result property="est_yy" column="est_yy"/>
+		<result property="est_mm" column="est_mm"/>
+		<result property="ogn_frm" column="ogn_frm"/>
+		<result property="ogn_frm_nm" column="ogn_frm_nm"/>
+		<result property="lst_yn" column="lst_yn"/>
+		<result property="lst_yn_nm" column="lst_yn_nm"/>
+		<result property="co_tp_cd" column="co_tp_cd"/>
+		<result property="cp_tp_cd_nm" column="cp_tp_cd_nm"/>
+		<result property="biz_fld_tp_cd" column="biz_fld_tp_cd"/>
+		<result property="empl_cnt" column="empl_cnt"/>  
+		<result property="tel" column="tel"/>  
+		<result property="fax" column="fax"/>  
+		<result property="post" column="post"/>   	    
+		<result property="addr1" column="addr1"/>
+		<result property="addr2" column="addr2"/>   		    
+		<result property="addr1_en" column="addr1_en"/>
+		<result property="addr2_en" column="addr2_en"/>       
+		<result property="url" column="url"/>  
+		<result property="auth_no" column="auth_no"/>  
+		<result property="opn_yn" column="opn_yn"/>
+		<result property="opn_yn_nm" column="opn_yn_nm"/>
+		<result property="manager_nm" column="manager_nm"/>   
+		<result property="manager_nm_en" column="manager_nm_en"/>  
+		<result property="manager_dept" column="manager_dept"/>   
+		<result property="manager_dept_en" column="manager_dept_en"/>  
+		<result property="manager_tel" column="manager_tel"/>  
+		<result property="manager_email" column="manager_email"/>  
+		<result property="manager_opn_yn" column="manager_opn_yn"/>  
+		<result property="newsltr_rcv_yn" column="newsltr_rcv_yn"/>  
+		<result property="member_yn" column="member_yn"/>  
+		<result property="member_yn_nm" column="member_yn_nm"/>  
+		<result property="reg_userno" column="reg_userno"/>
+		<result property="reg_usernm" column="reg_usernm"/>
+		<result property="reg_date" column="reg_date"/>
+		<result property="total_cnt" column="total_cnt" />
+		<result property="rnum" column="rnum" />
+	</resultMap>
+    
+    <select id="searchCmpyDirPageList" parameterType="Map" resultMap="cmpyDirMap">
+		<include refid="CommonSql.pageingTop"/>
+		
+    	SELECT T.*, TOT.TOTAL_CNT
+		FROM (
+			<include refid="selectCmpyDirList" />	
+		) T
+		JOIN(
+			SELECT COUNT(*) AS TOTAL_CNT 
+			FROM (
+				<include refid="selectCmpyDirList" />	
+			) T
+		) TOT
+    	
+		<include refid="CommonSql.pageingBottom"/>
+    	
+    </select>
+        
+
+	<!-- 기업디렉토리 정보를 조회한다. -->
+    <sql id="selectCmpyDirList">
+    	SELECT
+    	    dir_sn    
+    	    , biz_reg_no    	    
+    	    <if test="lang == null or lang == '' or lang == 'kr' ">
+    	    , cmpy_nm
+    	    , cmpy_nm_en
+    	    , ceo_nm
+    	    , inds_tp_cd    
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'INDS_TP_CD' AND code = a.inds_tp_cd) AS inds_tp_cd_nm
+    	    , wbiz_tp_l_cd    
+			, (SELECT wbiz_clsf_nm FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'L' AND wbiz_tp_l_cd = a.wbiz_tp_l_cd) AS wbiz_tp_l_cd_nm
+    	    , wbiz_tp_m_cd    
+			, (SELECT wbiz_clsf_nm FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'M' AND wbiz_tp_m_cd = a.wbiz_tp_m_cd) AS wbiz_tp_m_cd_nm
+    	    , wbiz_tp_s_cd  
+			, (SELECT wbiz_clsf_nm FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'S' AND wbiz_tp_s_cd = a.wbiz_tp_s_cd) AS wbiz_tp_s_cd_nm
+			, exp_country
+    	    , logo_file_id  
+			, (SELECT file_nm FROM T_COMMONFILE WHERE file_id = a.logo_file_id) AS logo_file_nm
+    	    </if>
+    	    <if test="lang != null and lang != '' and lang == 'en' ">
+    	    , cmpy_nm_en AS cmpy_nm
+    	    , ceo_nm_en   
+    	    , inds_tp_cd
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'INDS_TP_CD' AND code = a.inds_tp_cd) AS inds_tp_cd_nm
+    	    , wbiz_tp_l_cd    
+			, (SELECT wbiz_clsf_nm_en FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'L' AND wbiz_tp_l_cd = a.wbiz_tp_l_cd) AS wbiz_tp_l_cd_nm
+    	    , wbiz_tp_m_cd    
+			, (SELECT wbiz_clsf_nm_en FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'M' AND wbiz_tp_m_cd = a.wbiz_tp_m_cd) AS wbiz_tp_m_cd_nm
+    	    , wbiz_tp_s_cd  
+			, (SELECT wbiz_clsf_nm_en FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'S' AND wbiz_tp_s_cd = a.wbiz_tp_s_cd) AS wbiz_tp_s_cd_nm
+			, exp_country_en
+    	    , logo_file_id_en AS logo_file_id 
+			, (SELECT file_nm FROM T_COMMONFILE WHERE file_id = a.logo_file_id_en) AS logo_file_nm
+    	    </if>
+    	    , DATE_FORMAT( app_dt , '%Y-%m-%d' ) AS app_dt 
+    	    , app_stt_cd    
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'APP_STT_CD' AND code = a.app_stt_cd) AS app_stt_cd_nm
+    	    , ogn_frm    
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'OGN_FRM' AND code = a.ogn_frm) AS ogn_frm_nm
+    	    , co_tp_cd    
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'CO_TP_CD' AND code = a.co_tp_cd) AS cp_tp_cd_nm
+    	    , biz_fld_tp_cd 
+    	    , opn_yn    
+    	    , lst_yn    
+    	    , rjt_rsn  
+    	    , manager_nm
+    	    , manager_email  
+    	    , member_yn
+    	    , (SELECT code_nm FROM T_CODE WHERE gubun = 'MEMBER_YN' AND code = a.member_yn) AS member_yn_nm    	    
+    	FROM T_CMPY_DIR a
+    	<trim prefix="WHERE" prefixOverrides="AND | OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	    <if test="co_tp_cd != null and co_tp_cd != '' ">
+    	        AND co_tp_cd = #{co_tp_cd}    
+    	    </if>
+    	    <if test="inds_tp_cd != null and inds_tp_cd != '' ">
+    	        AND inds_tp_cd = #{inds_tp_cd}    
+    	    </if>
+    	    <if test="wbiz_tp_l_cd != null and wbiz_tp_l_cd != '' ">
+    	        AND wbiz_tp_l_cd = #{wbiz_tp_l_cd}    
+    	    </if>
+    	    <if test="wbiz_tp_m_cd != null and wbiz_tp_m_cd != '' ">
+    	        AND wbiz_tp_m_cd = #{wbiz_tp_m_cd}    
+    	    </if>
+    	    <if test="wbiz_tp_s_cd != null and wbiz_tp_s_cd != '' ">
+    	        AND wbiz_tp_s_cd = #{wbiz_tp_s_cd}    
+    	    </if>
+    	    <if test="ogn_frm != null and ogn_frm != '' ">
+    	        AND ogn_frm = #{ogn_frm}    
+    	    </if>
+    	    <if test="app_stt_cd != null and app_stt_cd != '' ">
+    	        AND app_stt_cd = #{app_stt_cd}    
+    	    </if>
+    	    <if test="opn_yn != null and opn_yn != '' ">
+    	        AND opn_yn = #{opn_yn}    
+    	    </if>
+    	    <if test="member_yn != null and member_yn != '' ">
+    	        AND member_yn = #{member_yn}    
+    	    </if>
+    	    <if test="cmpy_nm != null and cmpy_nm != '' and lang == 'kr'">
+    	        AND cmpy_nm LIKE CONCAT('%', UPPER(#{cmpy_nm}), '%')    
+    	    </if>
+    	    <if test="cmpy_nm != null and cmpy_nm != '' and lang == 'en'">
+    	        AND cmpy_nm_en LIKE CONCAT('%', UPPER(#{cmpy_nm}), '%')   
+    	    </if>
+    	    <if test="searchCondition != null and searchCondition == 'cmpy_nm' and searchText != null and searchText != '' ">
+    	        AND cmpy_nm LIKE CONCAT('%', UPPER(#{searchText}), '%')  
+    	    </if>
+    	    <if test="searchCondition != null and searchCondition == 'cmpy_nm_en' and searchText != null and searchText != '' ">
+    	        AND cmpy_nm_en LIKE CONCAT('%', UPPER(#{searchText}), '%')  
+    	    </if>
+    	    <if test="searchCondition != null and searchCondition == 'biz_reg_no' and searchText != null and searchText != '' ">
+    	        AND biz_reg_no LIKE CONCAT('%', UPPER(#{searchText}), '%')  
+    	    </if>
+    	    <if test="searchCondition != null and searchCondition == 'ceo_nm' and searchText != null and searchText != '' ">
+    	        AND ceo_nm LIKE CONCAT('%', UPPER(#{searchText}), '%') 
+    	    </if>
+    	    <if test="searchCondition != null and searchCondition == 'ceo_nm_en' and searchText != null and searchText != '' ">
+    	        AND ceo_nm_en LIKE CONCAT('%', UPPER(#{searchText}), '%')
+    	    </if>
+    	</trim>
+    
+    </sql>
+    
+    <!--
+        기업디렉토리 정보를 조회한다.
+    -->
+    <select id="selectCmpyDirListExcel" parameterType="Map" resultMap="cmpyDirMap">
+    	SELECT
+    	        	    dir_sn    
+    	    , biz_reg_no     	    
+    	    , cmpy_nm  
+    	    , cmpy_nm_en
+    	    , ceo_nm    
+    	    , ceo_nm_en   
+    	    , addr1    
+    	    , addr2    
+    	    , addr1_en 
+    	    , addr2_en
+    	    , inds_tp_cd    
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'INDS_TP_CD' AND code = a.inds_tp_cd) AS inds_tp_cd_nm
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'INDS_TP_CD_EN' AND code = a.inds_tp_cd) AS inds_tp_cd_nm_en
+    	    , wbiz_tp_l_cd    
+			, (SELECT wbiz_clsf_nm FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'L' AND wbiz_tp_l_cd = a.wbiz_tp_l_cd) AS wbiz_tp_l_cd_nm
+			, (SELECT wbiz_clsf_nm_en FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'L' AND wbiz_tp_l_cd = a.wbiz_tp_l_cd) AS wbiz_tp_l_cd_nm_en
+    	    , wbiz_tp_m_cd    
+			, (SELECT wbiz_clsf_nm FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'M' AND wbiz_tp_m_cd = a.wbiz_tp_m_cd) AS wbiz_tp_m_cd_nm
+			, (SELECT wbiz_clsf_nm_en FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'M' AND wbiz_tp_m_cd = a.wbiz_tp_m_cd) AS wbiz_tp_m_cd_nm_en
+    	    , wbiz_tp_s_cd  
+			, (SELECT wbiz_clsf_nm FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'S' AND wbiz_tp_s_cd = a.wbiz_tp_s_cd) AS wbiz_tp_s_cd_nm
+			, (SELECT wbiz_clsf_nm_en FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'S' AND wbiz_tp_s_cd = a.wbiz_tp_s_cd) AS wbiz_tp_s_cd_nm_en
+    	    , app_dt
+    	    , app_stt_cd
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'APP_STT_CD' AND code = a.app_stt_cd) AS app_stt_cd_nm
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'APP_STT_CD_EN' AND code = a.app_stt_cd) AS app_stt_cd_nm_en
+    	    , rjt_rsn    
+    	    , est_yy   
+    	    , est_mm     
+    	    , ogn_frm    
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'OGN_FRM' AND code = a.ogn_frm) AS ogn_frm_nm
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'OGN_FRM_EN' AND code = a.ogn_frm) AS ogn_frm_nm_en
+    	    , lst_yn    
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'LST_YN' AND code = a.lst_yn) AS lst_yn_nm
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'LST_YN_EN' AND code = a.lst_yn) AS lst_yn_nm_en
+    	    , co_tp_cd    
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'CO_TP_CD' AND code = a.co_tp_cd) AS cp_tp_cd_nm
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'CO_TP_CD_EN' AND code = a.co_tp_cd) AS cp_tp_cd_nm_en
+    	    , biz_fld_tp_cd  
+    	    , empl_cnt    
+    	    , tel    
+    	    , fax    
+    	    , post     
+    	    , url    
+    	    , opn_yn       
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'OPN_YN' AND code = a.opn_yn) AS opn_yn_nm
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'OPN_YN_EN' AND code = a.opn_yn) AS opn_yn_nm_en
+			, member_yn
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'MEMBER_YN' AND code = a.member_yn) AS member_yn_nm
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'MEMBER_YN_EN' AND code = a.member_yn) AS member_yn_nm_en
+    	FROM T_CMPY_DIR a
+    	<trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	    <if test="co_tp_cd != null and co_tp_cd != '' ">
+    	        AND co_tp_cd = #{co_tp_cd}    
+    	    </if>
+    	    <if test="inds_tp_cd != null and inds_tp_cd != '' ">
+    	        AND inds_tp_cd = #{inds_tp_cd}    
+    	    </if>
+    	    <if test="wbiz_tp_l_cd != null and wbiz_tp_l_cd != '' ">
+    	        AND wbiz_tp_l_cd = #{wbiz_tp_l_cd}    
+    	    </if>
+    	    <if test="wbiz_tp_m_cd != null and wbiz_tp_m_cd != '' ">
+    	        AND wbiz_tp_m_cd = #{wbiz_tp_m_cd}    
+    	    </if>
+    	    <if test="wbiz_tp_s_cd != null and wbiz_tp_s_cd != '' ">
+    	        AND wbiz_tp_s_cd = #{wbiz_tp_s_cd}    
+    	    </if>
+    	    <if test="ogn_frm != null and ogn_frm != '' ">
+    	        AND ogn_frm = #{ogn_frm}    
+    	    </if>
+    	    <if test="app_stt_cd != null and app_stt_cd != '' ">
+    	        AND app_stt_cd = #{app_stt_cd}    
+    	    </if>
+    	    <if test="opn_yn != null and opn_yn != '' ">
+    	        AND opn_yn = #{opn_yn}    
+    	    </if>
+    	    <if test="cmpy_nm != null and cmpy_nm != '' and lang == 'kr'">
+    	        AND cmpy_nm LIKE CONCAT('%', UPPER(#{cmpy_nm}), '%')    
+    	    </if>
+    	    <if test="cmpy_nm != null and cmpy_nm != '' and lang == 'en'">
+    	        AND cmpy_nm_en LIKE CONCAT('%', UPPER(#{cmpy_nm}), '%')   
+    	    </if>
+    	    <if test="searchCondition != null and searchCondition == 'cmpy_nm' and searchText != null and searchText != '' ">
+    	        AND cmpy_nm LIKE CONCAT('%', UPPER(#{searchText}), '%')  
+    	    </if>
+    	    <if test="searchCondition != null and searchCondition == 'cmpy_nm_en' and searchText != null and searchText != '' ">
+    	        AND cmpy_nm_en LIKE CONCAT('%', UPPER(#{searchText}), '%')  
+    	    </if>
+    	    <if test="searchCondition != null and searchCondition == 'biz_reg_no' and searchText != null and searchText != '' ">
+    	        AND biz_reg_no LIKE CONCAT('%', UPPER(#{searchText}), '%')  
+    	    </if>
+    	    <if test="searchCondition != null and searchCondition == 'ceo_nm' and searchText != null and searchText != '' ">
+    	        AND ceo_nm LIKE CONCAT('%', UPPER(#{searchText}), '%') 
+    	    </if>
+    	    <if test="searchCondition != null and searchCondition == 'ceo_nm_en' and searchText != null and searchText != '' ">
+    	        AND ceo_nm_en LIKE CONCAT('%', UPPER(#{searchText}), '%')
+    	    </if>
+    	</trim>
+    </select>
+    
+    <!--
+        기업디렉토리 정보를 상세조회한다.
+    -->
+    <select id="selectCmpyDir" parameterType="Map" resultMap="cmpyDirMap">
+    	SELECT
+    	    dir_sn    
+    	    , biz_reg_no     	    
+    	    , cmpy_nm  
+    	    , cmpy_nm_en
+    	    , ceo_nm    
+    	    , ceo_nm_en   
+    	    , addr1    
+    	    , addr2    
+    	    , addr1_en 
+    	    , addr2_en
+    	    , map_cn 
+    	    , map_cn_en
+    	    , brec_cn 
+    	    , brec_cn_en
+    	    , inds_tp_cd    
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'INDS_TP_CD' AND code = a.inds_tp_cd) AS inds_tp_cd_nm
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'INDS_TP_CD_EN' AND code = a.inds_tp_cd) AS inds_tp_cd_nm_en
+    	    , wbiz_tp_l_cd    
+			, (SELECT wbiz_clsf_nm FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'L' AND wbiz_tp_l_cd = a.wbiz_tp_l_cd) AS wbiz_tp_l_cd_nm
+			, (SELECT wbiz_clsf_nm_en FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'L' AND wbiz_tp_l_cd = a.wbiz_tp_l_cd) AS wbiz_tp_l_cd_nm_en
+    	    , wbiz_tp_m_cd    
+			, (SELECT wbiz_clsf_nm FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'M' AND wbiz_tp_m_cd = a.wbiz_tp_m_cd) AS wbiz_tp_m_cd_nm
+			, (SELECT wbiz_clsf_nm_en FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'M' AND wbiz_tp_m_cd = a.wbiz_tp_m_cd) AS wbiz_tp_m_cd_nm_en
+    	    , wbiz_tp_s_cd  
+			, (SELECT wbiz_clsf_nm FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'S' AND wbiz_tp_s_cd = a.wbiz_tp_s_cd) AS wbiz_tp_s_cd_nm
+			, (SELECT wbiz_clsf_nm_en FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'S' AND wbiz_tp_s_cd = a.wbiz_tp_s_cd) AS wbiz_tp_s_cd_nm_en
+			, exp_country
+			, exp_country_en
+    	    , logo_file_id  
+			, (SELECT file_nm FROM T_COMMONFILE WHERE file_id = a.logo_file_id) AS logo_file_nm
+			 , logo_file_id_en
+			, (SELECT file_nm FROM T_COMMONFILE WHERE file_id = a.logo_file_id_en) AS logo_file_nm_en
+    	    , app_dt
+    	    , app_stt_cd
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'APP_STT_CD' AND code = a.app_stt_cd) AS app_stt_cd_nm
+    	    , rjt_rsn    
+    	    , est_yy   
+    	    , est_mm     
+    	    , ogn_frm    
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'OGN_FRM' AND code = a.ogn_frm) AS ogn_frm_nm
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'OGN_FRM_EN' AND code = a.ogn_frm) AS ogn_frm_nm_en
+    	    , lst_yn    
+    	    , co_tp_cd    
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'CO_TP_CD' AND code = a.co_tp_cd) AS cp_tp_cd_nm
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'CO_TP_CD_EN' AND code = a.co_tp_cd) AS cp_tp_cd_nm_en
+    	    , biz_fld_tp_cd  
+    	    , empl_cnt    
+    	    , tel    
+    	    , fax    
+    	    , post     
+    	    , url        
+    	    , auth_no    
+    	    , member_yn
+    	    , (SELECT code_nm FROM T_CODE WHERE gubun = 'MEMBER_YN' AND code = a.member_yn) AS member_yn_nm
+    	    , manager_nm   
+    	    , manager_tel    
+    	    , manager_email   
+    	    , manager_dept  
+    	    , opn_yn        
+    	    , newsltr_rcv_yn
+    	    , reg_userno    
+    	    , reg_date    
+    	    , upd_userno    
+    	    , upd_date   
+    	FROM T_CMPY_DIR a
+    	<trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	</trim>
+    </select>
+    
+    <!--
+        기업디렉토리 정보를 중복확인 한다.
+    -->
+    <select id="checkCmpyDir" parameterType="Map" resultMap="cmpyDirMap">
+    	SELECT
+    	    dir_sn    
+    	    , biz_reg_no     	    
+    	    , cmpy_nm  
+    	    , ceo_nm
+    	    , auth_no
+    	    , app_stt_cd
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'APP_STT_CD' AND code = a.app_stt_cd) AS app_stt_cd_nm
+    	    , rjt_rsn    
+    	FROM T_CMPY_DIR a
+<!--     		biz_reg_no = #{biz_reg_no}   -->
+    	<trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <if test="biz_reg_no != null and biz_reg_no != '' ">
+                AND biz_reg_no = #{biz_reg_no}    
+            </if>
+            <if test="cmpy_nm != null and cmpy_nm != '' ">
+                AND cmpy_nm = #{cmpy_nm}    
+            </if>
+            <if test="ceo_nm != null and ceo_nm != '' ">
+                AND ceo_nm = #{ceo_nm}    
+            </if>
+		</trim>
+		ORDER BY reg_date DESC
+    	LIMIT 1
+    </select>
+    
+    <!--
+        기업디렉토리 정보를 중복확인 한다.
+    -->
+    <select id="checkCmpyDirAuth" parameterType="Map" resultMap="cmpyDirMap">
+    	SELECT
+    	    dir_sn    
+    	    , biz_reg_no     	    
+    	    , cmpy_nm  
+    	    , ceo_nm
+    	    , auth_no
+    	    , app_stt_cd
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'APP_STT_CD' AND code = a.app_stt_cd) AS app_stt_cd_nm
+    	    , rjt_rsn    
+    	FROM T_CMPY_DIR a
+    	WHERE
+    		dir_sn = #{dir_sn}
+    		AND auth_no = #{auth_no}
+    </select>
+    
+    <!--
+         기업디렉토리 정보를 등록한다.
+    -->
+    <insert id="insertCmpyDir" parameterType="Map">
+    	INSERT INTO T_CMPY_DIR (
+    	    dir_sn    
+    	    , cmpy_nm  
+    	    , cmpy_nm_en
+    	    , biz_reg_no   
+    	    , ceo_nm    
+    	    , ceo_nm_en
+    	    , co_tp_cd 
+    	    , inds_tp_cd   
+    	    , url      
+    	    , tel    
+    	    , fax  
+    	    , post        
+    	    , addr1    
+    	    , addr2   
+    	    , manager_nm   
+    	    , manager_tel    
+    	    , manager_email   
+    	    , manager_dept  
+    	    , manager_opn_yn        
+    	    , newsltr_rcv_yn        
+    	    , member_yn        
+    	    , app_dt 	
+    	    , app_stt_cd  
+    	    , auth_no
+    	    , reg_userno    
+    	    , reg_date    
+    	    , upd_userno    
+    	    , upd_date    
+    	) VALUES (
+    	    ( SELECT * FROM ( SELECT IFNULL(MAX(CAST(dir_sn AS UNSIGNED)),0)+1 FROM T_CMPY_DIR ) AS t )
+    	    , #{cmpy_nm}  
+    	    , #{cmpy_nm_en}
+    	    , #{biz_reg_no}   
+    	    , #{ceo_nm}    
+    	    , #{ceo_nm_en}
+    	    , #{co_tp_cd}   
+    	    , #{inds_tp_cd}    
+    	    , #{url}      
+    	    , #{tel}    
+    	    , #{fax}  
+    	    , #{post}        
+    	    , #{addr1}    
+    	    , #{addr2}   
+    	    , #{manager_nm}   
+    	    , #{manager_tel}    
+    	    , #{manager_email}   
+    	    , #{manager_dept}  
+    	    , #{manager_opn_yn}       
+    	    , #{newsltr_rcv_yn}       
+    	    , 'N'
+    	    , DATE_FORMAT(SYSDATE(), '%Y%m%d')
+    	    , '1'   
+    	    , #{auth_no}     
+    	    , #{reg_userno}    
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    , #{reg_userno}    
+    	    , DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	)
+    	
+    </insert>
+       
+    
+    <!--
+         기업디렉토리 정보를 수정한다.
+    -->
+    <update id="updateCmpyDirForMake" parameterType="Map">
+    	UPDATE T_CMPY_DIR
+    	    <trim prefix="SET" prefixOverrides=", "> 
+    	    cmpy_nm = #{cmpy_nm}  
+    	    , cmpy_nm_en = #{cmpy_nm_en}
+    	    , biz_reg_no = #{biz_reg_no}   
+    	    , ceo_nm = #{ceo_nm}    
+    	    , ceo_nm_en = #{ceo_nm_en}
+    	    , co_tp_cd = #{co_tp_cd}
+    	    , inds_tp_cd = #{inds_tp_cd}       
+    	    , url = #{url}      
+    	    , tel = #{tel}    
+    	    , fax = #{fax}  
+    	    , post = #{post}        
+    	    , addr1 = #{addr1}    
+    	    , addr2 = #{addr2}   
+    	    , manager_nm = #{manager_nm}   
+    	    , manager_tel = #{manager_tel}    
+    	    , manager_email = #{manager_email}   
+    	    , manager_dept = #{manager_dept}  
+    	    , manager_opn_yn = #{manager_opn_yn}        
+    	    , newsltr_rcv_yn = #{newsltr_rcv_yn} 
+    	    , app_dt = DATE_FORMAT(SYSDATE(), '%Y%m%d')
+    	    , app_stt_cd = '1' 
+    	    , rjt_rsn = ''
+    	    , upd_userno = #{reg_userno}        
+    	    , upd_date = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    </trim>
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	            <if test="dir_sn != null and dir_sn != '' ">
+    	                AND dir_sn = #{dir_sn}    
+    	            </if>
+    	    </trim>
+    	
+    </update>
+    
+    <!--
+	기업디렉토리 정보를 수정한다.
+    -->
+    <update id="updateCmpyDir" parameterType="Map">
+    	UPDATE T_CMPY_DIR
+    	    <trim prefix="SET" prefixOverrides=", "> 
+    	    , cmpy_nm = #{cmpy_nm}  
+    	    , cmpy_nm_en = #{cmpy_nm_en}
+    	    <if test="biz_reg_no != null">, biz_reg_no = #{biz_reg_no} </if>
+    	    , ceo_nm = #{ceo_nm}     
+    	    , ceo_nm_en = #{ceo_nm_en}
+    	    , est_yy = #{est_yy}        
+    	    , est_mm = #{est_mm}     
+    	    , ogn_frm = #{ogn_frm}       
+    	    <if test="lst_yn != null">, lst_yn = #{lst_yn} </if>   
+    	    , co_tp_cd = #{co_tp_cd}    
+    	    <if test="logo_file_id != null">, logo_file_id = #{logo_file_id} </if>
+    	    <if test="logo_file_id_en != null">, logo_file_id_en = #{logo_file_id_en} </if>
+    	    , biz_fld_tp_cd = #{biz_fld_tp_cd}        
+    	    , inds_tp_cd = #{inds_tp_cd}        
+    	    , wbiz_tp_l_cd = #{wbiz_tp_l_cd}        
+    	    , wbiz_tp_m_cd = #{wbiz_tp_m_cd}        
+    	    , wbiz_tp_s_cd = #{wbiz_tp_s_cd}          
+    	    , empl_cnt = #{empl_cnt}  
+    	    , url = #{url}                
+    	    , tel = #{tel}        
+    	    , fax = #{fax}        
+    	    , post = #{post}                     
+    	    , addr1 = #{addr1}    
+    	    , addr2 = #{addr2}   
+    	    , addr1_en = #{addr1_en}
+    	    , addr2_en = #{addr2_en}  
+    	    <if test="auth_no != null">, auth_no = #{auth_no} </if>
+    	    , opn_yn = #{opn_yn}
+    	    , upd_userno = #{reg_userno}        
+    	    , upd_date = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    </trim>
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	            <if test="dir_sn != null and dir_sn != '' ">
+    	                AND dir_sn = #{dir_sn}    
+    	            </if>
+    	    </trim>
+    	
+    </update>
+    
+    <!--
+	기업디렉토리 정보를 수정한다.
+    -->
+    <update id="updateCmpyDirExpCountry" parameterType="Map">
+    	UPDATE T_CMPY_DIR
+    	    <trim prefix="SET" prefixOverrides=", "> 
+    	    , exp_country = #{exp_country}  
+    	    , exp_country_en = #{exp_country_en}
+    	    , upd_userno = #{reg_userno}        
+    	    , upd_date = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    </trim>
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	            <if test="dir_sn != null and dir_sn != '' ">
+    	                AND dir_sn = #{dir_sn}    
+    	            </if>
+    	    </trim>
+    </update>
+    
+    <!--
+	기업디렉토리 정보를 조회한다.
+    -->
+    <select id="selectCmpyDirExpCountry" parameterType="Map" resultType="caseMap">
+    	SELECT
+    	    dir_sn    
+    	    , exp_country
+			, exp_country_en
+    	FROM T_CMPY_DIR
+    	<trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	</trim>
+    </select>
+    
+    <!--
+	기업디렉토리 정보를 삭제한다.
+    -->
+    <delete id="deleteCmpyDir" parameterType="Map">
+    	DELETE FROM T_CMPY_DIR
+    	WHERE
+    		dir_sn = #{dir_sn}
+    </delete>
+            
+    <!--
+	기업디렉토리 정보의 회원여부를 수정한다..
+    -->
+    <update id="updateMember" parameterType="Map">
+    	UPDATE T_CMPY_DIR
+    	SET
+    	    member_yn = #{member_yn} 
+    	WHERE
+    		dir_sn = #{dir_sn}
+    </update>
+            
+    <!--
+	기업디렉토리를 승인 한다.
+    -->
+    <update id="approveCmpyDir" parameterType="Map">
+    	UPDATE T_CMPY_DIR 
+    	SET
+    	    app_stt_cd = #{app_stt_cd}
+    	    <if test="auth_no != null and auth_no != '' "> 
+    	    	, auth_no = #{auth_no}
+    	    </if>
+    	WHERE
+    		dir_sn = #{dir_sn}
+    </update>
+            
+    <!--
+	기업디렉토리를 반려 한다.
+    -->
+    <update id="rejectCmpyDir" parameterType="Map">
+    	UPDATE T_CMPY_DIR
+    	SET
+    	    app_stt_cd = #{app_stt_cd} 
+    	    , rjt_rsn = #{rjt_rsn}
+    	WHERE
+    		dir_sn = #{dir_sn}
+    </update>
+    
+    <!--
+        담당자 정보 상세조회한다.
+    -->
+    <select id="selectCmpyDirManager" parameterType="Map" resultType="caseMap">
+    	
+    	SELECT
+    	    dir_sn    
+    	    , biz_reg_no   
+    	    , manager_nm   
+    	    , manager_dept  
+    	    , manager_nm_en
+    	    , manager_dept_en
+    	    , manager_tel    
+    	    , manager_email    
+    	    , manager_opn_yn    
+    	    , newsltr_rcv_yn    
+    	    , reg_userno    
+    	    , reg_date    
+    	    , upd_userno    
+    	    , upd_date    
+    	FROM T_CMPY_DIR
+    	<trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	</trim>
+    	
+    </select>
+    
+    <!--
+	담당자 정보를 수정한다.
+    -->
+    <update id="updateCmpyDirManager" parameterType="Map">
+    	UPDATE T_CMPY_DIR
+    	    <trim prefix="SET" prefixOverrides=", ">
+    	    , manager_nm = #{manager_nm}        
+    	    , manager_dept = #{manager_dept}     
+    	    , manager_nm_en = #{manager_nm_en}    
+    	    , manager_dept_en = #{manager_dept_en} 
+    	    , manager_tel = #{manager_tel}        
+    	    , manager_email = #{manager_email}           
+    	    , manager_opn_yn = #{manager_opn_yn}    
+    	    , newsltr_rcv_yn = #{newsltr_rcv_yn}     
+    	    </trim>
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	            <if test="dir_sn != null and dir_sn != '' ">
+    	                AND dir_sn = #{dir_sn}    
+    	            </if>
+    	    </trim>
+    	
+    </update>
+    
+   <!--
+       찾아오는길 정보 상세조회한다.
+    -->
+    <select id="selectCmpyDirMap" parameterType="Map" resultType="caseMap">
+    	SELECT
+    	    dir_sn     
+    	    , map_cn                   
+    	    , map_cn_en
+    	FROM T_CMPY_DIR
+    	<trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	</trim>
+    	
+    </select>
+    
+    <!--
+	찾아오시는길 수정한다.
+    -->
+    <update id="updateCmpyDirMap" parameterType="Map">
+    	UPDATE T_CMPY_DIR
+    	    <trim prefix="SET" prefixOverrides=", ">
+    	    , map_cn = #{map_cn}    
+    	    , map_cn_en = #{map_cn_en}  
+    	    </trim>
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	            <if test="dir_sn != null and dir_sn != '' ">
+    	                AND dir_sn = #{dir_sn}    
+    	            </if>
+    	    </trim>
+    	
+    </update>
+    
+    
+    
+   <!--
+       실적정보 정보 상세조회한다.
+    -->
+    <select id="selectCmpyDirBrec" parameterType="Map" resultType="caseMap">
+    	SELECT
+    	    dir_sn    
+    	    , brec_cn                 
+    	    , brec_cn_en
+    	FROM T_CMPY_DIR
+    	<trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	</trim>
+    	
+    </select>
+    
+    <!--
+	실적정보 수정한다.
+    -->
+    <update id="updateCmpyDirBrec" parameterType="Map">
+    	UPDATE T_CMPY_DIR
+    	    <trim prefix="SET" prefixOverrides=", ">
+    	    , brec_cn = #{brec_cn}    
+    	    , brec_cn_en = #{brec_cn_en}  
+    	    </trim>
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	            <if test="dir_sn != null and dir_sn != '' ">
+    	                AND dir_sn = #{dir_sn}    
+    	            </if>
+    	    </trim>
+    	
+    </update>
+    
+    
+</mapper>
+    

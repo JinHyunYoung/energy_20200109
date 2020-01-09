@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CategoryDao">
+
+	 <resultMap id="categoryMap" type="Map">
+	 
+	 	<result property="wbix_clsf_sn" column="wbix_clsf_sn" />
+	 	<result property="inds_tp_cd" column="inds_tp_cd" />
+		<result property="wbiz_tp_l_cd" column="wbiz_tp_l_cd" />
+		<result property="wbiz_tp_m_cd" column="wbiz_tp_m_cd" />
+		<result property="wbiz_tp_s_cd" column="wbiz_tp_s_cd" />
+		<result property="wbiz_cd_tp" column="wbiz_cd_tp" />
+		<result property="wbiz_clsf_kr_nm" column="wbiz_clsf_kr_nm" />
+		<result property="wbiz_clsf_en_nm" column="wbiz_clsf_en_nm" />
+		<result property="use_yn" column="use_yn" />
+		<result property="reg_userno" column="reg_userno" />
+		<result property="reg_date" column="reg_date" />
+		<result property="upd_userno" column="upd_userno" />
+		<result property="upd_date" column="upd_date" />		
+		<result property="code_nm" column="code_nm" />
+		
+	</resultMap>
+	
+	<select id="selectCategoryList" parameterType="Map" resultMap="categoryMap">
+		SELECT 
+			a.wbix_clsf_sn
+	   		, a.inds_tp_cd 
+			, a.wbiz_tp_l_cd
+			, a.wbiz_tp_m_cd
+			, a.wbiz_tp_s_cd
+			, a.wbiz_cd_tp
+			, a.wbiz_clsf_kr_nm
+			, a.wbiz_clsf_en_nm
+			, a.use_yn
+			, a.reg_userno
+			, a.reg_date
+			, a.upd_userno
+			, a.upd_date
+			, b.code_nm			
+		FROM 
+			T_WBIZ_CLSF a , 
+			T_CODE b
+		WHERE 
+			a.inds_tp_cd = b.code
+			AND a.use_yn = 'Y'
+			AND b.use_yn = 'Y'
+			ORDER BY b.sort ASC				
+	</select>
+	
+	<select id="loadCategoryList" parameterType="Map" resultMap="categoryMap">
+		SELECT 
+			a.wbix_clsf_sn
+	   		, a.inds_tp_cd 
+			, a.wbiz_tp_l_cd
+			, a.wbiz_tp_m_cd
+			, a.wbiz_tp_s_cd
+			, a.wbiz_cd_tp
+			, a.wbiz_clsf_kr_nm
+			, a.wbiz_clsf_en_nm
+			, a.use_yn
+			, a.reg_userno
+			, a.reg_date
+			, a.upd_userno
+			, a.upd_date
+			, b.code_nm			
+		FROM 
+			T_WBIZ_CLSF a , 
+			T_CODE b
+		WHERE 
+			a.inds_tp_cd = b.code
+			AND b.gubun = 'INDS_TP_CD' 
+			AND a.use_yn = 'Y'
+			AND b.use_yn = 'Y'
+			<if test='wbiz_cd_tp != null and ! wbiz_cd_tp.equals( "" )' >
+			AND wbiz_cd_tp = #{wbiz_cd_tp}
+			</if>
+			<if test='inds_tp_cd != null and ! inds_tp_cd.equals( "" )' >
+			AND inds_tp_cd = #{inds_tp_cd}
+			</if>
+			<if test='wbiz_tp_l_cd != null and ! wbiz_tp_l_cd.equals( "" )' >
+			AND wbiz_tp_l_cd = #{wbiz_tp_l_cd}
+			</if>
+			<if test='wbiz_tp_m_cd != null and ! wbiz_tp_m_cd.equals( "" )' >
+			AND wbiz_tp_m_cd = #{wbiz_tp_m_cd}
+			</if>			
+			ORDER BY b.sort ASC , 	wbiz_tp_l_cd ASC , wbiz_tp_m_cd ASC , wbiz_tp_s_cd ASC			
+	</select>
+	
+	<update id="insertCategory" parameterType="Map" >
+		INSERT INTO T_WBIZ_CLSF (
+			wbix_clsf_sn
+			, inds_tp_cd 
+			, wbiz_tp_l_cd
+			, wbiz_tp_m_cd
+			, wbiz_tp_s_cd
+			, wbiz_cd_tp
+			, wbiz_clsf_kr_nm
+			, wbiz_clsf_en_nm
+			, use_yn
+			, del_yn
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			( SELECT NVL( MAX( wbix_clsf_sn ) , 0 ) + 1 FROM T_WBIZ_CLSF )
+			 , #{inds_tp_cd}
+			, #{wbiz_tp_l_cd}
+			, #{wbiz_tp_m_cd}
+			, #{wbiz_tp_s_cd}
+			, #{wbiz_cd_tp}
+			, #{wbiz_clsf_kr_nm}
+			, #{wbiz_clsf_en_nm}
+			, 'Y'
+			, 'N'
+			, #{s_user_no}
+			, TO_CHAR( SYSDATE , 'YYYYMMDDHH24MISS' )			
+			, #{s_user_no}
+			, TO_CHAR( SYSDATE , 'YYYYMMDDHH24MISS' )
+		)
+	</update>
+	
+</mapper>

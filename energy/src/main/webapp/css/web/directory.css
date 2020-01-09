@@ -1,0 +1,123 @@
+@charset "utf-8";
+
+
+/* layout */
+#dwrap {overflow: hidden; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+
+#skip_nav {height:0}
+#skip_nav a {display: block; position: absolute; left: 0; top: -100px; width: 100%; height: 1px; text-align: center}
+#skip_nav a:focus, #skip a:active {position: absolute; top: 0; z-index: 120; height: 25px; padding: 10px 0; font-size: 1.4em; font-weight: 700; color: #36348f; background: #fff;}
+
+#dcontainer {overflow: hidden; clear: both; z-index: 1;}
+.dcontent_area {overflow: hidden; position: relative; z-index: 2; width: 1060px; margin: 0 auto; padding: 45px 20px 50px;}
+    #dcontent {overflow: hidden; display: block;}
+ #dfooter {/*overflow: hidden;*/ background-color: #f2efeb;}
+
+
+#dheader {overflow: hidden;}
+	.dheader_area {width: 100%; background: url('/images/web/sub/directory/bg_hsection.png') repeat-x 0 0;}
+
+	.dhsection {position: relative; z-index: 99; width: 1100px; height: 150px; margin: 0 auto; border-bottom: 2px solid #bfbfbf; text-align: right;}
+		h1.firm_logo {position: absolute; width: 293px; height: 56px; top: 80px; left: 2px;}
+		a.btn_return_home {display: inline-block; height: 25px; margin: 13px 0 12px; padding-left: 30px; color: #ffffff; line-height: 25px; background: url('/images/web/sub/directory/icon_return.png') no-repeat 0 center;}
+		.dhsection_btnarea {margin-top: 42px;}
+
+
+/* title */
+.dtitle_area {overflow: hidden; margin: 0; padding: 0;}
+	h2.title {display: block; min-height: 26px; margin-bottom: 22px; padding-left: 26px; font-size: 20px; font-weight: bold; color: #333333; line-height: 26px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; background: url('/images/web/common/bg_h5_title.png') no-repeat 0 0;}
+	.dtitle_area.margt {margin-top: 40px;}
+
+
+/* table [list, view, write] */
+.dtable_area {overflow: hidden; margin-bottom: 20px;}
+	table.dtable {width: 100%; border-top: 3px solid #f68121; border-bottom: 1px solid #7b736b; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+		table.dtable thead th {padding: 12px 0px; border-left: 1px solid #dcdcdc; border-right: 1px solid #dcdcdc; font-size: 15px; font-weight: bold; color: #333333; text-align: center; background-color: #f9f4f0;}
+		table.dtable tbody th {padding: 12px 15px; border: 1px solid #dcdcdc; border-bottom: 0; font-size: 15px; font-weight: bold; color: #333333; text-align: left; background-color: #f9f4f0;}
+		table.dtable tbody td {padding: 12px 15px; border: 1px solid #dcdcdc; border-bottom: 0; font-size: 14px;}
+		
+		table.dtable tbody td div.dtable_img {overflow: hidden; text-align: center;}
+		table.dtable tbody td div.dtable_img img {width: 158px;}
+		
+		table.dtable thead th.first,
+		table.dtable tbody th.first,
+		table.dtable tbody td.first {border-left: 0;}
+		table.dtable thead th.last,
+		table.dtable tbody th.last,
+		table.dtable tbody td.last {border-right: 0;}
+		
+		table.dtable tbody th.alignc,
+		table.dtable tbody td.alignc {text-align: center;}
+		table.dtable tbody th.alignr,
+		table.dtable tbody td.alignr {text-align: right;}
+		
+		
+		
+.dbutton_area {overflow: hidden; margin-bottom: 20px;}
+	.dbutton_area.margb50 {margin-bottom: 50px;}
+
+
+.deditor_area {overflow: hidden;}
+	.deditor_area.view {padding: 15px; border: 1px solid #dcdcdc;}
+
+
+/* dimg_tablist */
+.dphoto_gallery {overflow: hidden;}
+	ul.dimg_tablist {float: right; width: 258px;}
+		ul.dimg_tablist li {float: left; width: 123px; height: 80px; margin-bottom: 7px; border: 1px solid #dcdcdc; list-style: none; background-color: #eeeeee;}
+		ul.dimg_tablist li:nth-child(even) {margin-left: 8px;}
+		ul.dimg_tablist li a img {
+			width: 123px; height: 80px;
+			
+			/* for IE */
+			-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+			filter:alpha(opacity=60);
+		  
+			/* CSS3 standard */
+			opacity:0.4;
+			}
+		ul.dimg_tablist li a:hover img,
+		ul.dimg_tablist li.on a img {
+			/* for IE */
+			-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+			filter:alpha(opacity=100);
+			
+			/* CSS3 standard */
+			opacity:1.0;
+			}
+	
+	.dimg_area {overflow: hidden; float: left; width: 785px; height: 435px; border: 1px solid #dcdcdc; background-color: #eeeeee;}
+		.dimg_area img {width: 785px; height: 435px;}
+
+
+/* dvideo_area */
+.dvideo_area {overflow: hidden;}
+	ul.dvideo_list {overflow: hidden; text-align: left;}
+		ul.dvideo_list li {float: left; width: 18.8%; margin-left: 1%; text-align: center; list-style: none;}
+/* 		ul.dvideo_list li:first-child {margin-left: 0;} */
+		ul.dvideo_list li .dvideo_box {overflow: hidden; height: 147px; border: 1px solid #dcdcdc; background-color: #eeeeee;}
+
+
+/* dmap_area */
+.dmap_area {overflow: hidden; padding: 0; margin-bottom: 10px; border: 1px solid #dcdcdc;}
+
+
+/* 화면 해상도 width 1024px 이상 Design --------------------------------------*/
+@media screen and (min-width: 1025px){
+
+	body {overflow-x: auto; min-width: 1100px;}
+
+}
+
+
+/* 화면 해상도 width 641px 이상 1024px 이하 Design --------------------------------------*/ 
+@media screen and (max-width: 1024px) and (min-width: 641px) {
+
+}
+
+
+/* 화면 해상도 width 640px 이하 Design --------------------------------------*/
+@media screen and (max-width: 640px){
+
+}
+

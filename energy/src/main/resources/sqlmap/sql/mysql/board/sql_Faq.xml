@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="FaqDao">
+ 
+	 <resultMap id="faqMap" type="Map">
+		<result property="faq_id" column="faq_id" />
+		<result property="title" column="title" />
+		<result property="satisfy_yn" column="satisfy_yn" />
+		<result property="satisfy_point" column="satisfy_point" />
+		<result property="contents" column="contents" javaType="java.lang.String" jdbcType="CLOB"/>
+		<result property="sort" column="sort" />
+		<result property="use_yn" column="use_yn" />
+		<result property="reg_userno" column="reg_userno" />
+		<result property="reg_usernm" column="reg_usernm" />
+		<result property="reg_date" column="reg_date" />
+	</resultMap>
+	
+	<select id="selectFaqPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		
+		SELECT 
+	   		faq_id
+			, title
+			, satisfy_yn
+			, satisfy_point
+			, sort
+			, use_yn
+			, reg_userno
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, GET_DATEFORMAT(reg_date) AS reg_date
+			, TOT.TOTAL_CNT
+		FROM T_FAQ a
+		JOIN 
+        	(
+        		SELECT COUNT(*) AS TOTAL_CNT 
+        		FROM T_FAQ
+        	 	WHERE 
+					1 = 1  			
+					<if test='title != null and !title.equals("")' >
+						AND title = #{title}
+					</if>
+					<if test='contents != null and !contents.equals("")' >
+						AND contents = #{contents}
+					</if>
+					<if test='use_yn != null and !use_yn.equals("")' >
+						AND use_yn = #{use_yn}
+					</if>
+        	) TOT
+		WHERE 
+			1 = 1  			
+			<if test='title != null and !title.equals("")' >
+				AND title = #{title}
+			</if>
+			<if test='contents != null and !contents.equals("")' >
+				AND contents = #{contents}
+			</if>
+			<if test='use_yn != null and !use_yn.equals("")' >
+				AND use_yn = #{use_yn}
+			</if>
+			
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="selectFaqList" parameterType="Map" resultType="caseMap" resultMap="faqMap">
+		SELECT 
+			@ROWNUM := @ROWNUM + 1 AS RNUM
+			, faq_id
+			, title
+			, satisfy_yn
+			, IFNULL(satisfy_point,0) satisfy_point
+			, contents
+			, sort
+			, use_yn
+			, reg_userno
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, GET_DATEFORMAT(reg_date) AS reg_date
+		FROM 
+			T_FAQ a
+			,  (SELECT @ROWNUM := 0) R
+		WHERE 
+			1 = 1  			
+			<if test='searchtxt != null and !searchtxt.equals("")' >
+			   AND (UPPER(title) LIKE CONCAT('%', UPPER(#{searchtxt}), '%') OR INSTR(contents, UPPER(#{searchtxt})) > 0 OR INSTR(contents, LOWER(#{searchtxt})) > 0 )
+			</if>
+			<if test='use_yn != null and !use_yn.equals("")' >
+			   AND use_yn = #{use_yn}
+			</if>
+		ORDER BY SORT ASC		
+	</select>
+	
+	<select id="selectFaq" parameterType="Map" resultMap="faqMap">
+		SELECT 
+			faq_id
+			, title
+			, satisfy_yn
+			, satisfy_point
+			, contents
+			, sort
+			, use_yn
+			, reg_userno
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, GET_DATEFORMAT(reg_date) AS reg_date
+		FROM T_FAQ a
+		WHERE
+			faq_id = #{faq_id}
+	</select>
+	
+	<select id="selectFaqExist" parameterType="Map" resultType="integer">
+		SELECT 
+			  count(*)
+		FROM T_FAQ
+		WHERE 
+			faq_id = #{faq_id}
+	</select>
+	
+	<update id="insertFaq" parameterType="Map" >
+		<selectKey resultType="String" keyProperty="sort" order="BEFORE">
+        	SELECT IFNULL(max(sort),0)+1 FROM T_FAQ 
+		</selectKey>
+
+		INSERT INTO T_FAQ (
+			faq_id
+			, title
+			, satisfy_yn
+			, satisfy_point
+			, contents
+			, sort
+			, use_yn
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			#{faq_id}
+			, #{title}
+			, #{satisfy_yn}
+			, #{satisfy_point}
+			, #{contents}
+			, #{sort}
+			, #{use_yn}
+			, #{s_user_no}
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+			, #{s_user_no}
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+		)
+	</update>
+	
+	<update id="updateFaq" parameterType="Map" >
+	    UPDATE T_FAQ
+		SET
+			title = #{title}
+			, satisfy_yn = #{satisfy_yn}
+			, contents = #{contents}
+			, use_yn = #{use_yn}
+			, upd_userno = #{s_user_no}
+			, upd_date = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+		WHERE 
+			faq_id = #{faq_id}
+	</update>
+	
+	<delete id="deleteFaq" parameterType="Map" >
+	 	DELETE FROM T_FAQ 
+		WHERE 	
+			faq_id = #{faq_id}
+	</delete>
+	
+	<update id="updateFaqSort" parameterType="Map" >
+	    UPDATE T_FAQ
+	    SET 
+	    	sort = #{sort}
+	    WHERE 
+	    	faq_id = #{faq_id}
+	</update>
+	
+	<update id="deleteFaqReorder" parameterType="Map" >
+	    UPDATE T_FAQ a,
+	    	 (SELECT sort FROM T_FAQ WHERE faq_id = #{faq_id}) b
+		SET
+        	sort = sort - 1
+		WHERE
+			sort > b.sort
+	</update>
+	
+	<select id="selectLoadMainFaq" parameterType="Map" resultType="caseMap">
+		SELECT 
+			T.*
+		FROM (
+			SELECT 
+				@ROWNUM := @ROWNUM + 1 AS ROWNUM
+				, faq_id
+				, title
+			FROM 
+				T_FAQ
+				, (SELECT @ROWNUM := 0) R
+			WHERE 
+				use_yn = 'Y'
+			ORDER BY sort ASC
+		) T
+		WHERE 
+			ROWNUM <![CDATA[ <= ]]> CAST((#{size}, UNSIGNED))+1
+	</select>
+
+</mapper>

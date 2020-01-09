@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+<PRE>
+Directory Export information management
+!=
+T_기업디렉토리 수출 정보를 관리
+=!
+</PRE>
+
+-->
+<mapper namespace="CmpyDirExpDao">
+    <!--
+          기업디렉토리수출 정보를 상세조회한다
+    -->
+    <select id="selectCmpyDirExpList" parameterType="Map" resultType="caseMap">
+    	
+    	SELECT
+    	    dir_sn    
+    	    , exp_sn    
+    	    , exp_yy    
+    	    , exp_amount    	
+    	    , reg_userno    
+    	    , reg_date    
+    	    , upd_userno    
+    	    , upd_date   
+    	FROM T_CMPY_DIR_EXP
+    	<trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	</trim>
+    	ORDER BY exp_yy DESC
+    	<if test="limit != null and limit != '' ">
+   	        limit ${limit}
+   	    </if>
+    	
+    </select>
+    
+    <!--
+	기업디렉토리 수출 정보를 등록한다.
+    -->
+    <insert id="insertCmpyDirExp" parameterType="Map">
+    	INSERT INTO T_CMPY_DIR_EXP (
+    	    dir_sn    
+    	    , exp_sn    
+    	    , exp_yy    
+    	    , exp_amount    
+    	    , reg_userno    
+    	    , reg_date    
+    	    , upd_userno    
+    	    , upd_date    
+    	) VALUES (
+    	    #{dir_sn}     
+    	    , ( SELECT * FROM ( SELECT IFNULL(MAX(CAST(exp_sn AS UNSIGNED)),0)+1 FROM T_CMPY_DIR_EXP WHERE dir_sn = #{dir_sn} ) AS t ) 
+    	    , #{exp_yy}    
+    	    , #{exp_amount}    
+    	    , #{reg_userno}    
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    , #{reg_userno}    
+    	    , DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	)
+    	
+    </insert>
+    
+    <!--
+	기업디렉토리 수출 정보를 수정한다.
+    -->
+    <update id="updateCmpyDirExp" parameterType="Map">
+    	UPDATE T_CMPY_DIR_EXP 
+    	    <trim prefix="SET" prefixOverrides=", ">
+    	    , exp_yy = #{exp_yy}   
+    	    , exp_amount = #{exp_amount}   
+    	    , exp_country = #{exp_country}   
+    	    , exp_country_en = #{exp_country_en}
+    	    , upd_userno = #{reg_userno}        
+    	    , upd_date = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    </trim>
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	            <if test="dir_sn != null and dir_sn != '' ">
+    	                AND dir_sn = #{dir_sn}    
+    	            </if>
+		    	    <if test="exp_sn != null and exp_sn != '' ">
+		    	        AND exp_sn = #{exp_sn}    
+		    	    </if>
+    	    </trim>
+    	
+    </update>
+    
+    <!--
+	기업디렉토리 수출 정보를 삭제한다.
+    -->
+    <delete id="deleteCmpyDirExp" parameterType="Map">
+    	DELETE FROM T_CMPY_DIR_EXP
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	    </trim>
+    	
+    </delete>
+    
+    </mapper>
+    

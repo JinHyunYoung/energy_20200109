@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<configuration>
+	
+	<project>
+	
+		<defaultLocale>ko</defaultLocale>
+			
+		<site>
+			<name>물시장종합정보센터</name>
+			<address>(우)30103 세종특별자치시 도움6로 11 정부세종청사 6동</address>
+			<contact>한국상하수도협회 물산업팀 : 02-3156-7851</contact>
+			<copyright>Copyright Ministry of Environment. All Rights Reserved.</copyright>
+		</site>
+		
+		<server>
+			<url>http://hnskr.iptime.org</url>
+			<docroot>/app/tomcat8_wabis/webapps/wabis</docroot>
+			<webUrl>http://hnskr.iptime.org</webUrl>
+			<admimUrl>http://admin.hnskr.iptime.org</admimUrl>
+			<httpsPort>28443</httpsPort>
+		</server>
+				
+		<mail>	
+			<serverUrl>http://hnskr.iptime.org:25000</serverUrl>
+			<adminemail>wabis.email@gmail.comr</adminemail>
+			<adminname>물산업 관리자</adminname>
+			<protocol>smtp</protocol>
+			<authority>true</authority>
+			<starttls>true</starttls>			
+			<smtp>
+				<host>smtp.gmail.com</host>
+				<port>587</port>
+				<userid>wabis.email</userid>
+				<password>anftksdjq</password>	
+			</smtp>
+		</mail>
+		
+	</project>
+
+	<!-- 컨텐츠 파일 업로드 -->
+	<contents>
+		<upload>
+			<maxfilesize>20</maxfilesize>
+			<basePath>/project/wabis/contents/</basePath>			
+			<temp>/project/wabis/contents/temp/</temp>
+			<urlPath>/contents/</urlPath>	
+		</upload>
+		<url>
+		    <local>http://hnskr.iptime.org/contents/</local>
+		</url>
+	</contents>
+	
+	<!-- File 관리 -->
+	<fileType>
+		<!--name of file type  -->
+		<names>img,zip,pdf,doc,ppt,xls,hwp,movie</names>		
+		<types>
+			<img>gif,jpg,jpeg,png,bmp</img>
+			<zip>zip</zip>
+			<pdf>pdf</pdf>
+			<doc>doc,docx</doc>
+			<xls>xls,xlsx,csv</xls>
+			<ppt>ppt,pptx</ppt>
+			<hwp>hwp</hwp>
+			<movie>wmv,avi,asf,mpg,mpeg</movie>
+		</types>
+		<!-- image file of file types  -->
+		<images>
+			<base>/images/common/icon</base>
+			<default>${fileType.images.base}/ico_etc.gif</default>
+			<img>${fileType.images.base}/ico_img.gif</img>
+			<zip>${fileType.images.base}/ico_zip.gif</zip>
+			<pdf>${fileType.images.base}/ico_pdf.gif</pdf>
+			<doc>${fileType.images.base}/ico_doc.gif</doc>
+			<xls>${fileType.images.base}/ico_xls.gif</xls>
+			<ppt>${fileType.images.base}/ico_ppt.gif</ppt>
+			<hwp>${fileType.images.base}/ico_hwp.gif</hwp>
+			<movie>${fileType.images.base}/ico_movie.gif</movie>
+		</images>
+	</fileType>
+	
+</configuration>

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="IntroPageDao">
+ 
+	<resultMap id="intropageMap" type="Map">
+		<result property="page_id" column="page_id" />
+		<result property="title" column="title" />
+		<result property="contents" column="contents" javaType="java.lang.String" jdbcType="CLOB"/>
+		<result property="satis_yn" column="satis_yn" />
+		<result property="satisfy_yn" column="satisfy_yn" />
+		<result property="meta_keyword" column="meta_keyword" />
+		<result property="cpr_use_yn" column="cpr_use_yn" />
+		<result property="cpr_cmrc_use_yn" column="cpr_cmrc_use_yn" />
+		<result property="cpr_chng_use_yn" column="cpr_chng_use_yn" />
+		<result property="charge_info" column="charge_info" />
+		<result property="group_id" column="group_id" />
+		<result property="reg_userno" column="reg_userno" />
+		<result property="reg_usernm" column="reg_usernm" />
+		<result property="reg_date" column="reg_date" />
+	</resultMap>
+	 
+	<select id="selectIntropagePageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		
+		SELECT 
+	   	    page_id
+			, title
+			, satis_yn
+			, meta_keyword
+			, cpr_use_yn
+			, cpr_cmrc_use_yn
+			, cpr_chng_use_yn
+			, charge_info
+			, group_id
+			, reg_userno
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, GET_DATEFORMAT(reg_date) as reg_date
+			, (SELECT NVL(ROUND(AVG(point),1),0) FROM T_SATISFY ts WHERE ts.contents_id = a.page_id) AS satis_score
+		FROM T_INTROPAGE a
+		WHERE 
+			1 = 1  			
+			<if test='searchtxt != null and !searchtxt.equals("")' >
+			   AND (UPPER(title) LIKE '%'||UPPER(#{searchtxt})||'%' OR INSTR(contents, UPPER(#{searchtxt})) > 0 OR INSTR(contents, LOWER(#{searchtxt})) > 0 )
+			</if>
+			<if test='satis_yn != null and !satis_yn.equals("")' >
+			   AND satis_yn = #{satis_yn}
+			</if>
+				
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="selectIntropageList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			ROWNUM AS RNUM
+			, page_id
+			, title
+			, satis_yn
+			, meta_keyword
+			, cpr_use_yn
+			, cpr_cmrc_use_yn
+			, cpr_chng_use_yn
+			, charge_info
+			, group_id
+			, reg_userno
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, GET_DATEFORMAT(reg_date) AS reg_date
+		FROM T_INTROPAGE a
+		WHERE 
+			1 = 1  			
+			<if test='title != null and !title.equals("")' >
+			   AND title = #{title}
+			</if>
+			<if test='contents != null and !contents.equals("")' >
+			   AND contents = #{contents}
+			</if>
+	</select>
+	
+	<select id="selectIntropage" parameterType="Map" resultMap="intropageMap">
+		SELECT 
+  			page_id
+			, title
+			, contents
+			, satis_yn
+			, meta_keyword
+			, cpr_use_yn
+			, cpr_cmrc_use_yn
+			, cpr_chng_use_yn
+			, charge_info
+			, group_id
+			, reg_userno
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, GET_DATEFORMAT(reg_date) AS reg_date
+			, CASE 
+				WHEN (SELECT COUNT(1) FROM T_SATISFY ts WHERE ts.contents_id = a.page_id AND reg_userno = #{reg_userno}) > 0 THEN 'Y' 
+				ELSE 'N' 
+			END satisfy_yn
+		FROM T_INTROPAGE a
+		WHERE 
+			page_id = #{page_id}
+	</select>
+	
+	<select id="selectIntropageExist" parameterType="Map" resultType="integer">
+		SELECT 
+			count(*)
+		FROM T_INTROPAGE
+		WHERE 	
+			page_id = #{page_id}
+			
+	</select>
+	
+	<update id="insertIntropage" parameterType="Map" >
+		INSERT INTO T_INTROPAGE (
+			page_id
+			, title
+			, contents
+			, satis_yn
+			, meta_keyword
+			, cpr_use_yn
+			, cpr_cmrc_use_yn
+			, cpr_chng_use_yn
+			, charge_info
+			, group_id
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			#{page_id}
+			, #{title}
+			, #{contents}
+			, #{satis_yn}
+			, #{meta_keyword}
+			, #{cpr_use_yn}
+			, #{cpr_cmrc_use_yn}
+			, #{cpr_chng_use_yn}
+			, #{charge_info}
+			, #{group_id}
+			, #{s_user_no}
+			, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+			, #{s_user_no}
+			, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+		)
+	</update>
+	
+	<update id="updateIntropage" parameterType="Map" >
+	    UPDATE T_INTROPAGE
+		SET
+			title = #{title}
+			, contents = #{contents}
+			, satis_yn = #{satis_yn}
+			, meta_keyword = #{meta_keyword}
+			, cpr_use_yn = #{cpr_use_yn}
+			, cpr_cmrc_use_yn = #{cpr_cmrc_use_yn}
+			, cpr_chng_use_yn = #{cpr_chng_use_yn}
+			, charge_info = #{charge_info}
+			, group_id = #{group_id}
+			, reg_userno = #{reg_userno}
+			, reg_date = #{reg_date}
+			, upd_userno = #{s_user_no}
+			, upd_date = TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')	
+		WHERE  
+			page_id = #{page_id}
+	</update>
+	
+	<delete id="deleteIntropage" parameterType="Map" >
+	 	DELETE FROM T_INTROPAGE 
+		WHERE 
+			page_id = #{page_id}
+	</delete>
+	
+	<update id="updateGroupId" parameterType="Map" >
+	    UPDATE T_INTROPAGE
+		SET
+			group_id = #{group_id}
+		WHERE  
+			page_id = #{page_id}
+	</update>
+
+</mapper>

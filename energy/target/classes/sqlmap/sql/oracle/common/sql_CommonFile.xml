@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CommonFileDao">
+
+	<select id="getCommonFile" parameterType="Map" resultType="commonFileVO" >
+		SELECT 
+			FILE_ID
+        	, FILE_NM
+        	, FILE_TYPE
+        	, FILE_SIZE
+        	, ORIGIN_FILE_NM
+        	, GROUP_ID
+        	, FILE_PATH
+        	, FILE_TITLE
+        	, SORT
+        FROM 
+        	T_COMMONFILE
+		WHERE 1 = 1  
+		<if test='file_id != null and !file_id.equals("")'>			
+			AND file_id = #{file_id}
+		</if>
+    </select>
+    
+    <select id="getCommonFileList" parameterType="Map" resultType="commonFileVO" >
+        SELECT 
+        	FILE_ID
+        	, FILE_NM
+        	, FILE_TYPE
+        	, FILE_SIZE
+        	, ORIGIN_FILE_NM
+        	, GROUP_ID
+        	, FILE_PATH
+        	, FILE_TITLE
+        	, SORT
+        FROM 
+        	T_COMMONFILE
+		WHERE 1 = 1  
+		<if test='group_id != null and !group_id.equals("")'>			
+			AND group_id = #{group_id}
+		</if>
+		<if test='file_id != null and !file_id.equals("")'>			
+			AND file_id = #{file_id}
+		</if>
+		<if test='file_nm != null and !file_nm.equals("")'>			
+		   AND file_nm like '%'||#{file_nm}||'%'
+		</if>		
+		ORDER BY SORT
+    </select> 
+
+    <insert id="insertCommonFile" parameterType="commonFileVO">
+		<selectKey resultType="String" keyProperty="file_id" order="BEFORE">
+        	SELECT GET_GUID() FROM DUAL       
+		</selectKey>
+
+		INSERT INTO T_COMMONFILE (
+        	FILE_ID
+        	, FILE_NM
+        	, FILE_TYPE
+        	, FILE_SIZE
+        	, ORIGIN_FILE_NM
+        	, GROUP_ID
+        	, FILE_PATH
+        	, FILE_TITLE
+        	, SORT
+        	, UPD_USERNO
+        	, UPD_DATE
+        	, REG_USERNO
+        	, REG_DATE
+		) VALUES (
+        	#{file_id}
+        	, #{file_nm}
+        	, #{file_type}
+        	, #{file_size}
+        	, #{origin_file_nm}
+        	, #{group_id}
+        	, #{file_path}
+        	, #{file_title}
+        	, #{sort}
+        	, #{s_user_no}
+        	, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+        	, #{s_user_no}
+        	, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+        )        
+    </insert>
+    
+	<update id="updateCommonFile" parameterType="commonFileVO">
+		UPDATE T_COMMONFILE
+		SET
+			FILE_NM = #{file_nm}
+			, FILE_TYPE = #{file_type}
+			, FILE_SIZE = #{file_size}
+			, ORIGIN_FILE_NM = #{origin_file_nm}
+			, FILE_PATH = #{file_path}
+			, FILE_TITLE = #{file_title}
+			, SORT = #{sort}
+			, UPD_USERNO = #{s_user_no}
+			, UPD_DATE = TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+       	WHERE
+       		FILE_ID = #{file_id}
+    </update>
+    
+    <delete id="deleteCommonFile" parameterType="String">
+        DELETE FROM T_COMMONFILE
+        WHERE 
+        	FILE_ID = #{file_id}
+    </delete>
+    
+    <delete id="deleteCommonFileAll" parameterType="Map">
+        DELETE FROM T_COMMONFILE
+        WHERE 
+        	GROUP_ID = #{group_id}
+    </delete>
+    
+     <select id="getCommonFilePageList" parameterType="Map" resultType="commonFileVO" >
+		<include refid="CommonSql.pageingTop"/>
+		
+		SELECT 
+        	FILE_ID
+        	, FILE_NM
+        	, FILE_TYPE
+        	, FILE_SIZE
+        	, ORIGIN_FILE_NM
+        	, GROUP_ID
+        	, FILE_PATH
+        	, FILE_TITLE
+        	, SORT
+        FROM 
+        	T_COMMONFILE
+		WHERE 1 = 1  
+		<if test='group_id != null and !group_id.equals("")'>			
+		   AND group_id = #{group_id}
+		</if>
+		<if test='file_id != null and !file_id.equals("")'>			
+		   AND file_id = #{file_id}
+		</if>
+		<if test='file_nm != null and !file_nm.equals("")'>			
+		   AND file_nm like '%'||#{file_nm}||'%'
+		</if>
+		ORDER BY SORT
+		
+		<include refid="CommonSql.pageingBottom"/>
+    </select> 
+    
+    <select id="getCommonFileCodeList" parameterType="Map" resultType="caseMap" >
+        SELECT 
+        	FILE_ID AS code, FILE_NM AS codeNm
+        FROM 
+        	T_COMMONFILE
+    </select>
+
+	<update id="updateFileListSort" parameterType="Map" >
+	    UPDATE T_COMMONFILE
+	    SET 
+	    	sort = #{sort}
+	    WHERE 
+	    	file_id = #{file_id}
+	</update>
+    
+</mapper>

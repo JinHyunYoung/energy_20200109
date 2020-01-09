@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation=
+		"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+    	 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+    	 http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
+
+
+	<!-- ******************************************************************************************* -->
+    <!-- DB 트랜잭션 관리 -->
+    <!-- ******************************************************************************************* -->
+	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource-log4j-remix"/>
+	</bean>
+	<!-- <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true" /> -->     
+	
+
+	<!-- ******************************************************************************************* -->
+    <!-- 트랜잭션 관리 -->
+    <!-- ******************************************************************************************* -->
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+	   <tx:attributes>	 
+		   <tx:method name="*" rollback-for="Exception" />
+		   <!--<tx:method name="*" propagation="REQUIRED" rollback-for="Exception"/> -->
+	   </tx:attributes>
+	</tx:advice>
+	
+	
+	<!-- ******************************************************************************************* -->
+    <!-- 트랜잭션 AOP -->
+    <!-- ******************************************************************************************* -->
+    <aop:config proxy-target-class="true">
+        <aop:pointcut id="txPointCut" expression="execution(* kr.or.wabis..service.*Service*.*(..))"/>
+        <aop:advisor id="txAdvisor"  advice-ref="txAdvice" pointcut-ref="txPointCut" />
+    </aop:config>
+
+
+    <!--
+	<aop:config>
+		<aop:pointcut id="requiredTx" expression="execution(* kr.or.wabis..service.*Service*.*(..))"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="requiredTx" />
+	</aop:config>
+    
+	<aop:config>
+		<aop:pointcut id="requiredTx" expression="execution(* kr.or.wabis..*ServiceImpl.insert*(..)) or 
+												  execution(* kr.or.wabis..*ServiceImpl.update*(..)) or 
+												  execution(* kr.or.wabis..*ServiceImpl.delete*(..))"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="requiredTx" />
+	</aop:config>
+    -->
+    
+	<!-- <aop:aspectj-autoproxy proxy-target-class="true"/> --> 
+    
+</beans>

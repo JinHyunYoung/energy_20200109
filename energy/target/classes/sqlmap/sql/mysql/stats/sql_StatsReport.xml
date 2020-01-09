@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="StatsReportDao">
+	
+	<select id="statisticsReportData" parameterType="Map" resultType="caseMap">
+		SELECT (SELECT SUM(IF(INDS_TP_CD = A.INDS_TP_CD, 1,0)) FROM T_STATS_INDS WHERE BS_YY = A.BS_YY AND INDS_TP_CD = A.INDS_TP_CD) AS  CNT_L
+		       , (SELECT SUM(IF(WBIZ_TP_L_CD = A.WBIZ_TP_L_CD, 1,0)) FROM T_STATS_INDS WHERE BS_YY = A.BS_YY AND INDS_TP_CD = A.INDS_TP_CD AND WBIZ_TP_L_CD = A.WBIZ_TP_L_CD) AS  CNT_M
+		       , (SELECT SUM(IF(WBIZ_TP_M_CD = A.WBIZ_TP_M_CD, 1,0)) FROM T_STATS_INDS WHERE BS_YY = A.BS_YY AND INDS_TP_CD = A.INDS_TP_CD AND WBIZ_TP_L_CD = A.WBIZ_TP_L_CD AND WBIZ_TP_M_CD = A.WBIZ_TP_M_CD) AS  CNT_S
+		       , A.*
+		FROM 
+	    (
+	        SELECT BS_YY, INDS_TP_CD, INDS_TP_NM, WBIZ_TP_L_CD, WBIZ_TP_L_NM, WBIZ_TP_M_CD, WBIZ_TP_M_NM, WBIZ_TP_S_CD, WBIZ_TP_S_NM, COUNT(POINT) AS CNT
+	        FROM T_STATS_INDS 
+	   		WHERE bs_YY = #{bs_yy}
+			<if test='p_inds_tp_cd != null and ! p_inds_tp_cd.equals( "" )' >
+			AND inds_tp_cd = #{p_inds_tp_cd}
+			</if>
+			<if test='p_wbiz_tp_l_cd != null and ! p_wbiz_tp_l_cd.equals( "" )' >
+			AND wbiz_tp_l_cd = #{p_wbiz_tp_l_cd}
+			</if>
+			<if test='p_wbiz_tp_m_cd != null and ! p_wbiz_tp_m_cd.equals( "" )' >
+			AND wbiz_tp_m_cd = #{p_wbiz_tp_m_cd}
+			</if>
+			<if test='p_wbiz_tp_s_cd != null and ! p_wbiz_tp_s_cd.equals( "" )' >
+			AND wbiz_tp_s_cd = #{p_wbiz_tp_s_cd}
+			</if>
+	        GROUP BY  BS_YY, INDS_TP_CD, WBIZ_TP_L_CD, WBIZ_TP_M_CD, WBIZ_TP_S_CD
+	    ) A
+	</select>
+	
+	<select id="selectIndustryGraph" parameterType="Map" resultType="caseMap">
+		SELECT  MAX(INDS_TP_NM) NM, SUM(POINT) AS POINT
+		FROM (
+			      SELECT '0' AS INDS_TP_CD
+			      		 , '합계' AS INDS_TP_NM 
+			             , SUM(POINT) POINT
+		          FROM T_STATS_INDS
+		          WHERE BS_YY = #{bs_yy}
+		            AND STATS_S_CD LIKE concat(#{stats_s_cd},'%')
+		          UNION ALL
+			      SELECT INDS_TP_CD
+			      		 , INDS_TP_NM 
+			             , POINT
+		          FROM T_STATS_INDS
+		          WHERE BS_YY = #{bs_yy}
+		            AND STATS_S_CD LIKE concat(#{stats_s_cd},'%')
+		    ) A
+		 GROUP BY INDS_TP_CD
+		 ORDER BY INDS_TP_CD
+	</select>
+	<select id="selectIndustryScaleGraph" parameterType="Map" resultType="caseMap">
+		SELECT  (SELECT CODE_NM FROM T_CODE A WHERE A.GUBUN='SCALE_CD' AND A.CODE = right(STATS_S_CD, 2)) as NM
+		       , SUM(POINT) AS POINT
+		FROM (
+			      SELECT STATS_S_CD
+			             , POINT
+		          FROM T_STATS_INDS
+		          WHERE BS_YY = #{bs_yy}
+		            AND STATS_S_CD LIKE concat(#{stats_s_cd},'%')
+		    ) A
+		 GROUP BY STATS_S_CD
+		 ORDER BY STATS_S_CD
+	</select>	
+	<select id="selectMajorIndices" parameterType="Map" resultType="caseMap">
+		SELECT t.STATS_S_CD
+		       , CASE WHEN t.STATS_S_CD = '01-01-01' THEN '사업체수(개)' 
+		              WHEN t.STATS_S_CD = '02-04-01' THEN '종사자수(명)' 
+		              WHEN t.STATS_S_CD = '02-09-01' THEN '매출액(백만원)' 
+		              WHEN t.STATS_S_CD = '03-01-01' THEN '수출액(백만원)' 
+		              WHEN t.STATS_S_CD = '05-01-01' THEN '수입액(백만원)' 
+		              WHEN t.STATS_S_CD = '05-08-01' THEN '연구개발비(백만원)' 
+		              WHEN t.STATS_S_CD = '05-08-02' THEN '연구개발비(백만원)' END AS NM 
+		        , t.POINT_1
+		        , t.POINT_2
+		        , t.POINT_3
+		        , (t.POINT_1 - t.POINT_2) POINT_4
+		        , ROUND((POINT_1 / POINT_2)-1,1)*100 POINT_5
+		        , ROUND(t.POINT_1 / b.CNT_1, 1) AS CNT_1
+		        , ROUND(t.POINT_2 / b.CNT_2, 1) AS CNT_2
+		        , ROUND(t.POINT_3 / b.CNT_3, 1) AS CNT_3
+		        , ROUND((t.POINT_1 - t.POINT_2) / b.CNT_1, 1) AS CNT_4
+		        
+		FROM (
+		    SELECT STATS_S_CD
+		          , IFNULL(SUM(POINT_1), 0) AS POINT_1
+		          , IFNULL(SUM(POINT_2), 0) AS POINT_2
+		          , IFNULL(SUM(POINT_3), 0) AS POINT_3
+		    FROM (
+		          SELECT STATS_S_CD
+		                , CASE WHEN BS_YY = (YEAR(NOW())-1) THEN POINT END AS POINT_1
+		                , CASE WHEN BS_YY = (YEAR(NOW())-2) THEN POINT END AS POINT_2
+		                , CASE WHEN BS_YY = (YEAR(NOW())-3) THEN POINT END AS POINT_3
+		          FROM T_STATS_INDS
+		          WHERE STATS_S_CD IN ('01-01-01','03-01-01','05-01-01', '02-04-01', '02-09-01')
+		          UNION ALL
+		          SELECT '05-08-01' AS STATS_S_CD
+		                , CASE WHEN BS_YY = (YEAR(NOW())-1) THEN POINT END AS POINT_1
+		                , CASE WHEN BS_YY = (YEAR(NOW())-2) THEN POINT END AS POINT_2
+		                , CASE WHEN BS_YY = (YEAR(NOW())-3) THEN POINT END AS POINT_3
+		          FROM T_STATS_INDS
+		          WHERE STATS_S_CD IN ('05-08-01','05-08-02')
+		    ) a
+		GROUP BY STATS_S_CD
+		) t,
+		(
+		  SELECT STATS_S_CD 
+		        , IFNULL(SUM(CNT_1), 0) AS CNT_1
+		        , IFNULL(SUM(CNT_2), 0) AS CNT_2
+		        , IFNULL(SUM(CNT_3), 0) AS CNT_3
+		  FROM (  
+		  SELECT BS_YY, STATS_S_CD
+		                  , CASE WHEN BS_YY = (YEAR(NOW())-1) THEN SUM(POINT) END AS CNT_1
+		                  , CASE WHEN BS_YY = (YEAR(NOW())-2) THEN SUM(POINT) END AS CNT_2
+		                  , CASE WHEN BS_YY = (YEAR(NOW())-3) THEN SUM(POINT) END AS CNT_3
+		            FROM T_STATS_INDS
+		            WHERE STATS_S_CD IN ('01-01-01')
+		           GROUP BY BS_YY) a
+		       ) b
+	</select>
+	<select id="selectIndustryGraphYear" parameterType="Map" resultType="caseMap">
+		SELECT  INDS_TP_NM AS NM
+		        , IFNULL(SUM(POINT_0), 0) AS POINT_0
+		        , IFNULL(SUM(POINT_1), 0) AS POINT_1
+		        , IFNULL(SUM(POINT_2), 0) AS POINT_2
+		        , IFNULL(SUM(POINT_3), 0) AS POINT_3
+		FROM (
+		      SELECT BS_YY, INDS_TP_CD, INDS_TP_NM
+				      , POINT AS POINT_0
+				      , CASE WHEN BS_YY = (YEAR(NOW())-1) THEN POINT END AS POINT_1
+				      , CASE WHEN BS_YY = (YEAR(NOW())-2) THEN POINT END AS POINT_2
+				      , CASE WHEN BS_YY = (YEAR(NOW())-3) THEN POINT END AS POINT_3
+	          FROM T_STATS_INDS
+	          WHERE BS_YY >= (YEAR(NOW())-3)
+	            AND STATS_S_CD LIKE concat(#{stats_s_cd},'%')
+		    ) A
+		 GROUP BY INDS_TP_CD
+		 ORDER BY INDS_TP_CD
+	</select>
+	<select id="selectJobGraphYear" parameterType="Map" resultType="caseMap">
+		SELECT  STATS_S_CD
+				, STATS_S_CD AS NM  
+		        , IFNULL(SUM(POINT_0), 0) AS POINT_0
+		        , IFNULL(SUM(POINT_1), 0) AS POINT_1
+		        , IFNULL(SUM(POINT_2), 0) AS POINT_2
+		        , IFNULL(SUM(POINT_3), 0) AS POINT_3
+		FROM (
+		      SELECT BS_YY, STATS_S_CD
+				      , POINT AS POINT_0
+				      , CASE WHEN BS_YY = (YEAR(NOW())-1) THEN POINT END AS POINT_1
+				      , CASE WHEN BS_YY = (YEAR(NOW())-2) THEN POINT END AS POINT_2
+				      , CASE WHEN BS_YY = (YEAR(NOW())-3) THEN POINT END AS POINT_3
+	          FROM T_STATS_INDS
+	          WHERE BS_YY >= (YEAR(NOW())-3)
+	            AND STATS_S_CD LIKE concat(#{stats_s_cd},'%')
+		    ) A
+		 GROUP BY STATS_S_CD
+		 ORDER BY STATS_S_CD
+	</select>
+	<select id="selectIndustryScaleGraphYear" parameterType="Map" resultType="caseMap">
+		SELECT  (SELECT CODE_NM FROM T_CODE A WHERE A.GUBUN='SCALE_CD' AND A.CODE = right(STATS_S_CD, 2)) as NM
+		        , IFNULL(SUM(POINT_0), 0) AS POINT_0
+		        , IFNULL(SUM(POINT_1), 0) AS POINT_1
+		        , IFNULL(SUM(POINT_2), 0) AS POINT_2
+		        , IFNULL(SUM(POINT_3), 0) AS POINT_3
+		FROM (
+		      SELECT BS_YY, STATS_S_CD
+				      , POINT AS POINT_0
+				      , CASE WHEN BS_YY = (YEAR(NOW())-1) THEN POINT END AS POINT_1
+				      , CASE WHEN BS_YY = (YEAR(NOW())-2) THEN POINT END AS POINT_2
+				      , CASE WHEN BS_YY = (YEAR(NOW())-3) THEN POINT END AS POINT_3
+	          FROM T_STATS_INDS
+	          WHERE BS_YY >= (YEAR(NOW())-3)
+	            AND STATS_S_CD LIKE concat(#{stats_s_cd},'%')
+		    ) A
+		 GROUP BY STATS_S_CD
+		 ORDER BY STATS_S_CD
+	</select>
+	<select id="selectScaleGraphYear" parameterType="Map" resultType="caseMap">
+		SELECT (SELECT CODE_NM FROM T_CODE A WHERE A.GUBUN='SCALE_CD' AND A.CODE = SCALE_CD) NM
+				, SCALE_CD
+				, IFNULL(SUM(POINT_0), 0) AS POINT_0
+				, IFNULL(SUM(POINT_1), 0) AS POINT_1
+				, IFNULL(SUM(POINT_2), 0) AS POINT_2
+				, IFNULL(SUM(POINT_3), 0) AS POINT_3
+				, IFNULL(SUM(POINT_4), 0) AS POINT_4
+		FROM (
+		      SELECT BS_YY 
+		              , SCALE_CD
+				      , POINT AS POINT_0
+				      , CASE WHEN SCALE_CD = '02' THEN POINT END AS POINT_1
+				      , CASE WHEN SCALE_CD = '03' THEN POINT END AS POINT_2
+				      , CASE WHEN SCALE_CD = '04' THEN POINT END AS POINT_3
+				      , CASE WHEN SCALE_CD = '05' THEN POINT END AS POINT_4
+	          FROM T_STATS_SCALE
+	          WHERE BS_YY >= (YEAR(NOW())-3)
+              AND STATS_S_CD LIKE concat(#{stats_s_cd},'%')
+		    ) A
+		 GROUP BY SCALE_CD
+		 ORDER BY SCALE_CD
+	</select>
+
+	<select id="selectScaleGraph" parameterType="Map" resultType="caseMap">
+		SELECT (SELECT CODE_NM FROM T_CODE A WHERE A.GUBUN='SCALE_CD' AND A.CODE = SCALE_CD) NM
+		        , SCALE_CD, SUM(POINT) AS POINT
+		FROM (
+				      SELECT SCALE_CD, POINT
+
+		          FROM T_STATS_SCALE
+		          WHERE BS_YY = #{bs_yy}
+		            AND STATS_S_CD LIKE concat(#{stats_s_cd},'%')
+		    ) A
+		 GROUP BY SCALE_CD
+		 ORDER BY SCALE_CD
+	</select>
+
+	<select id="selectExcelUploadList" parameterType="Map" resultType="caseMap">
+		SELECT 
+		        bs_yy, issue_yy,
+		        max(research_reg_date) as research_reg_date,
+		        max(research_file_id) as research_file_id,
+		        max(research_group_id) as research_group_id,
+		        max(person_reg_date) as person_reg_date,
+		        max(person_file_id) as person_file_id,
+		        max(person_group_id) as person_group_id
+		FROM (        
+		  SELECT 
+		             a.bs_yy, a.issue_yy, 
+		             case when a.xls_tp = '1' then date_format(a.reg_date,"%Y-%m-%d") end as research_reg_date,
+		             case when a.xls_tp = '1' then b.file_id end as research_file_id,
+		             case when a.xls_tp = '1' then b.group_id end as research_group_id,
+		             case when a.xls_tp = '2' then date_format(a.reg_date,"%Y-%m-%d") end as person_reg_date,
+		             case when a.xls_tp = '2' then b.file_id  end as person_file_id, 
+		             case when a.xls_tp = '2' then b.group_id  end as person_group_id
+		      FROM T_STATS_UPLOAD a 
+		      LEFT OUTER JOIN T_COMMONFILE b
+		      ON a.group_id = b.group_id
+		) a
+		GROUP BY bs_yy, issue_yy
+		ORDER BY a.bs_yy desc;
+	</select>
+	
+	<insert id="insertExcelUploadList" parameterType ="Map" >
+		INSERT INTO T_STATS_UPLOAD
+		(BS_YY, XLS_TP, ISSUE_YY, GROUP_ID, REG_USERNO, REG_DATE)
+		VALUES
+		(#{bs_yy}, #{xls_tp}, #{issue_yy}, #{group_id}, #{item.s_user_no}, DATE_FORMAT(sysdate(),"%Y%m%d%H%i%s"))
+	</insert>
+	
+	<delete id="deleteExcelUploadList" parameterType="Map">
+		DELETE FROM T_STATS_UPLOAD
+		WHERE BS_YY=#{bs_yy}
+		  AND XLS_TP=#{xls_tp}
+	</delete>
+
+	<insert id="insertIndustryExcelUpload" parameterType ="Map" >
+		INSERT INTO T_STATS_INDS 
+	    (	BS_YY, INDS_TP_CD, INDS_TP_NM, WBIZ_TP_L_CD, WBIZ_TP_L_NM, WBIZ_TP_M_CD, WBIZ_TP_M_NM, WBIZ_TP_S_CD, WBIZ_TP_S_NM,
+	        STATS_S_CD, POINT, REG_USERNO, REG_DATE) 
+		VALUES
+    	<foreach collection="list" item="item" separator="," >
+	    	(
+	    		#{item.bs_yy}, #{item.inds_tp_cd}, #{item.inds_tp_nm}, #{item.wbiz_tp_l_cd},  #{item.wbiz_tp_l_nm}, #{item.wbiz_tp_m_cd},  #{item.wbiz_tp_m_nm},  #{item.wbiz_tp_s_cd}, #{item.wbiz_tp_s_nm},   
+	       		#{item.stats_s_cd},  #{item.point}, #{item.s_user_no}, DATE_FORMAT(sysdate(),"%Y%m%d%H%i%s")
+	       	)
+       	</foreach>
+	</insert>
+	
+	<insert id="insertScaleExcelUpload" parameterType ="Map" >
+		INSERT INTO T_STATS_SCALE
+	    (	BS_YY, SCALE_CD, SCALE_NM, STATS_S_CD, POINT, REG_USERNO, REG_DATE) 
+		VALUES
+    	<foreach collection="list" item="item" separator="," >
+	    	(
+	    		#{item.bs_yy}, #{item.scale_cd}, #{item.scale_nm}, #{item.stats_s_cd},  #{item.point}, #{item.s_user_no}, DATE_FORMAT(sysdate(),"%Y%m%d%H%i%s")
+	       	)
+       	</foreach>
+	</insert>
+
+	<delete id="deleteIndustryExcelUpload" parameterType="Map">
+		DELETE FROM T_STATS_INDS
+		WHERE BS_YY=#{bs_yy}
+	</delete>
+	<delete id="deleteScaleExcelUpload" parameterType="Map">
+		DELETE FROM T_STATS_SCALE
+		WHERE BS_YY=#{bs_yy}
+	</delete>
+	
+	<select id="selectStatsPerson" parameterType="Map" resultType="caseMap">
+		SELECT 
+				BS_YY,  SMPL_CD,  SMPL_NM,  INDS_TP_CD,  INDS_TP_NM, 
+				WBIZ_TP_L_CD,  WBIZ_TP_L_NM,  WBIZ_TP_M_CD,  WBIZ_TP_M_NM,  WBIZ_TP_S_CD,  WBIZ_TP_S_NM,
+				BIZ_REG_NO, 	CMPY_NM, 	ADDR1, 	ADDR2, 	ADDR3, ADDR,  BIZ_CATE_CD,
+				EMPL_CNT,  SCALE_CD,   
+				REG_USERNO, REG_DATE
+		FROM T_STATS_PERSON
+		WHERE 
+				bs_yy = #{bs_yy}
+				<if test='smpl_cd != null and ! smpl_cd.equals( "" )' >
+				AND smpl_cd = #{smpl_cd}
+				</if>
+				<if test='inds_tp_cd != null and ! inds_tp_cd.equals( "" )' >
+				AND inds_tp_cd = #{inds_tp_cd}
+				</if>
+				<if test='wbiz_tp_l_cd != null and ! wbiz_tp_l_cd.equals( "" )' >
+				AND wbiz_tp_l_cd = #{wbiz_tp_l_cd}
+				</if>
+				<if test='wbiz_tp_m_cd != null and ! wbiz_tp_m_cd.equals( "" )' >
+				AND wbiz_tp_m_cd = #{wbiz_tp_m_cd}
+				</if>
+				<if test='wbiz_tp_s_cd != null and ! wbiz_tp_s_cd.equals( "" )' >
+				AND wbiz_tp_s_cd = #{wbiz_tp_s_cd}
+				</if>
+				<if test='cmpy_nm != null and ! cmpy_nm.equals( "" )' >
+				AND cmpy_nm like concat('%', #{cmpy_nm}, '%')
+				</if>
+				<if test='wbiz_tp_s_cd != null and ! wbiz_tp_s_cd.equals( "" )' >
+				AND wbiz_tp_s_cd = #{wbiz_tp_s_cd}
+				</if>
+				<if test='addr != null and ! addr.equals( "" )' >
+				AND addr like concat('%', #{addr}, '%')
+				</if>
+				<if test='scale_cd != null and ! scale_cd.equals( "" )' >
+				AND scale_cd = #{scale_cd}
+				</if>
+		ORDER BY bs_yy , stats_sn 
+	</select>
+	<insert id="insertStatsPerson" parameterType ="Map" >
+		INSERT INTO  T_STATS_PERSON
+		(
+			BS_YY,  SMPL_CD,  SMPL_NM,  INDS_TP_CD,  INDS_TP_NM, 
+			WBIZ_TP_L_CD,  WBIZ_TP_L_NM,  WBIZ_TP_M_CD,  WBIZ_TP_M_NM,  WBIZ_TP_S_CD,  WBIZ_TP_S_NM,
+			BIZ_REG_NO, 	CMPY_NM, 	ADDR1, 	ADDR2, 	ADDR3,  ADDR, BIZ_CATE_CD,
+			EMPL_CNT,  SCALE_CD,    
+			REG_USERNO, REG_DATE
+		)
+		VALUES
+		(
+			#{bs_yy},  #{smpl_cd},  #{smpl_nm},  #{inds_tp_cd},  #{inds_tp_nm} ,
+			#{wbiz_tp_l_cd},  #{wbiz_tp_l_nm},  #{wbiz_tp_m_cd}, #{wbiz_tp_m_nm},  #{wbiz_tp_s_cd},  #{wbiz_tp_s_nm},
+			#{biz_reg_no},	#{cmpy_nm}, 	#{addr1}, 	#{addr2}, 	#{addr3}, concat(#{addr1}, 	#{addr2}, 	#{addr3}) ,  #{biz_cate_cd},
+			#{empl_cnt},  #{scale_cd},    
+			#{item.s_user_no}, DATE_FORMAT(sysdate(),"%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	<delete id="deleteStatsPerson" parameterType="Map">
+		DELETE FROM T_STATS_PERSON
+		WHERE BS_YY = #{bs_yy}
+	</delete>
+	
+	<select id="selectCategory" parameterType="Map" resultType="caseMap">
+		SELECT 
+			wbiz_clsf_nm
+		FROM 
+			T_WBIZ_CLSF
+		WHERE			 
+			del_yn = 'N'
+			<if test='wbiz_cd_tp != null and ! wbiz_cd_tp.equals( "" )' >
+			AND wbiz_cd_tp = #{wbiz_cd_tp}
+			</if>
+			<if test='inds_tp_cd != null and ! inds_tp_cd.equals( "" )' >
+			AND inds_tp_cd = #{inds_tp_cd}
+			</if>
+			<if test='wbiz_tp_l_cd != null and ! wbiz_tp_l_cd.equals( "" )' >
+			AND wbiz_tp_l_cd = #{wbiz_tp_l_cd}
+			</if>
+			<if test='wbiz_tp_m_cd != null and ! wbiz_tp_m_cd.equals( "" )' >
+			AND wbiz_tp_m_cd = #{wbiz_tp_m_cd}
+			</if>
+			<if test='wbiz_tp_s_cd != null and ! wbiz_tp_s_cd.equals( "" )' >
+			AND wbiz_tp_s_cd = #{wbiz_tp_s_cd}
+			</if>
+		LIMIT 1
+	</select>
+	<select id="selectCode" parameterType="Map" resultType="caseMap">
+		SELECT 
+			code_nm
+		FROM 
+			T_CODE
+		WHERE			 
+			use_yn = 'Y'
+		AND gubun = #{gubun}
+			<if test='code != null and ! code.equals( "" )' >
+			AND code = #{code}
+			</if>
+	</select>
+	
+</mapper>

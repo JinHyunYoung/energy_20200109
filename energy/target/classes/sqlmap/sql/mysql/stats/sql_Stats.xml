@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="StatsDao">
+	
+	<insert id="insertHomepageconn" parameterType="Map" >
+	 	INSERT INTO T_HOMEPAGECONN (
+	 		conn_dt
+	 		, user_no
+	 		, ip
+	 		, homepage
+	 		, yyyy
+	 		, mm
+	 		, dd
+	 		, hh
+	 	) VALUES (
+	 		DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+	 		, #{s_user_no}
+	 		, #{ip}
+	 		, #{homepage}
+	 		, DATE_FORMAT(SYSDATE(), '%Y')
+	 		, DATE_FORMAT(SYSDATE(), '%m')
+	 		, DATE_FORMAT(SYSDATE(), '%d')
+	 		, DATE_FORMAT(SYSDATE(), '%H') 
+		)
+	</insert>
+	
+	<select id="selectTodayConn" parameterType="Map" resultType="int">
+		SELECT 
+			COUNT(DISTINCT user_no) 
+		FROM T_HOMEPAGECONN
+		WHERE homepage = 'F' AND conn_dt BETWEEN CONCAT(DATE_FORMAT(SYSDATE(),'%Y%m%d'),'000000') AND CONCAT(DATE_FORMAT(SYSDATE(),'%Y%m%d'),'235959')
+	</select>
+		
+	<select id="selectHomepageconnTotal" parameterType="Map" resultType="caseMap">
+		SELECT 
+		  IFNULL((SELECT COUNT(DISTINCT user_no) FROM T_HOMEPAGECONN where homepage = 'F' 
+		             AND conn_dt BETWEEN CONCAT(DATE_FORMAT(SYSDATE(),'%Y%m%d'),'000000') AND CONCAT(DATE_FORMAT(SYSDATE(),'%Y%m%d'),'235959') ),0) AS today_cnt,
+		  IFNULL((SELECT COUNT(DISTINCT user_no) FROM T_HOMEPAGECONN where homepage = 'F' ),0) AS whole_cnt
+		FROM DUAL
+	</select>
+	
+	<select id="selectHomepageconnHour" parameterType="Map" resultType="caseMap">
+		SELECT 
+		     x.h00, ROUND((x.h00/tot_cnt)*100,2) as ha00
+		     , x.h01, ROUND((x.h01/tot_cnt)*100,2) as ha01
+		     , x.h02, ROUND((x.h02/tot_cnt)*100,2) as ha02
+		     , x.h03, ROUND((x.h03/tot_cnt)*100,2) as ha03
+		     , x.h04, ROUND((x.h04/tot_cnt)*100,2) as ha04
+		     , x.h05, ROUND((x.h05/tot_cnt)*100,2) as ha05
+		     , x.h06, ROUND((x.h06/tot_cnt)*100,2) as ha06
+		     , x.h07, ROUND((x.h07/tot_cnt)*100,2) as ha07
+		     , x.h08, ROUND((x.h08/tot_cnt)*100,2) as ha08
+		     , x.h09, ROUND((x.h09/tot_cnt)*100,2) as ha09
+		     , x.h10, ROUND((x.h10/tot_cnt)*100,2) as ha10
+		     , x.h11, ROUND((x.h11/tot_cnt)*100,2) as ha11
+		     , x.h12, ROUND((x.h12/tot_cnt)*100,2) as ha12
+		     , x.h13, ROUND((x.h13/tot_cnt)*100,2) as ha13
+		     , x.h14, ROUND((x.h14/tot_cnt)*100,2) as ha14
+		     , x.h15, ROUND((x.h15/tot_cnt)*100,2) as ha15
+		     , x.h16, ROUND((x.h16/tot_cnt)*100,2) as ha16
+		     , x.h17, ROUND((x.h17/tot_cnt)*100,2) as ha17
+		     , x.h18, ROUND((x.h18/tot_cnt)*100,2) as ha18
+		     , x.h19, ROUND((x.h19/tot_cnt)*100,2) as ha19
+		     , x.h20, ROUND((x.h20/tot_cnt)*100,2) as ha20
+		     , x.h21, ROUND((x.h21/tot_cnt)*100,2) as ha21
+		     , x.h22, ROUND((x.h22/tot_cnt)*100,2) as ha22
+		     , x.h23, ROUND((x.h23/tot_cnt)*100,2) as ha23
+		     , x.h00+x.h01+x.h02+x.h03+x.h04+x.h05+x.h06+x.h07+x.h08+x.h09+x.h10+x.h11+x.h12+x.h13+x.h14+x.h15+x.h16+x.h17+x.h18+x.h19+x.h20+x.h21+x.h22+x.h23 AS h_tot
+		FROM (
+			SELECT 
+				SUM(CASE WHEN hh = '00' THEN 1 ELSE 0 END) AS h00
+		      	, SUM(CASE WHEN hh = '01' THEN 1 ELSE 0 END) AS h01
+		      	, SUM(CASE WHEN hh = '02' THEN 1 ELSE 0 END) AS h02
+		      	, SUM(CASE WHEN hh = '03' THEN 1 ELSE 0 END) AS h03
+		      	, SUM(CASE WHEN hh = '04' THEN 1 ELSE 0 END) AS h04
+		      	, SUM(CASE WHEN hh = '05' THEN 1 ELSE 0 END) AS h05
+		      	, SUM(CASE WHEN hh = '06' THEN 1 ELSE 0 END) AS h06
+		      	, SUM(CASE WHEN hh = '07' THEN 1 ELSE 0 END) AS h07
+		      	, SUM(CASE WHEN hh = '08' THEN 1 ELSE 0 END) AS h08
+		      	, SUM(CASE WHEN hh = '09' THEN 1 ELSE 0 END) AS h09
+		      	, SUM(CASE WHEN hh = '10' THEN 1 ELSE 0 END) AS h10
+		      	, SUM(CASE WHEN hh = '11' THEN 1 ELSE 0 END) AS h11
+		      	, SUM(CASE WHEN hh = '12' THEN 1 ELSE 0 END) AS h12
+		      	, SUM(CASE WHEN hh = '13' THEN 1 ELSE 0 END) AS h13
+		      	, SUM(CASE WHEN hh = '14' THEN 1 ELSE 0 END) AS h14
+		      	, SUM(CASE WHEN hh = '15' THEN 1 ELSE 0 END) AS h15
+		      	, SUM(CASE WHEN hh = '16' THEN 1 ELSE 0 END) AS h16
+		      	, SUM(CASE WHEN hh = '17' THEN 1 ELSE 0 END) AS h17
+		      	, SUM(CASE WHEN hh = '18' THEN 1 ELSE 0 END) AS h18
+		      	, SUM(CASE WHEN hh = '19' THEN 1 ELSE 0 END) AS h19
+		      	, SUM(CASE WHEN hh = '20' THEN 1 ELSE 0 END) AS h20
+		      	, SUM(CASE WHEN hh = '21' THEN 1 ELSE 0 END) AS h21
+		      	, SUM(CASE WHEN hh = '22' THEN 1 ELSE 0 END) AS h22
+		      	, SUM(CASE WHEN hh = '23' THEN 1 ELSE 0 END) AS h23
+		      	, COUNT(user_no) AS tot_cnt
+		  	FROM T_HOMEPAGECONN
+		  	WHERE  homepage = 'F' AND conn_dt BETWEEN CONCAT(REPLACE(#{conn_stadt},'-',''),'000000') AND CONCAT(REPLACE(#{conn_enddt},'-',''),'235959')
+		) x
+	</select>
+	
+	<select id="selectHomepageconnDay" parameterType="Map" resultType="caseMap">
+		SELECT 
+			        conn_dd
+			        , tot_user_cnt
+		          , round(tot_user_cnt / ( SELECT 
+		                                       count(distinct user_no) AS tot_user_cnt
+		                                    FROM T_HOMEPAGECONN
+		                                    WHERE 
+		                                      homepage = 'F' 
+		                                      AND conn_dt BETWEEN CONCAT(REPLACE(#{conn_stadt},'-',''),'000000') AND CONCAT(REPLACE(#{conn_enddt},'-',''),'235959')
+		                                      ) * 100, 2)
+		              AS avg_user_conn
+			    FROM (
+		          SELECT 
+		            DATE_FORMAT(conn_dt, '%Y-%m-%d') AS conn_dd
+		            , count(distinct user_no) AS tot_user_cnt
+		          FROM T_HOMEPAGECONN
+		          WHERE 
+		            homepage = 'F' 
+		            AND conn_dt BETWEEN CONCAT(REPLACE(#{conn_stadt},'-',''),'000000') AND CONCAT(REPLACE(#{conn_enddt},'-',''),'235959')
+		          GROUP BY YYYY, MM, DD
+		     ) Y
+			    ORDER BY conn_dd DESC	
+	</select>
+	
+	<select id="selectHomepageconnYear" parameterType="Map" resultType="caseMap">
+		SELECT 
+			yyyy AS conn_yyyy
+			, count(distinct user_no) AS tot_user_cnt
+		FROM T_HOMEPAGECONN
+		WHERE  
+			homepage = 'F'
+		GROUP BY yyyy
+		ORDER BY yyyy IS NULL DESC, yyyy DESC
+	</select>
+		
+	<!-- 이후부터 안됨 -->
+	<insert id="insertMenuconn" parameterType="Map" >
+	 	INSERT INTO T_MENUCONN (
+	 		conn_dt
+	 		, menu_id
+	 		, ip
+	 		, homepage
+	 		, yyyy
+	 		, mm
+	 		, dd
+	 		, hh
+	 	) VALUES (
+	 		DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+	 		, #{menu_id}
+	 		, #{ip}
+	 		, #{homepage}
+	 		, DATE_FORMAT(SYSDATE(), '%Y')
+	 		, DATE_FORMAT(SYSDATE(), '%m')
+	 		, DATE_FORMAT(SYSDATE(), '%d')
+	 		, DATE_FORMAT(SYSDATE(), '%H') 
+		)
+	</insert>
+	
+	
+	<select id="selectMenuconnPeriod" parameterType="Map" resultType="caseMap">
+		SELECT 
+					m.menu_level
+					, m.menu_number
+					, m.menu_id
+					, m.up_menu_id
+					, m.menu_nm
+					, m.sort
+					, m.sub_cnt
+					, m.homepage
+					, c.conn_cnt
+		FROM
+			(
+		        SELECT
+		               func.level AS menu_level, (@RN := @RN + 1) AS menu_number
+		               , d.menu_id
+		               , ifnull(d.up_menu_id, d.menu_id) as up_menu_id
+		               , d.menu_nm
+		               , d.sort
+		               , d.homepage
+		  			       , (SELECT COUNT(menu_id) FROM T_MENU WHERE homepage='F' AND up_menu_id = d.menu_id AND use_yn = 'Y' ) AS sub_cnt
+			      FROM (
+			                SELECT 
+			                   get_menu_gnb() AS id, @level AS level, (@RN := 0)
+			                  FROM
+			                      (select @start_with := '0000000000', @id := @start_with, @level := 0, @gnb := 'Y') vars
+			                  JOIN T_MENU
+			                  WHERE @id IS NOT NULL
+			                  ) func
+			          INNER JOIN T_MENU d
+			          ON func.id = d.menu_id
+		     ) m
+		LEFT JOIN 
+			(
+				SELECT 
+                		menu_id
+                		, count(menu_id) as conn_cnt
+				FROM T_MENUCONN				
+				<if test='conn_startdt != null and !conn_startdt.equals("") and conn_enddt != null and !conn_enddt.equals("")' >
+        		WHERE 
+           				conn_dt	BETWEEN DATE_FORMAT(CONCAT(replace(#{conn_startdt},'-',''), '000000'), '%Y-%m-%d %H:%i:%s') 
+                        		    AND DATE_FORMAT(CONCAT(replace(#{conn_enddt},'-',''), '235959'), '%Y-%m-%d %H:%i:%s')
+				</if>
+				GROUP BY menu_id
+		) c 
+		ON m.menu_id = c.menu_id
+		ORDER BY m.menu_number	
+	</select>
+	
+	<select id="selectMenuconnMonth" parameterType="Map" resultType="caseMap">
+		SELECT 
+					m.menu_level
+					, m.menu_number
+					, m.menu_id
+					, m.up_menu_id
+					, m.menu_nm
+					, m.sort
+					, m.sub_cnt
+					, m.homepage
+          			, c.mm
+					, IFNULL(c.conn_cnt, 0) AS conn_cnt
+		FROM
+			(
+		        SELECT
+		               func.level AS menu_level, (@RN := @RN + 1) AS menu_number
+		               , d.menu_id
+		               , ifnull(d.up_menu_id, d.menu_id) as up_menu_id
+		               , d.menu_nm
+		               , d.sort
+		               , d.homepage
+		  			       , (SELECT COUNT(menu_id) FROM T_MENU WHERE homepage='F' AND up_menu_id = d.menu_id AND use_yn = 'Y' ) AS sub_cnt
+			      FROM (
+			                SELECT 
+			                   get_menu_gnb() AS id, @level AS level, (@RN := 0)
+			                  FROM
+			                      (select @start_with := '0000000000', @id := @start_with, @level := 0, @gnb := 'Y') vars
+			                  JOIN T_MENU
+			                  WHERE @id IS NOT NULL
+			                  ) func
+			          INNER JOIN T_MENU d
+			          ON func.id = d.menu_id
+		     ) m
+		LEFT JOIN 
+		(
+            SELECT 
+	              d.mm
+	              , f.conn_cnt
+	              , f.menu_id
+	          FROM
+	          (
+	              SELECT '01' AS MM FROM DUAL UNION SELECT '02' AS MM FROM DUAL UNION SELECT '03' AS MM FROM DUAL UNION SELECT '04' MM FROM DUAL UNION SELECT '05' AS MM FROM DUAL UNION SELECT '06' AS MM FROM DUAL UNION  
+                SELECT '07' AS MM FROM DUAL UNION SELECT '08' AS MM FROM DUAL UNION SELECT '09' AS MM FROM DUAL UNION SELECT '10' MM FROM DUAL UNION SELECT '11' AS MM FROM DUAL UNION SELECT '12' AS MM FROM DUAL
+              ) d
+	          LEFT OUTER JOIN 
+	          (
+	              SELECT 
+	                  mm 
+	                  , count(menu_id) as conn_cnt 
+	                  , menu_id
+	              FROM T_MENUCONN
+                WHERE YYYY = #{conn_year}
+	              GROUP BY mm , yyyy, menu_id 
+	          ) f 
+	          ON d.mm = f.mm
+   		) c
+   		ON m.menu_id = c.menu_id
+    	ORDER BY m.menu_number
+	</select>
+	
+	<select id="selectMenuconnDay" parameterType="Map" resultType="caseMap">
+		SELECT 
+			m.menu_level
+			, m.menu_number
+			, m.menu_id
+			, m.up_menu_id
+			, m.menu_nm
+			, m.sort
+			, m.sub_cnt
+			, m.homepage
+			, c.dd
+			, c.conn_cnt
+		FROM
+		(
+		        SELECT
+		               func.level AS menu_level, (@RN := @RN + 1) AS menu_number
+		               , d.menu_id
+		               , ifnull(d.up_menu_id, d.menu_id) as up_menu_id
+		               , d.menu_nm
+		               , d.sort
+		               , d.homepage
+		  			       , (SELECT COUNT(menu_id) FROM T_MENU WHERE homepage='F' AND up_menu_id = d.menu_id AND use_yn = 'Y' ) AS sub_cnt
+			      FROM (
+			                SELECT 
+			                   get_menu_gnb() AS id, @level AS level, (@RN := 0)
+			                  FROM
+			                      (select @start_with := '0000000000', @id := @start_with, @level := 0, @gnb := 'Y') vars
+			                  JOIN T_MENU
+			                  WHERE @id IS NOT NULL
+			                  ) func
+			          INNER JOIN T_MENU d
+			          ON func.id = d.menu_id
+		) m
+		LEFT JOIN 
+		(
+	         SELECT 
+	              d.dd
+	              , IFNULL(conn_cnt, 0) conn_cnt
+	              , f.menu_id
+	          FROM
+	            (
+                <!--  해당 월의 날짜 1~ 31안에 실제 일자들 돌려주기     -->
+                SELECT DATE_FORMAT(dt, '%d') as dd
+                  FROM (
+                        SELECT CONCAT(y, '0101') + INTERVAL a*100 + b*10 + c DAY dt
+                          FROM (SELECT 0 a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 ) a
+                             , (SELECT 0 b UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) b
+                             , (SELECT 0 c UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) c
+                             , (SELECT '2017' y) d
+                         WHERE a*100 + b*10 + c <![CDATA[<]]> DayOfYear(CONCAT(y, '1231'))
+                         GROUP BY dt
+                       ) dt
+                WHERE DATE_FORMAT(dt, '%Y%m') = CONCAT(#{conn_year},LPAD(#{conn_month},2, '0'))
+	            ) d
+	            LEFT OUTER JOIN 
+	            (
+	              SELECT 
+	                  dd 
+	                  , mm 
+	                  , yyyy
+	                  , count(menu_id) as conn_cnt 
+	                  , menu_id
+	              FROM T_MENUCONN
+                  WHERE yyyy = #{conn_year}
+                    AND mm = LPAD(#{conn_month},2, '0')
+	              GROUP BY dd, menu_id
+	            ) f 
+	            ON d.dd = f.dd
+	            ORDER BY dd
+		) c 
+		ON m.menu_id = c.menu_id
+    ORDER BY m.menu_number	
+
+	</select>
+	<select id="selectCompanyReportByYear" parameterType="Map" resultType="caseMap">
+		SELECT YEAR, TP_CD, SUM(CMPY_CNT) AS TOT_CMPY_CNT
+		FROM T_STAT_CMPY
+		GROUP BY YEAR, TP_CD
+	</select>
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans  xmlns="http://www.springframework.org/schema/beans" 
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:util="http://www.springframework.org/schema/util"
+    	xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+    	http://www.springframework.org/schema/util 
+        http://www.springframework.org/schema/util/spring-util-3.2.xsd
+    	http://www.springframework.org/schema/aop 
+    	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+	
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" 		value="mail.koref.or.kr"/>
+        <!-- <property name="protocol" 	value=""/> -->
+        <property name="port" 		value="25"/>
+        <property name="username" 	value="minwon@koref.or.kr"/>
+        <property name="password" 	value="111111"/>
+		<property name="javaMailProperties">
+            <props>
+                <!-- <prop key="mail.smtp.ssl.trust">smtp.naver.com</prop> -->
+                <prop key="mail.smtp.starttls.enable">true</prop>                       
+                <prop key="mail.smtp.auth">true</prop>
+                <prop key="mail.smtp.debug">true</prop>
+                <!-- 
+                <prop key="mail.smtp.socketFactory.port">465</prop>
+                <prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
+                <prop key="mail.smtp.socketFactory.fallback">false</prop>
+                -->
+            </props>
+		</property>
+    </bean>
+ <!-- 
+    <bean id="egovMailManageService" class="kr.or.wabis.framework.email.MailManageServiceImpl">
+        <property name="mailSender" ref="mailSender"/>
+        <property name="velocityEngine" ref="velocityEngine"/> 
+    </bean>
+     -->
+	<bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+        <property name="velocityProperties">
+            <props>
+                <prop key="input.encoding">UTF-8</prop>
+                <prop key="output.encoding">UTF-8</prop>
+                <prop key="response.encoding">UTF-8</prop>
+                <prop key="resource.loader">class</prop>
+                <prop key="class.resource.loader.class">org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader</prop>
+                <!-- <prop key="file.resource.loader.path">#{mail['relative.path']}/email-templates</prop> -->
+                <!-- <prop key="file.resource.loader.cache">false</prop> -->
+            </props>
+        </property>
+    </bean>
+    <!--
+    <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+        <property name="velocityProperties">
+            <value>
+                resource.loader=class
+                class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+            </value>
+        </property>
+    </bean>
+    -->
+         
+</beans>

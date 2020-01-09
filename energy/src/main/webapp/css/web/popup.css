@@ -1,0 +1,138 @@
+@charset "utf-8";
+
+
+body.body_search_pop {border: 2px solid #f68121;}
+
+/* layout */
+#wrap {overflow: hidden;}
+.pop_wrap {border: 1px solid #7b736b;}
+#pop_header {
+	overflow: hidden; position: relative; margin: 0; padding: 11px 15px 11px !important;border: 1px solid #7b736b;
+	font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; 
+	color: #ffffff; background-color: #7b736b;
+}
+	#pop_header h1 { position: relative !important; left: 0px !important; top: 0px !important;  }
+	a.pop_close {position: absolute; top: 10px; right: 10px; width: 19px; height: 20px; background: url('/images/web/common/btn_pop_close.png') no-repeat 0 0;}
+	a.pop_close span {display: block; position: absolute; top: -999999px; right: -999999px;}
+
+
+#pop_search_header {overflow: hidden; position: relative; margin: 0 0 20px; padding-top: 30px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; color: #ffffff;}
+	a.pop_search_close {position: absolute; top: 0; right: 0; width: 38px; height: 38px; background: url('/images/web/common/btn_search_pop_close.png') no-repeat 0 0;}
+	a.pop_search_close span {display: block; position: absolute; top: -999999px; right: -999999px;}
+
+
+#pop_container {overflow: hidden;}
+	.pop_content_area {overflow: hidden; border: 1px solid #7b736b;}
+	    #pop_content {overflow: hidden; padding: 27px 15px 37px;}
+	    .pop_content_line {border-bottom: 1px dotted #dcdcdc;}
+
+
+
+
+/* title */
+.title_area {overflow: hidden; margin-bottom: 30px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+.title_area1 {overflow: hidden; margin-bottom: 15px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+h1.pop_title {float: left; margin: 0 35px 0 0; font-size: 16px; font-weight: bold; color: #ffffff; line-height: 1.4em;}
+h1.pop_search_title {display: block; font-size: 20px; font-weight: bold; color: #333333; line-height: 1.4em;  text-align: center;}
+	h1.pop_search_title span {color: #5bad00;}
+
+
+/* 첨부파일 */
+.file_box {overflow: hidden; padding: 15px 10px 12px;}
+	.file_box strong {display: inline-block; float: left; margin-right: 5px; font-size: 13px; font-weight: bold; color: #333333;}
+	.file_box ul {overflow: hidden;}
+		.file_box ul li {float: left; font-size: 13px; color: #333333; list-style: none;}
+
+
+/* 법인등록번호 */
+.cor_no_box {overflow: hidden; padding: 24px 0; text-align: center; background-color: #e9eff6; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+	.cor_no_txt {margin-bottom: 25px;}
+	.cor_no_txt p {font-weight: bold; color: #4d4d4d; text-align: center;}
+	.cor_no_box input {margin: 0 10px;}
+	.cor_no_box label {font-weight: bold; color: #4d4d4d;}
+
+/* 통합검색 */
+.search_form {overflow: hidden; margin-bottom: 40px; text-align: center;}
+	.search_form .input_search_area {overflow: hidden; width: 448px; height: 43px; margin: 0 auto; border: 1px solid #c9c9c9; background-color: #ffffff;
+		border-radius: 5px;
+		-webkit-border-radius: 5px;
+		-moz-border-radius: 5px;
+	}
+		.search_form .input_search_area input {display: block; float: left; width: 85%; height: 43px; border: 0;}
+		.search_form .input_search_area button {display: block; float: right; width: 15%; height: 43px; font-size: 16px; font-weight: bold; text-align: center; color: #ffffff; line-height: 43px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; background-color: #7b736b;}
+	.search_form .keyword_list_area {overflow: hidden; width: 448px; margin: 10px auto 0; padding: 0 7px; font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+		.search_form .keyword_list_area strong {display: inline-block; float: left; margin-right: 13px; font-size: 11px; color: #4d4d4d;}
+		.search_form .keyword_list_area ul {overflow: hidden; margin-top: -3px;}
+		.search_form .keyword_list_area ul li {float: left; padding-left: 10px; margin-right: 10px; list-style: none; background: url('/images/web/common/bullet_keword_list.png') no-repeat 0 4px;}
+		.search_form .keyword_list_area ul li:first-child {padding-left: 0; background: none;}
+		.search_form .keyword_list_area ul li a {font-size: 11px; color: #4d4d4d;}
+
+
+/* table_top_area */
+.table_top_area {overflow: hidden; margin-bottom: 10px; font-size: 13px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+	.table_top_area .table_top_left {float: left;}
+	.table_top_area .table_top_right {float: right;}
+	.table_top_area .table_count {color: #f68121;}
+	.table_top_area p {margin-top: 16px; font-size: 13px; color: #585858;}
+	.table_top_area select {height: 35px; border: 1px solid #d2d2d2; color: #4d4d4d;}
+	.table_top_area input[type=text] {height: 33px; border: 1px solid #d2d2d2; color: #4d4d4d;}
+	.table_top_area button {margin-left: -5px;}
+
+.search_area {overflow: hidden; position: relative; padding: 25px 50px; margin-bottom: 30px; border: 2px solid #b1bec8; background: url('/images/web/common/search_bg.png') no-repeat right bottom;}
+	.search_txt_box {overflow: hidden; margin-bottom: 10px;}
+	.search_txt_box input[type=text] {width: 98.4%; border: 1px solid #d2d2d2;}
+		 .btn.sch {width: 71px; height: 25px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 13px; font-weight: bold; text-align: center; line-height: 25px; color: #ffffff; border-radius: 3px; background-color: #0487cb;}
+		 .btn.clear {width: 71px; height: 25px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 13px; font-weight: bold; text-align: center; line-height: 25px; color: #0487cb; border: 1px solid #0487cb; border-radius: 3px; background-color: #ffffff;}
+
+	dl.search_box {overflow: hidden; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕'; font-size: 13px; vertical-align: top;}
+		dl.search_box + dl.search_box {margin-top: 6px;}
+		dl.search_box > dt.title {float: left; width: 80px; margin-right: 10px; padding: 4px 0 0 9px; font-weight: bold; vertical-align: top; background: url('/images/web/common/bullet_search.png') no-repeat 0 11px;}
+		dl.search_box > dd.box {overflow: hidden; min-height: 27px; font-weight: normal; vertical-align: top;}
+		dl.search_box > dd.box input {height: 25px;}
+		dl.search_box > dd.box input[type="text"] {height: 23px; border: 1px solid #d2d2d2;}
+		dl.search_box > dd.box input.input_day {width: 20%;}
+		dl.search_box > dd.box input.input_txt1 {width: 50%;}
+		dl.search_box > dd.box input.input_txt2 {width: 60%;}
+		dl.search_box > dd.box span.txt {display: inline-block; font-weight: normal; font-size: 0.98em; color: #4d4d4d; letter-spacing: -0.04em; vertical-align: middle;}
+		dl.search_box > dd.box select {height: 25px; border: 1px solid #d2d2d2;}
+		dl.search_box > dd.box select.selectbox1 {width: 25%;}
+		dl.search_box > dd.box div.search_btn_area {display: inline-block; vertical-align: top;}
+
+
+/* statistics_area */
+.stati_title_area {
+	display: block; height: 48px; padding: 0px 13px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-weight: bold; line-height: 50px;
+	border-top-left-radius: 10px;
+    -webkit-border-top-left-radius: 10px;
+    -moz-border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    -webkit-border-top-right-radius: 10px;
+    -moz-border-top-right-radius: 10px;
+	}
+	.stati_title_area.off {border: 1px solid #cfcfcf; font-size: 15px; font-weight: bold; color: #585757; background-color: #eaeaea;}
+	.stati_title_area.on {border: 1px solid #e86a02; font-size: 15px; font-weight: bold; color: #ffffff; background-color: #f68121;}
+	
+	.stati_list_area {overflow-y: auto;}
+		.stati_list_area.off {border: 1px solid #cfcfcf; border-top: 0px;}
+		.stati_list_area.off.noselect {background: url('/images/web/icon/bg_statistics_txt1.png') no-repeat center center;}
+		.stati_list_area.on {border: 1px solid #e86a02; border-top: 0px;}
+		
+		ul.stati_list {overflow: hidden; margin: 1px; font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 13px;}
+			ul.stati_list li {list-style: none;}
+			ul.stati_list li a {overflow: hidden; display: block; height: 34px; padding: 0 15px 0 23px; color: #585757; line-height: 36px; text-overflow: ellipsis; white-space: nowrap; background: url('/images/web/common/bullet_stati_off.png') no-repeat 15px center;}
+			ul.stati_list li a:hover {background-color: #eaeaea;}
+			ul.stati_list li.on a:active,
+			ul.stati_list li.on a:visited,
+			ul.stati_list li.on a {font-weight: bold; text-decoration: none; color: #ffffff; background: url('/images/web/common/bullet_stati_on.png') no-repeat 15px center #f68121;}
+		
+	.bg_arrow_next {float: left; width: 5%; height: 298px; background: url('/images/web/common/img_next_arrow.png') no-repeat center center;}
+	
+	.tree_area {overflow-y: scroll; padding: 15px; border: 1px solid #cfcfcf; border-top: 0px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+		ul.check_list {overflow: hidden;}
+			ul.check_list li {margin-top: 7px; font-size: 13px; list-style: none;}
+			ul.check_list li:first-child {margin-top: 0;}
+
+
+
+/* footer */
+.close_area {overflow: hidden; padding: 12px 15px 11px; border-top: 1px solid #dcdcdc; font-size: 13px; color: #333333; text-align: right;}

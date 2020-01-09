@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SupportreqDao">
+	
+	    <select id="selectSupportreq" parameterType="Map" resultType="caseMap">
+	        select 
+	            req_id
+				,req_nm
+				,date_format(STR_TO_DATE(birth,'%Y%m%d'),'%Y-%m-%d') as birth
+				,prot_gb
+				,prot_type
+				,gener_type
+				,gener_cnt
+				,child_cnt
+				,disable_cnt
+				,zipcode
+				,addr1
+				,addr2
+				,handphone
+				,live_type
+				,heat_type
+				,heat_etc
+				,obj_prof_doc
+				,(SELECT origin_file_nm FROM t_commonfile WHERE file_id = a.obj_prof_doc) as obj_prof_doc_nm
+				,date_format(STR_TO_DATE(reg_date,'%Y%m%d%H%i%s'),'%Y-%m-%d') as reg_date
+				,eval_result
+				,(select code_nm from t_code where gubun = 'EVAL_RESULT' and code = a.eval_result) as eval_result_nm
+				,ifnull(date_format(STR_TO_DATE(eval_date,'%Y%m%d%H%i%s'),'%Y-%m-%d'),'-') as eval_date
+				,apply_org_nm
+				,apply_org_usernm
+				,memo
+				,administ_cd
+	        from t_support_req a
+	        where req_id = #{req_id}
+	    </select>
+	     
+		<select id="selectSupportreqPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+			select req_id
+			       ,req_nm
+			       ,date_format(STR_TO_DATE(birth,'%Y%m%d'),'%Y.%m.%d') as birth
+			       ,prot_gb
+			       ,(select code_nm from t_code where gubun = 'SAFE_CD' and code = a.prot_gb) as prot_gb_nm
+			       ,prot_type
+			       ,(select code_nm from t_code where gubun = concat('SAFE_CD_',a.prot_gb) and code = a.prot_type) as prot_type_nm
+			       ,gener_type
+			       ,(select code_nm from t_code where gubun = 'FA_TYPE_CD' and code = a.gener_type) as gener_type_nm
+			       ,gener_cnt
+			       ,child_cnt
+				   ,disable_cnt
+				   ,zipcode
+				   ,addr1
+				   ,addr2
+				   ,handphone
+				   ,live_type
+				   ,(select code_nm from t_code where gubun = 'LIVE_TYPE' and code = a.live_type) as live_type_nm
+				   ,heat_type
+			       ,(select code_nm from t_code where gubun = 'HEAT_TYPE' and code = a.heat_type) as heat_type_nm
+			       ,heat_etc
+			       ,case when obj_prof_doc is not null then 'Y' else 'N' end as obj_prof_doc_yn  
+			       ,(select code_nm from t_code where gubun = 'SIDO_CD' and code = substring(a.administ_cd,1,2)) as sido
+			       ,(select code_nm from t_code where gubun = 'ADMINISTRATOR_CD' and code = a.administ_cd) as sigun
+			       ,date_format(STR_TO_DATE(reg_date,'%Y%m%d%H%i%s'),'%Y-%m-%d') as reg_date
+			       ,eval_result
+			       ,(select code_nm from t_code where gubun = 'EVAL_RESULT' and code = a.eval_result) as eval_result_nm
+			       ,ifnull(date_format(STR_TO_DATE(eval_date,'%Y%m%d%H%i%s'),'%Y-%m-%d'),'-') as eval_date
+				   ,apply_org_nm
+				   ,apply_org_usernm
+				   ,memo
+			from t_support_req a
+			where 1=1
+			  <if test='p_administ_cd != null and !p_administ_cd.equals("")' >
+			    and a.administ_cd like concat(#{p_administ_cd},'%') 
+			  </if>
+			  <if test='p_eval_result != null and !p_eval_result.equals("")' >
+			  and a.eval_result = #{p_eval_result}
+			  </if>
+			  <if test='p_prot_gb != null and !p_prot_gb.equals("")' >
+			  and a.prot_gb = #{p_prot_gb} 
+			  </if>
+			  <if test='p_prot_type != null and !p_prot_type.equals("")' >
+			  and a.prot_type = #{p_prot_type}
+			  </if>
+			  <if test='p_gener_type != null and !p_gener_type.equals("")' >
+			  and a.gener_type = #{p_gener_type} 
+			  </if>
+			  <if test='p_searchtxt != null and !p_searchtxt.equals("")' >
+				  <if test='p_searchkey != null and p_searchkey.equals("reg_nm")' >
+				  and req_nm like concat('%',#{p_searchtxt},'%')
+				  </if>
+				  <if test='p_searchkey != null and p_searchkey.equals("birth")' >
+				  and birth like concat('%',#{p_searchtxt},'%')
+				  </if>
+				  <if test='p_searchkey != null and p_searchkey.equals("apply_org_nm")' >
+				  and apply_org_nm like concat('%',#{p_searchtxt},'%')
+				  </if>
+				  <if test='p_searchkey != null and p_searchkey.equals("apply_org_usernm")' >
+				  and apply_org_usernm like concat('%',#{p_searchtxt},'%')
+				  </if>
+			   </if>
+			<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<update id="insertSupportreq" parameterType="Map" >
+		insert into t_support_req
+		(req_nm
+		,birth
+		,prot_gb
+		,prot_type
+		,gener_type
+		,gener_cnt
+		,child_cnt
+		,disable_cnt
+		,zipcode
+		,addr1
+		,addr2
+		,handphone
+		,live_type
+		,heat_type
+		,heat_etc
+		,obj_prof_doc
+		,reg_date
+		,eval_result
+		,administ_cd
+		)
+		values
+		(
+		 #{req_nm}
+		,REPLACE(#{birth},'-','')
+		,#{prot_gb}
+		,#{prot_type}
+		,#{gener_type}
+		,#{gener_cnt}
+		,#{child_cnt}
+		,#{disable_cnt}
+		,#{zipcode}
+		,#{addr1}
+		,#{addr2}
+		,#{handphone}
+		,#{live_type}
+		,#{heat_type}
+		,#{heat_etc}
+		,#{obj_prof_doc}
+		,DATE_FORMAT( now() , '%Y%m%d%H%i%S' )
+		,'R'
+		,#{administ_cd}
+		)
+	</update>
+	
+	<update id="updateSupportreq" parameterType="Map" >
+		update t_support_req
+		set 
+		req_nm              = #{req_nm}          
+		,birth               = REPLACE(#{birth},'-','')         
+		,prot_gb             = #{prot_gb}
+		,prot_type           = #{prot_type}       
+		,gener_type          = #{gener_type}      
+		,gener_cnt           = #{gener_cnt}       
+		,child_cnt           = #{child_cnt}       
+		,disable_cnt         = #{disable_cnt}     
+		,zipcode             = #{zipcode}         
+		,addr1               = #{addr1}           
+		,addr2               = #{addr2}           
+		,handphone           = #{handphone}       
+		,live_type           = #{live_type}       
+		,heat_type           = #{heat_type}       
+		,heat_etc            = #{heat_etc}       
+		,obj_prof_doc        = #{obj_prof_doc}  
+		,apply_org_nm        = #{apply_org_nm}
+		,apply_org_usernm    = #{apply_org_usernm}
+		,memo                = #{memo}
+		,administ_cd         = #{administ_cd}
+		where req_id               = #{req_id}
+    </update>
+
+	<update id="approvalSupportreq" parameterType="Map" >
+		update t_support_req
+		set 
+		eval_result         = #{eval_result}
+		,eval_date          = DATE_FORMAT( now() , '%Y%m%d%H%i%S' )     
+		where req_id               = #{req_id}
+    </update>
+    
+    <delete id="deleteSupportreq" parameterType="Map" >
+       delete from t_support_req where req_id = #{req_id}
+    </delete>
+
+	<select id="selectSupportbusiStatList" parameterType="Map" resultType="caseMap">
+	   select
+          b.year, b.region_cd, b.region_nm, ifnull(a.amt,0) as amt, ifnull(a.house_num,0) as house_num 
+       from  
+       (
+		select 
+		  year
+		  ,region_cd
+		  ,amt
+		  ,house_num
+		from t_supportbusi_stat 
+		where year = #{p_year}
+		) a right outer join 
+		(
+		   select
+		       c.year, d.region_cd, d.region_nm
+		   from 
+		   (select #{p_year} as year from dual) c,(
+		    select code as region_cd, code_nm as region_nm 
+		    from t_code
+		    where gubun = 'SIDO_CD'
+		    ) d
+		) b on a.year = b.year and a.region_cd = b.region_cd   
+        order by b.region_cd asc  
+	</select>
+	
+	<update id="insertSupportbusiStat" parameterType="Map" >
+		INSERT INTO t_supportbusi_stat (
+			year
+			,region_cd
+			,amt
+			,house_num
+		) VALUES (
+			#{year}
+			,#{region_cd}
+			,#{amt}
+			,#{house_num}
+		) ON DUPLICATE KEY 
+		UPDATE amt= #{amt},
+		       house_num = #{house_num}
+	</update>
+		       
+	<select id="selectSupportfundStatList" parameterType="Map" resultType="caseMap">
+	   select
+          fund_id, year, ifnull(amt,0) as amt, use_yn 
+       from t_supportfund_stat  
+        order by year desc  
+	</select>
+	
+	<update id="insertSupportfundStat" parameterType="Map" >
+		INSERT INTO t_supportfund_stat (
+			year
+			,amt
+			,use_yn
+		) VALUES (
+			#{year}
+			,#{amt}
+			,#{use_yn}
+		) 
+	</update>
+	
+	<update id="updateSupportfundStat" parameterType="Map" >
+		UPDATE t_supportfund_stat
+		SET	year = #{year}
+			,amt = #{amt}
+			,use_yn = #{use_yn}
+		WHERE fund_id = #{fund_id} 
+	</update>
+			 
+    <delete id="deleteSupportfundStat" parameterType="Map" >
+       delete from t_supportfund_stat where fund_id = #{fund_id}
+    </delete>
+    			  	  
+    <select id="selectSigunCodeList" parameterType="Map" resultType="caseMap">
+		select code, code_nm as codenm 
+		from t_code 
+		where gubun = 'ADMINISTRATOR_CD' and code like concat(#{sido},'%')
+		order by code asc 
+	</select>			  
+    			       
+</mapper>

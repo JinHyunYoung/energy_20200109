@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="IntgSchDao">
+
+	 <resultMap id="intgSchMap" type="Map">
+		<result property="contents_id" column="term_sn" />
+		<result property="board_id" column="kr_idx" />
+		<result property="board_title" column="kr_idx" />		
+		<result property="title" column="en_idx" />
+		<result property="contents" column="term_kr_nm" />
+		<result property="menu_id" column="menu_id" />				
+	</resultMap>
+	
+	<resultMap id="searchTermMap" type="Map">		
+		<result property="sch_term" column="sch_term" />
+		<result property="sch_dt" column="sch_dt" />		
+		<result property="cnt" column="cnt" />
+	</resultMap>
+
+	<select id="selectIntgSchPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		SELECT
+			d.contents_id
+		    , d.title as board_title
+			, d.board_id 
+			, d.title 
+		    , d.contents 
+		    , d.reg_date
+		    , d.menu_id
+		    , m.menu_navi
+		FROM
+		(
+		SELECT 
+	   		b.contents_id
+		    , a.title as board_title
+			, a.board_id 
+			, b.title 
+		    , b.contents 
+		    , b.reg_date
+		    , ( SELECT menu_id from T_MENU c WHERE c.use_yn = 'Y' AND c.url = CONCAT( '/web/board/boardContentsListPage.do?board_id=' , a.board_id ) LIMIT 0 , 1  ) AS menu_id
+		FROM 
+				T_BOARD a , T_BOARDCONTENTS b
+		WHERE 
+				a.board_id = b.board_id
+   			 	AND a.del_yn = 'N' AND a.use_yn = 'Y' AND b.del_yn = 'N'
+			<if test='keyword != null and ! keyword.equals( "" )' >
+				AND ( b.title like CONCAT('%',  #{keyword}, '%') OR b.contents LIKE CONCAT('%',  #{keyword}, '%') )
+			</if>
+		) d , 
+		( 
+		SELECT 
+	  		A.menu_id
+			, A.menu_navi
+		FROM 
+			( SELECT   menu_sys_connect_by_path('#', d.menu_id) as menu_navi, func.level, d.*
+		          FROM ( SELECT get_menu() AS id, @level AS level
+		                  FROM (select @start_with := '0000000000', @id := @start_with, @level := 0) vars
+		                  JOIN T_MENU
+		                  WHERE @id IS NOT NULL
+		                  ) func
+		          INNER JOIN T_MENU d
+		          ON func.id = d.menu_id
+			) A
+		)  m WHERE m.menu_id = d.menu_id and d.menu_id != '' AND d.menu_id is not null			
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="searchIntgSchHistoryTop5" parameterType="Map" resultMap="searchTermMap">
+	 	SELECT sch_term , count( sch_term ) AS cnt FROM T_INTG_SCH_HIST GROUP BY SCH_TERM ORDER BY cnt DESC LIMIT 0 , 5
+	</select>
+	
+	<insert id="insertIntgSchHistory" parameterType="Map">
+	 	INSERT INTO T_INTG_SCH_HIST ( sch_term , sch_dt )	
+	 	VALUES ( #{keyword} , now() )
+	</insert>
+
+	
+</mapper>

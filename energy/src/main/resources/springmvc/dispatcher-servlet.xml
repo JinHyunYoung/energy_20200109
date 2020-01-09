@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation=
+		"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd">
+
+	<context:component-scan base-package="kr.or.wabis">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+	</context:component-scan>
+    
+		
+	<!-- ============================================================ -->
+    <!-- View Resolver -->
+    <!-- ============================================================ -->
+  	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="contentNegotiationManager">  
+            <bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+                <property name="favorPathExtension" value="false" />
+                <property name="favorParameter" value="false" />
+                <!-- <property name="parameterName" value="mediaType" /> -->
+                <property name="ignoreAcceptHeader" value="false"/>
+                <property name="useJaf" value="false"/>
+                <property name="defaultContentType" value="application/json" />             
+                <property name="mediaTypes">
+                    <map>
+                        <entry key="html" value="text/html" />
+                        <entry key="json" value="application/json" />
+                        <entry key="xml" value="application/xml" />
+                   </map>
+                </property>
+            </bean> 
+        </property>  
+	    <property name="viewResolvers">      	
+	        <list>  	       
+				
+			    <bean class="org.springframework.web.servlet.view.BeanNameViewResolver">	
+                    <property name="order" value="1" />
+                </bean>  
+	                        
+				<bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+                    <property name="order" value="2" />
+					<property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView" />
+				</bean>
+				
+				<bean class="org.springframework.web.servlet.view.UrlBasedViewResolver">		
+                    <property name="order" value="3" />
+                    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+                    <property name="prefix" value="/WEB-INF/jsp/" />
+                    <property name="suffix" value=".jsp" />
+                </bean>
+				
+	        </list>
+	    </property>
+	    <property name="defaultViews">
+	        <list>
+	            <ref bean="jsonView" />
+	        </list>
+	    </property>
+	</bean>		
+    
+    <!-- 확인 필요 -->
+    <bean id="jsonMapper" class="com.fasterxml.jackson.databind.ObjectMapper" />    
+    <bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+        <property name="objectMapper" ref="jsonMapper" />
+    </bean>
+    	
+    		
+	<!-- ============================================================ -->
+    <!-- Request Mapping Handler -->
+    <!-- ============================================================ -->
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="customArgumentResolvers">
+			<list>
+				<bean class="kr.or.wabis.framework.web.support.CustomArgumentResolver" />
+			</list>
+		</property>
+		<property name="messageConverters">
+			<list>
+				<bean 
+					class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+			</list>
+		</property>
+	</bean>
+
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
+	
+
+
+	<!-- ============================================================ -->
+    <!-- Multipart Resolver -->
+    <!-- ============================================================ -->
+	<!-- regular spring resolver -->
+	<bean id="spring.RegularCommonsMultipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="1000000000" />
+		<property name="maxInMemorySize" value="1000000" />
+	</bean>
+	<alias name="spring.RegularCommonsMultipartResolver" alias="multipartResolver" />
+		
+	
+	<!-- ============================================================ -->
+    <!-- Tiles Config -->
+    <!-- ============================================================ -->
+	<bean id="tilesConfigurer"  class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+		<property name="definitions">
+			<list>
+				<value>/WEB-INF/tiles.xml</value>
+			</list>
+		</property>
+	</bean>
+	
+	
+	<!-- ============================================================ -->
+    <!-- Conversion Service Resolver -->
+    <!-- ============================================================ -->	
+	<mvc:annotation-driven conversion-service="conversionService" >
+        <mvc:argument-resolvers>
+            <bean class="kr.or.wabis.framework.web.controller.CommandArrayArgumentResolver" />
+        </mvc:argument-resolvers>
+    </mvc:annotation-driven>
+	
+	
+	<!-- ============================================================ -->
+    <!-- JQ Grid View -->
+    <!-- ============================================================ -->
+    <bean id="jqGridView" class="kr.or.wabis.framework.web.view.JqGridView" />
+	
+			
+	<!-- ============================================================ -->
+    <!-- Download View -->
+    <!-- ============================================================ -->
+	<bean id="downloadView" class="kr.or.wabis.framework.web.view.DownloadView" />	
+	
+	
+	<!-- ============================================================ -->
+    <!-- Excel Down View -->
+    <!-- ============================================================ -->
+	<bean id="excelDownView" class="kr.or.wabis.framework.web.view.ExcelDownView"></bean>  
+	    
+    
+	<!-- ============================================================ -->
+    <!-- Spring context -->
+    <!-- ============================================================ -->
+	<bean id="applicationContextProvider" class="kr.or.wabis.framework.web.support.ApplicationContextProvider"></bean>
+    
+    
+	<!-- ============================================================ -->
+    <!-- Formatting Conversion -->
+    <!-- ============================================================ -->
+	<bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+		<property name="formatters">
+			<set>
+			    <!-- If Login-language is Amharic, Convert Date to Gregorian-Date -->
+				<bean class="kr.or.wabis.framework.web.converter.StringDateTimeFormatAnnotationFormatterFactory" />
+			</set>
+		</property>
+	</bean>
+		
+	
+	<!-- ******************************************************************************************* -->
+	<!-- Message Config -->
+    <!-- ******************************************************************************************* -->
+	<bean id="messageSource" class="kr.or.wabis.framework.message.PropertyResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>classpath:/message/message</value>
+			</list>
+		</property>
+		<property name="defaultEncoding" value="UTF-8" />
+		<property name="cacheSeconds" value="180" />
+        <property name="languages">
+            <array>
+                <value>ko</value> 
+                <value>en</value>
+            </array>
+        </property>
+	</bean>
+	
+	<bean id="messageSourceAccessor" class="org.springframework.context.support.MessageSourceAccessor">
+    	<constructor-arg ref ="messageSource"/>
+    </bean>
+    
+    <bean id="messageUtil" class="kr.or.wabis.framework.util.MessageUtil">
+        <property name="messageSourceAccessor" ref="messageSourceAccessor"/>
+    </bean>
+		
+	<!-- ============================================================ -->
+    <!-- Controller Interceptor -->
+    <!-- ============================================================ -->
+    <mvc:interceptors>
+        	
+        <!--
+        <mvc:interceptor>
+            <mvc:mapping path="/admin" />
+			<bean class="kr.or.wabis.framework.web.interceptor.LoggingInterceptor" />
+        </mvc:interceptor>
+        
+		<mvc:interceptor>
+        
+			<mvc:mapping path="/**/*.do" />
+            	
+			<mvc:exclude-mapping path="/locale/*.do" /> 
+			<mvc:exclude-mapping path="/comm/searchCode.do" />
+			<mvc:exclude-mapping path="/comm/moveValidationResult.do" />
+            
+			<mvc:exclude-mapping path="/main.do" />
+			<mvc:exclude-mapping path="/login.do" />
+			<mvc:exclude-mapping path="/login/*.do" />
+			<mvc:exclude-mapping path="/noti/detailNoti.do" />
+            			
+			<bean class="kr.or.wabis.framework.web.interceptor.AuthInterceptor" />	
+			
+		</mvc:interceptor>
+        -->
+        
+        <mvc:interceptor>
+            <mvc:mapping path="/locale/changeLanguage.do" />
+            <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+                <property name="paramName" value="language"></property>
+            </bean>
+        </mvc:interceptor>
+        
+		<mvc:interceptor>
+	         <mvc:mapping path="/**/*.do" />
+	         <mvc:mapping path="/**/*" />
+	         <mvc:exclude-mapping path="/index.jsp" />
+	         <bean class="kr.or.wabis.framework.web.interceptor.SessionInterceptor" />
+	     </mvc:interceptor>
+	     
+	</mvc:interceptors>
+    	
+	
+</beans>

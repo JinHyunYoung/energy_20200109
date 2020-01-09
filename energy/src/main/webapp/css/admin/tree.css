@@ -1,0 +1,9 @@
+﻿@charset "utf-8";
+
+
+/* tree_area */
+.tree_area {overflow: hidden; padding: 10px 10px 0px; border: 1px solid #dadada; background-color: #fafafa;}
+	.tree_box {overflow: hidden; margin: 0px 15px 10px 0;}
+	strong.tree_title {display: block; height: 28px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-weight: bold; text-align: center; line-height: 28px;}
+	.tree_layout {overflow-y: auto; height: 210px; margin-top: 2px; padding: 8px 5px; border: 1px solid #dadada; background-color: #ffffff;}
+	ul.tree_list li {clear: both; margin-left: 15px; font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 12px; letter-spacing: -0.03em; list-style: none;}

@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CodeDao">
+ 
+	<select id="selectCodegubunPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		
+		SELECT 
+	   		gubun
+			, gubun_nm
+			, reg_userno
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, reg_date
+			, use_yn
+			, gubun_desc
+			, (SELECT COUNT(code) FROM T_CODE WHERE gubun = a.gubun) AS code_cnt
+		FROM t_codegubun a
+		WHERE 
+			1=1
+			<if test='gubun_nm != null and !gubun_nm.equals("")' >
+			   AND gubun_nm LIKE '%'||#{gubun_nm}||'%'
+			</if>
+			<if test='use_yn != null and !use_yn.equals("")' >
+			   AND use_yn = #{use_yn}
+			</if>			
+			
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="selectCodegubunList" parameterType="Map" resultType="caseMap">
+		SELECT 
+    		gubun
+			, gubun_nm
+			, use_yn
+			, reg_userno
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, reg_date
+			, upd_userno
+			, upd_date
+		FROM t_codegubun a
+		WHERE 
+			1 = 1  			
+			<if test='gubun != null and !gubun.equals("")' >
+			   AND gubun = #{gubun}
+			</if>
+			<if test='gubun_nm != null and !gubun_nm.equals("")' >
+			   AND gubun_nm = #{gubun_nm}
+			</if>
+			<if test='reg_userno != null and !reg_userno.equals("")' >
+			   AND reg_userno = #{reg_userno}
+			</if>
+			<if test='reg_date != null and !reg_date.equals("")' >
+			   AND reg_date = #{reg_date}
+			</if>
+			<if test='upd_userno != null and !upd_userno.equals("")' >
+			   AND upd_userno = #{upd_userno}
+			</if>
+			<if test='upd_date != null and !upd_date.equals("")' >
+			   AND upd_date = #{upd_date}
+			</if>
+			<if test='use_yn != null and !use_yn.equals("")' >
+			   AND use_yn = #{use_yn}
+			</if>
+	</select>
+	
+	<select id="selectCodegubun" parameterType="Map" resultType="caseMap">
+		SELECT 
+   			gubun
+			, gubun_nm
+			, use_yn
+			, gubun_desc
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, reg_userno
+			, GET_DATEFORMAT(reg_date) as reg_date
+		FROM t_codegubun a
+		WHERE 
+			gubun = #{gubun}
+			<if test='use_yn != null and !use_yn.equals("")' >
+			   AND use_yn = #{use_yn}
+			</if>
+	</select>
+	
+	<select id="selectCodegubunExist" parameterType="Map" resultType="integer">
+		SELECT
+			count(*)
+		FROM t_codegubun
+		WHERE 
+			gubun = #{gubun}
+			
+	</select>
+	
+	<update id="insertCodegubun" parameterType="Map" >
+		INSERT INTO t_codegubun (
+			gubun
+			, gubun_nm
+			, use_yn
+			, gubun_desc
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			 #{gubun}
+			, #{gubun_nm}
+			, 'Y'
+			, #{gubun_desc}
+			, #{s_user_no}
+			, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+			, #{s_user_no}
+			, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+		)
+	</update>
+	
+	<update id="updateCodegubun" parameterType="Map" >
+	    UPDATE t_codegubun
+		SET
+			gubun_nm = #{gubun_nm}
+			, use_yn = #{use_yn}
+			, gubun_desc = #{gubun_desc}
+			, upd_userno = #{s_user_no}
+			, upd_date = TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+		WHERE  
+			gubun = #{gubun}
+	</update>
+	
+	<delete id="deleteCodegubun" parameterType="Map" >
+	 	DELETE FROM	t_codegubun 
+		WHERE 
+			gubun = #{gubun}
+	</delete>
+	
+	<select id="selectCodeList" parameterType="Map" resultType="caseMap">
+		SELECT 	
+			gubun
+			, code
+			, code_nm
+			, use_yn
+			, code_desc
+			, sort
+			, reg_userno
+			, GET_DATEFORMAT(reg_date) as reg_date
+		FROM T_CODE
+		WHERE  
+			gubun = #{gubun}
+			<if test='code_nm != null and !code_nm.equals("")' >
+			   AND code_nm LIKE '%'||#{code_nm}||'%'
+			</if>
+		ORDER BY sort		
+	</select>
+	
+	<select id="selectCodeGubunCodeList" parameterType="String" resultType="caseMap">
+		SELECT 
+			code
+			, code_nm AS codenm
+		FROM T_CODE
+		WHERE  
+			use_yn = 'Y' 
+			AND gubun = #{gubun}
+		ORDER BY sort
+	</select>
+	
+	<select id="selectCode" parameterType="Map" resultType="caseMap">
+		SELECT 
+  			gubun
+  			, (SELECT gubun_nm FROM t_codegubun where gubun = a.gubun) AS gubun_nm
+			, code
+			, code_nm
+			, sort
+			, code_desc
+			, use_yn
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, reg_userno
+			, GET_DATEFORMAT(reg_date) as reg_date
+		FROM T_CODE a
+		WHERE  
+			gubun = #{gubun}  
+			AND code = #{code}
+	</select>
+	
+	<select id="selectCodeExist" parameterType="Map" resultType="integer">
+		SELECT 
+			count(*)
+		FROM T_CODE
+		WHERE 
+			code = #{code}
+			AND	gubun = #{gubun}
+	</select>
+	
+	<update id="insertCode" parameterType="Map" >
+		INSERT INTO T_CODE (
+			gubun
+			, code
+			, code_nm
+			, sort
+			, code_desc
+			, use_yn
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			#{gubun}
+			, #{code}
+			, #{code_nm}
+			, (SELECT NVL(MAX(sort),0)+1 FROM T_CODE WHERE gubun = #{gubun})
+			, #{code_desc}
+			, 'Y'
+			, #{s_user_no}
+			, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+			, #{s_user_no}
+			, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+		)
+	</update>
+	
+	<update id="updateCode" parameterType="Map" >
+	    UPDATE T_CODE
+		SET
+			code_nm = #{code_nm}
+			, code_desc = #{code_desc}
+			, use_yn = #{use_yn}
+			, upd_userno = #{s_user_no}
+			, upd_date = TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')		
+		WHERE 
+			code = #{code}
+			AND	gubun = #{gubun}
+	</update>
+	
+	<delete id="deleteCode" parameterType="Map" >
+	 	DELETE FROM T_CODE 
+		WHERE  
+			code = #{code}
+			AND	gubun = #{gubun}
+	</delete>
+	
+	<delete id="deleteCodeAll" parameterType="Map" >
+	 	DELETE FROM T_CODE 
+		WHERE 
+			gubun = #{gubun}
+	</delete>
+	
+	<update id="updateCodeSeq" parameterType="Map" >
+	    UPDATE T_CODE
+	    SET 
+	    	sort = #{sort}
+	    WHERE 
+	    	gubun = #{gubun} 
+	    	AND code = #{code}
+	</update>
+	
+	<update id="deleteCodeReorder" parameterType="Map" >
+	    UPDATE T_CODE
+		SET
+			sort = sort - 1
+		WHERE	
+			sort > (SELECT sort FROM T_CODE WHERE gubun = #{gubun} AND code = #{code})
+	</update>
+
+</mapper>

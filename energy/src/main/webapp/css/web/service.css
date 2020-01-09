@@ -1,0 +1,96 @@
+@charset "utf-8";
+@import "nanumgothic.css";
+
+
+
+/* 사이트맵 */
+.sitemap_area {overflow: hidden; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+	.sitemap_area > ul {overflow: hidden;}
+	.sitemap_area > ul > li {float: left; width: 23.5%; min-height: 680px; margin: 0 0 50px 2%; list-style: none;}
+	.sitemap_area > ul > li:first-child,
+	.sitemap_area > ul > li:nth-child(4n+5) {clear: left; margin-left: 0;}}
+	
+	.sitemap_area > ul > li > strong {display: block; height: 60px; font-size: 20px; font-weight: bold; color: #ffffff; text-align: center; line-height: 60px; background-color: #f68121;}
+	.sitemap_area .sitemap_list > li {border-bottom: 1px solid #dcdcdc; list-style: none;}
+	.sitemap_area .sitemap_list > li > a {display: inline-block; padding: 14px 12px 12px; font-size: 15px; color: #959595;}
+	.sitemap_area .sitemap_sub_list {padding: 14px 12px 13px; border-top: 1px dotted #dcdcdc;}
+	.sitemap_area .sitemap_sub_list > li {margin-top: 10px; padding-left: 8px; list-style: none; background: url('/images/web/common/bullet_dash.png') no-repeat 0 7px;}
+	.sitemap_area .sitemap_sub_list > li:first-child {margin-top: 0;}
+	.sitemap_area .sitemap_sub_list > li > a {font-size: 14px; color: #959595;}
+
+/* 통합검색 */
+.search_area {overflow: hidden; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+	.search_form {overflow: hidden; margin-bottom: 40px; padding: 29px 0 26px; border: 1px solid #ebccb5; text-align: center; background-color: #fef5ee;}
+	.search_form .input_search_area {overflow: hidden; width: 548px; height: 43px; margin: 0 auto; border: 1px solid #c9c9c9; background-color: #ffffff;
+		border-radius: 5px;
+		-webkit-border-radius: 5px;
+		-moz-border-radius: 5px;
+	}
+		.search_form .input_search_area input {display: block; float: left; width: 90%; height: 43px; border: 0;}
+		.search_form .input_search_area button {display: block; float: right; width: 10%; height: 43px; font-size: 16px; font-weight: bold; text-align: center; color: #ffffff; line-height: 43px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; background-color: #7b736b;}
+	.search_form .keyword_list_area {overflow: hidden; width: 534px; margin: 10px auto 0; padding: 0 7px; font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif;}
+		.search_form .keyword_list_area strong {display: inline-block; float: left; margin-right: 13px; font-size: 11px; color: #4d4d4d;}
+		.search_form .keyword_list_area ul {overflow: hidden; margin-top: -3px;}
+		.search_form .keyword_list_area ul li {float: left; padding-left: 10px; margin-right: 10px; list-style: none; background: url('/images/web/common/bullet_keword_list.png') no-repeat 0 4px;}
+		.search_form .keyword_list_area ul li:first-child {padding-left: 0; background: none;}
+		.search_form .keyword_list_area ul li a {font-size: 11px; color: #4d4d4d;}
+	.search_result_area {overflow: hidden; margin-bottom: 70px;}
+		.search_result_category {overflow: hidden; margin-bottom: 33px; padding-bottom: 16px; border-bottom: 1px solid #dcdcdc;}
+			.search_result_category .category_title {font-size: 13px; color: #585858;}
+			.search_result_category .category_title strong {display: inline-block; font-size: 18px; font-weight: bold;}
+			.search_result_category .category_title span {font-size: 15px; font-weight: bold; color: #f68121;}
+		.search_result_detail {overflow: hidden; border-top: 2px solid #7b736b; border-bottom: 1px solid #7b736b;}
+			.search_result_detail .search_list {overflow: hidden; padding: 20px 18px; border-top: 1px solid #dcdcdc;}
+			.search_result_detail .search_list:first-child {border-top: 0;}
+				.search_result_detail .search_list strong {display: block; margin-bottom: 16px; font-size: 15px; font-weight: bold;}
+				.search_result_detail .search_list a {color: #0074b7; text-decoration: underline;}
+				.search_result_detail .search_list span.board_name {display: block; margin-bottom: 12px; font-size: 13px; color: #f68121;}
+				.search_result_detail dl.sch_dl {overflow: hidden; margin-bottom: 22px; font-size: 13px; color: #4d4d4d; line-height: 1.4em;}
+					.search_result_detail dl.sch_dl dt.sch_dt {float: left; margin-left: 8px; padding-left: 8px; font-weight: bold; background: url('/images/web/common/bg_search_dt.png') no-repeat left 2px;}
+					.search_result_detail dl.sch_dl dt.sch_dt:first-child {padding-left: 0; margin-left: 0; background: none;}
+					.search_result_detail dl.sch_dl dd.sch_dd {float: left; padding-left: 10px; margin-left: 9px; background: url('/images/web/common/bg_search_dd.png') no-repeat left 4px;}
+			.search_result_detail .search_txt {overflow: hidden; max-height: 40px; font-size: 13px; color: #333333; line-height: 1.5em;}
+				.search_result_detail .search_txt span.search_keyword {font-weight: bold; color: #ff0000; background-color: #ffedb6;}
+
+
+
+/* 화면 해상도 width 640px 이상 Design --------------------------------------*/
+@media screen and (min-width: 1025px){
+
+
+
+}
+
+
+/* 화면 해상도 width 640px 이상 960px 이하 Design --------------------------------------*/ 
+@media screen and (max-width: 1024px) and (min-width: 641px) {
+
+
+	/* 사이트맵 */
+	.sitemap_area > ul > li {width: 49%; min-height: 280px; margin: 0 0 50px 2%;}
+	.sitemap_area > ul > li:first-child,
+	.sitemap_area > ul > li:nth-child(2n+1) {margin-left: 0;}
+
+	/* 통합검색 */
+	.search_form .input_search_area {width: 80%;}
+		.search_form .input_search_area input {width: 85%;}
+		.search_form .input_search_area button {width: 15%;}
+	.search_form .keyword_list_area {width: 80%;}
+
+}
+
+
+/* 화면 해상도 width 640px 이하 Design --------------------------------------*/
+@media screen and (max-width: 640px){
+
+	/* 사이트맵 */
+	.sitemap_area > ul > li {width: 100%; min-height: 280px; margin: 0 0 50px 0;}
+
+	/* 통합검색 */
+	.search_form .input_search_area {width: 80%;}
+		.search_form .input_search_area input {width: 80%;}
+		.search_form .input_search_area button {width: 20%;}
+	.search_form .keyword_list_area {width: 80%;}
+
+}
+

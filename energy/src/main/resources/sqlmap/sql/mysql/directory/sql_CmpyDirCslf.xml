@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+<PRE>
+T_기업디렉토리 분류 정보를 관리
+</PRE>
+
+-->
+<mapper namespace="CmpyDirCslfDao">
+    
+    <!--
+    	기업디렉토리 분류 정보를 상세조회한다.
+    -->
+    <select id="selectCmpyDirCslfList" parameterType="Map" resultType="caseMap">
+   	
+    	SELECT
+    	    dir_sn      
+    	    , cslf_sn   
+    	    , inds_tp_cd    
+			, (SELECT code_nm FROM T_CODE WHERE gubun = 'INDS_TP_CD' AND code = a.inds_tp_cd) AS inds_tp_cd_nm
+    	    , wbiz_tp_l_cd    
+			, (SELECT wbiz_clsf_nm FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'L' AND wbiz_tp_l_cd = a.wbiz_tp_l_cd) AS wbiz_tp_l_cd_nm
+			, (SELECT wbiz_clsf_nm_en FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'L' AND wbiz_tp_l_cd = a.wbiz_tp_l_cd) AS wbiz_tp_l_cd_nm_en
+    	    , wbiz_tp_m_cd    
+			, (SELECT wbiz_clsf_nm FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'M' AND wbiz_tp_m_cd = a.wbiz_tp_m_cd) AS wbiz_tp_m_cd_nm
+			, (SELECT wbiz_clsf_nm_en FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'M' AND wbiz_tp_m_cd = a.wbiz_tp_m_cd) AS wbiz_tp_m_cd_nm_en
+    	    , wbiz_tp_s_cd  
+			, (SELECT wbiz_clsf_nm FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'S' AND wbiz_tp_s_cd = a.wbiz_tp_s_cd) AS wbiz_tp_s_cd_nm
+			, (SELECT wbiz_clsf_nm_en FROM T_WBIZ_CLSF WHERE wbiz_cd_tp = 'S' AND wbiz_tp_s_cd = a.wbiz_tp_s_cd) AS wbiz_tp_s_cd_nm_en
+    	    , reg_userno    
+    	    , reg_date    
+    	    , upd_userno    
+    	    , upd_date  
+    	FROM T_CMPY_DIR_CSLF a
+    	<trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	</trim>
+    	ORDER BY inds_tp_cd, wbiz_tp_l_cd, wbiz_tp_m_cd, wbiz_tp_s_cd
+    	
+    </select>
+    
+    <!--
+	기업디렉토리 분류 정보를 등록한다.
+    -->
+    <insert id="insertCmpyDirCslf" parameterType="Map">
+    	INSERT INTO T_CMPY_DIR_CSLF (
+    	    dir_sn     
+    	    , cslf_sn    
+    	    , inds_tp_cd    
+    	    , wbiz_tp_l_cd    
+    	    , wbiz_tp_m_cd    
+    	    , wbiz_tp_s_cd     
+    	    , reg_userno    
+    	    , reg_date    
+    	    , upd_userno    
+    	    , upd_date    
+    	) VALUES (
+    	    #{dir_sn}    
+    	    , ( SELECT * FROM ( SELECT IFNULL(MAX(CAST(cslf_sn AS UNSIGNED)),0)+1 FROM T_CMPY_DIR_CSLF WHERE dir_sn = #{dir_sn} ) AS t ) 
+    	    , #{sub_inds_tp_cd}    
+    	    , #{sub_wbiz_tp_l_cd}    
+    	    , #{sub_wbiz_tp_m_cd}    
+    	    , #{sub_wbiz_tp_s_cd} 
+    	    , #{reg_userno}    
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    , #{reg_userno}    
+    	    , DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	)
+    	
+    </insert>
+    
+    <!--
+	기업디렉토리 분류 정보를 수정한다.
+    -->
+    <update id="updateCmpyDirCslf" parameterType="Map">
+    	UPDATE T_CMPY_DIR_CSLF 
+    	    <trim prefix="SET" prefixOverrides=", ">
+    	    , inds_tp_cd = #{inds_tp_cd}   
+    	    , wbiz_tp_l_cd = #{wbiz_tp_l_cd}    
+    	    , wbiz_tp_m_cd = #{wbiz_tp_m_cd}    
+    	    , wbiz_tp_s_cd = #{wbiz_tp_s_cd}  
+    	    , upd_userno = #{reg_userno}        
+    	    , upd_date = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    </trim>
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	            <if test="dir_sn != null and dir_sn != '' ">
+    	                AND dir_sn = #{dir_sn}    
+    	            </if>
+		    	    <if test="cslf_sn != null and cslf_sn != '' ">
+		    	        AND cslf_sn = #{cslf_sn}    
+		    	    </if>
+    	    </trim>
+    	
+    </update>
+    
+    <!--
+	기업디렉토리 분류 정보를 삭제한다.
+    -->
+    <delete id="deleteCmpyDirCslf" parameterType="Map">
+    	DELETE FROM T_CMPY_DIR_CSLF
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	    </trim>
+    	
+    </delete>
+    
+</mapper>
+    

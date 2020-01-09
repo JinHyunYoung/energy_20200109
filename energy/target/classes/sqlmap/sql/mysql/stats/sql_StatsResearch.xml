@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StatsResearchDao">
+ 
+	<select id="selectResearchCodeList" parameterType="Map" resultType="caseMap">
+		SELECT 
+	  			CODE
+	  			, CODE_NM
+		FROM T_CODE a
+		WHERE 
+			1 = 1  			
+		<if test='gubun != null and !gubun.equals("")' >
+	      AND GUBUN = #{gubun}
+			<if test='gubun.equals("STATS_M_CD") and inds_tp_cd != null and inds_tp_cd.equals("2") ' >
+		      AND code != '01-01'
+			</if>
+		</if>
+		<if test='code != null and !code.equals("")' >
+	      AND code like concat(#{code},'%')
+		</if>
+		ORDER BY sort				
+	</select>
+
+	<select id="selectResearchBizTypeItemTree" parameterType="Map" resultType="caseMap">
+	   SELECT 
+			'0000000000' AS id
+			, '#' AS parent
+			, '물시장종합정보센터' AS text
+			, 'N' AS AUTH_YN
+			, 0 AS SORT
+			, 0 AS LVL
+		FROM DUAL
+		UNION ALL
+		SELECT 
+		       WBIZ_TP_L_CD AS ID, '0000000000' AS PARENT, WBIZ_CLSF_NM AS TEXT, 'Y' AS AUTH_YN, @RNUM := @RNUM+1 AS SORT, 1 AS LVL
+		FROM T_WBIZ_CLSF a, (SELECT @RNUM := 0) b
+		WHERE USE_YN = 'Y'
+		  AND DEL_YN = 'N'
+		  AND WBIZ_CD_TP = 'L'
+		UNION ALL
+		SELECT 
+		       WBIZ_TP_M_CD AS ID, WBIZ_TP_L_CD AS PARENT, WBIZ_CLSF_NM AS TEXT, 'Y' AS AUTH_YN, @RNUM := @RNUM+1 AS SORT, 2 AS LVL
+		FROM T_WBIZ_CLSF a, (SELECT @RNUM := 0) b
+		WHERE USE_YN = 'Y'
+		  AND DEL_YN = 'N'
+		  AND WBIZ_CD_TP = 'M'
+		UNION ALL
+		SELECT 
+		       WBIZ_TP_S_CD AS ID, WBIZ_TP_M_CD AS PARENT, WBIZ_CLSF_NM AS TEXT, 'Y' AS AUTH_YN, @RNUM := @RNUM+1 AS SORT, 3 AS LVL
+		FROM T_WBIZ_CLSF a, (SELECT @RNUM := 0) b
+		WHERE USE_YN = 'Y'
+		  AND DEL_YN = 'N'
+		  AND WBIZ_CD_TP = 'S'
+	</select>
+
+	<select id="selectResearchScaleItemTree" parameterType="Map" resultType="caseMap">
+	   SELECT 
+			'0000000000' AS id
+			, '#' AS parent
+			, '물시장종합정보센터' AS text
+			, 'N' AS AUTH_YN
+			, 0 AS SORT
+			, 0 AS LVL
+		FROM DUAL
+		UNION ALL
+		SELECT 
+		       CODE AS ID, '0000000000' AS PARENT, CODE_NM AS TEXT, 'Y' AS AUTH_YN, SORT,  3 AS LVL
+		FROM T_CODE a
+		WHERE USE_YN = 'Y'
+		  AND GUBUN = 'SCALE_CD'
+	</select>
+	<select id="selectResearchTableList" parameterType="Map" resultType="caseMap">
+		SELECT
+		        bs_yy, inds_tp_cd, (SELECt code_nm FROM T_CODE WHERE gubun='INDS_TP_CD' and code=a.inds_tp_cd) as inds_tp_nm
+		        , wbiz_tp_l_cd, wbiz_tp_l_nm, wbiz_tp_m_cd, wbiz_tp_m_nm, wbiz_tp_s_cd, wbiz_tp_s_nm
+		        , group_concat( point) point
+		FROM (
+		      SELECT 
+		            bs_yy, inds_tp_cd
+		            , wbiz_tp_l_cd, wbiz_tp_l_nm, wbiz_tp_m_cd, wbiz_tp_m_nm, wbiz_tp_s_cd, wbiz_tp_s_nm
+		            , stats_s_cd, point
+		      FROM T_STATS_INDS
+		      WHERE bs_yy= #{bs_yy}
+		      AND inds_tp_cd  =#{inds_tp_cd}
+			  <if test='wbiz_tp_s_list != null' >
+			  	AND wbiz_tp_s_cd IN 
+			  	<foreach collection="wbiz_tp_s_list" item="item" index="index" open="(" close=")" separator="," >
+			  		${wbiz_tp_s_list[index]}
+			  	</foreach>
+			  </if>
+			  <if test='stats_s_list != null' >
+			  	AND stats_s_cd IN 
+			  	<foreach collection="stats_s_list" item="item" index="index" open="(" close=")" separator="," >
+		  			${stats_s_list[index]}
+			  	</foreach>
+			  </if>
+		) a
+		GROUP BY bs_yy, inds_tp_cd, wbiz_tp_l_cd, wbiz_tp_m_cd, wbiz_tp_s_cd
+	</select>
+
+	<select id="selectResearchTableHeader" parameterType="Map" resultType="caseMap">
+		SELECT group_concat(code) as code, group_concat(code_nm) as name 
+		FROM T_CODE
+		WHERE gubun='STATS_S_CD'
+		AND code like concat(#{code}, '%')
+		  <if test='stats_s_list != null' >
+		  	AND code IN 
+		  	<foreach collection="stats_s_list" item="item" index="index"  open="(" close=")" separator="," >
+		  		${stats_s_list[index]}
+		  	</foreach>
+		  </if>
+	</select>
+		
+</mapper>

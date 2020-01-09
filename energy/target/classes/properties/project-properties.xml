@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<configuration>
+	
+	<project>
+	
+		<defaultLocale>ko</defaultLocale>
+			
+		<site>
+			<name>한국에너지재단</name>
+			<address>06732) 서울시 서초구 효령로 72길 60</address>
+			<contact>TEL 02-6913-2110 FAX 02-6913-2111</contact>
+			<copyright>Copyright 2010. 한국에너지재단 All rights reserved.</copyright>
+			<warring>본 페이지에 게시된 이메일 주소가 자동수집 되는것을 거부하며 이를 위반시 정보통신법에 의해 처벌됨을 유념하시기 바랍니다.</warring>
+		</site>
+		
+		<server>
+			<url>http://localhost</url>
+			<docroot>C:\eGovFrameDev-3.5.1-64bit\workspace\WABIS_v1\src\main\webapp</docroot>
+			<webUrl>http://localhost:8080</webUrl>
+			<admimUrl>http://localhost:8080</admimUrl>
+			<httpsPort>8443</httpsPort>
+		</server>
+				
+		<mail>
+			<serverUrl>http://hnskr.iptime.org:25000</serverUrl>
+			<adminemail>minwon@koref.or.kr</adminemail>
+			<adminname>한국에너지재단 관리자</adminname>
+			<protocol>smtp</protocol>
+			<authority>true</authority>
+			<starttls>true</starttls>
+			<smtp>
+				<host>smtp.gmail.com</host>
+				<port>587</port>
+				<userid>wabis.email</userid>
+				<password>anftksdjq</password>
+			</smtp>
+		</mail>
+		
+	</project>
+
+	<!-- 컨텐츠 파일 업로드 -->
+	<contents>
+		<upload>
+			<maxfilesize>20</maxfilesize>
+			<!-- 
+			<basePath>Z:/100 Project/wabis/contents/</basePath>			
+			<temp>Z:/100 Project/wabis/contents/temp/</temp>
+			 -->
+			<!--
+			<basePath>C:\eGovPlatform\wabis\contents\</basePath>
+			<temp>C:\eGovPlatform\wabis\contents\temp\</temp>
+			 -->
+			<basePath>D:\energy\server\tomcat\webapps\contents\</basePath>
+			<temp>D:\energy\server\tomcat\webapps\contents\temp\</temp>
+			
+			<urlPath>/contents/</urlPath>	
+		</upload>
+		<url>
+		    <local>http://localhost:8080/contents/</local>
+		</url>
+	</contents>
+	
+	<!-- File 관리 -->
+	<fileType>
+	
+		<!--name of file type  -->
+		<names>img,zip,pdf,doc,ppt,xls,hwp,movie</names>		
+		<types>
+			<img>gif,jpg,jpeg,png,bmp</img>
+			<zip>zip</zip>
+			<pdf>pdf</pdf>
+			<doc>doc,docx</doc>
+			<xls>xls,xlsx,csv</xls>
+			<ppt>ppt,pptx</ppt>
+			<hwp>hwp</hwp>
+			<movie>wmv,avi,asf,mpg,mpeg</movie>
+		</types>
+		
+		<!-- image file of file types  -->
+		<images>
+			<base>/images/common/icon</base>
+			<default>${fileType.images.base}/ico_etc.gif</default>
+			<img>${fileType.images.base}/ico_img.gif</img>
+			<zip>${fileType.images.base}/ico_zip.gif</zip>
+			<pdf>${fileType.images.base}/ico_pdf.gif</pdf>
+			<doc>${fileType.images.base}/ico_doc.gif</doc>
+			<xls>${fileType.images.base}/ico_xls.gif</xls>
+			<ppt>${fileType.images.base}/ico_ppt.gif</ppt>
+			<hwp>${fileType.images.base}/ico_hwp.gif</hwp>
+			<movie>${fileType.images.base}/ico_movie.gif</movie>
+		</images>
+		
+	</fileType>
+	
+</configuration>

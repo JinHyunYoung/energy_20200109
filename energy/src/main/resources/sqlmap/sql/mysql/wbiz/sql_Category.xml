@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CategoryDao">
+
+	 <resultMap id="categoryMap" type="Map">
+	 
+	 	<result property="wbix_clsf_sn" column="wbix_clsf_sn" />
+	 	<result property="inds_tp_cd" column="inds_tp_cd" />
+		<result property="wbiz_tp_l_cd" column="wbiz_tp_l_cd" />
+		<result property="wbiz_tp_m_cd" column="wbiz_tp_m_cd" />
+		<result property="wbiz_tp_s_cd" column="wbiz_tp_s_cd" />
+		<result property="wbiz_tp_l_nm" column="wbiz_tp_l_nm" />
+		<result property="wbiz_tp_m_nm" column="wbiz_tp_m_nm" />
+		<result property="wbiz_tp_s_nm" column="wbiz_tp_s_nm" />
+		<result property="wbiz_cd_tp" column="wbiz_cd_tp" />
+		<result property="wbiz_clsf_nm" column="wbiz_clsf_nm" />
+		<result property="wbiz_clsf_nm_en" column="wbiz_clsf_nm_en" />
+		<result property="use_yn" column="use_yn" />
+		<result property="reg_userno" column="reg_userno" />
+		<result property="reg_date" column="reg_date" />
+		<result property="upd_userno" column="upd_userno" />
+		<result property="upd_date" column="upd_date" />		
+		<result property="code_nm" column="code_nm" />
+		
+	</resultMap>
+	
+	<resultMap id="categoryListMap" type="Map">
+	 
+	 	<result property="inds_tp_cd" column="inds_tp_cd" />
+	 	<result property="code_nm" column="code_nm" />
+		<result property="cnt_l" column="cnt_l" />
+		<result property="wbiz_tp_l_cd" column="wbiz_tp_l_cd" />
+		<result property="wbiz_tp_l_nm" column="wbiz_tp_l_nm" />
+		<result property="cnt_m" column="cnt_m" />
+		<result property="wbiz_tp_m_cd" column="wbiz_tp_m_cd" />
+		<result property="wbiz_tp_m_nm" column="wbiz_tp_m_nm" />
+		<result property="cnt_s" column="cnt_s" />
+		<result property="wbiz_tp_s_cd" column="wbiz_tp_s_cd" />
+		<result property="wbiz_tp_s_nm" column="wbiz_tp_s_nm" />
+		<result property="use_yn_l" column="use_yn_l" />
+		<result property="use_yn_m" column="use_yn_m" />
+		<result property="use_yn_s" column="use_yn_s" />
+		
+	</resultMap>
+
+	
+	<select id="categorySelectList" parameterType="Map" resultMap="categoryListMap">
+	<![CDATA[
+		SELECT
+					T.inds_tp_cd ,     
+					C.code_nm, 
+                    C.sort,
+				    T.cnt_l , 
+				    T.wbiz_tp_l_cd , 
+				    ( SELECT A.wbiz_clsf_nm FROM T_WBIZ_CLSF A WHERE A.wbiz_cd_tp = 'L' AND A.wbiz_tp_l_cd = T.wbiz_tp_l_cd ) AS wbiz_tp_l_nm ,
+				    ( SELECT A.use_yn FROM T_WBIZ_CLSF A WHERE A.wbiz_cd_tp = 'L' AND A.wbiz_tp_l_cd = T.wbiz_tp_l_cd ) AS use_yn_l ,
+				    T.cnt_m , 
+				    T.wbiz_tp_m_cd , 
+				    ( SELECT A.wbiz_clsf_nm FROM T_WBIZ_CLSF A WHERE A.wbiz_cd_tp = 'M' AND A.wbiz_tp_m_cd = T.wbiz_tp_m_cd ) AS wbiz_tp_m_nm ,
+				    ( SELECT A.use_yn FROM T_WBIZ_CLSF A WHERE A.wbiz_cd_tp = 'M' AND A.wbiz_tp_m_cd = T.wbiz_tp_m_cd ) AS use_yn_m ,
+				    T.cnt_s , 
+				    T.wbiz_tp_s_cd , 
+				    T.wbiz_clsf_nm AS wbiz_tp_s_nm , 
+				    ( SELECT A.use_yn FROM T_WBIZ_CLSF A WHERE A.wbiz_cd_tp = 'S' AND A.wbiz_tp_s_cd = T.wbiz_tp_s_cd ) AS use_yn_s
+			FROM T_CODE C,
+				(
+					SELECT
+						A.inds_tp_cd  
+						, A.wbiz_tp_l_cd  
+						, C.wbiz_tp_m_cd     
+						, B.wbiz_tp_s_cd 
+						, B.wbiz_clsf_nm 
+						, ifnull( B.cnt_l , 0 ) AS cnt_l
+                        , ifnull( B.cnt_m , 0 ) AS cnt_m
+                        , ifnull( B.cnt_s , 0 ) AS cnt_s						
+                    FROM
+                    (
+					SELECT
+						inds_tp_cd  
+		                , wbiz_tp_l_cd
+					FROM
+						T_WBIZ_CLSF
+			        WHERE 
+						del_yn = 'N'
+                        and wbiz_cd_tp = 'L'
+                    ) A
+                    LEFT JOIN
+                    (
+					SELECT
+						inds_tp_cd  
+		                , wbiz_tp_l_cd
+                        , wbiz_tp_m_cd
+					FROM
+						T_WBIZ_CLSF
+			        WHERE 
+						del_yn = 'N'
+                        and wbiz_cd_tp = 'M'
+                    ) C
+                    ON A.inds_tp_cd = C.inds_tp_cd AND A.wbiz_tp_l_cd = C.wbiz_tp_l_cd
+                    LEFT JOIN
+                    (
+			        SELECT 
+			                inds_tp_cd  
+			                , wbiz_tp_l_cd     
+			                , wbiz_tp_m_cd     
+			                , wbiz_tp_s_cd 
+			                , wbiz_clsf_nm 
+			                , (select sum(if(b.inds_tp_cd=a.inds_tp_cd,1, 0)) from T_WBIZ_CLSF b where b.del_yn = 'N' AND b.inds_tp_cd = a.inds_tp_cd and b.wbiz_tp_m_cd <>''  and b.wbiz_tp_s_cd <>'') as cnt_l
+			                , (select sum(if(b.wbiz_tp_l_cd=a.wbiz_tp_l_cd,1, 0)) from T_WBIZ_CLSF b where b.del_yn = 'N' AND b.inds_tp_cd = a.inds_tp_cd and b.wbiz_tp_m_cd <>''  and b.wbiz_tp_s_cd <>'') as cnt_m
+			                , (select sum(if(b.wbiz_tp_m_cd=a.wbiz_tp_m_cd,1, 0)) from T_WBIZ_CLSF b where b.del_yn = 'N' AND b.inds_tp_cd = a.inds_tp_cd and b.wbiz_tp_m_cd <>''  and b.wbiz_tp_s_cd <>'') as cnt_s
+			          FROM 
+			          T_WBIZ_CLSF a
+			          WHERE 
+						 wbiz_tp_m_cd <>'' and 
+                         wbiz_tp_s_cd <>'' and 
+                         del_yn = 'N'	
+                      ) B
+                      ON A.inds_tp_cd = B.inds_tp_cd AND A.wbiz_tp_l_cd = B.wbiz_tp_l_cd  AND C.wbiz_tp_m_cd = B.wbiz_tp_m_cd
+						
+			      ) T
+			WHERE
+			      T.inds_tp_cd = C.code 
+			  AND C.gubun = 'INDS_TP_CD' 
+			  AND C.use_yn = 'Y'
+			ORDER BY 
+				C.sort ASC , T.wbiz_tp_l_cd ASC , T.wbiz_tp_m_cd ASC , T.wbiz_tp_s_cd ASC   
+		]]>	
+	</select>
+	
+	<select id="categorySelectListEn" parameterType="Map" resultMap="categoryListMap">
+	<![CDATA[
+		SELECT
+					T.inds_tp_cd ,     
+					C.code_nm, 
+                    C.sort,
+				    T.cnt_l , 
+				    T.wbiz_tp_l_cd , 
+				    ( SELECT A.wbiz_clsf_nm_en FROM T_WBIZ_CLSF A WHERE A.wbiz_cd_tp = 'L' AND A.wbiz_tp_l_cd = T.wbiz_tp_l_cd ) AS wbiz_tp_l_nm ,
+				    T.cnt_m , 
+				    T.wbiz_tp_m_cd , 
+				    ( SELECT A.wbiz_clsf_nm_en FROM T_WBIZ_CLSF A WHERE A.wbiz_cd_tp = 'M' AND A.wbiz_tp_m_cd = T.wbiz_tp_m_cd ) AS wbiz_tp_m_nm ,
+				    T.cnt_s , 
+				    T.wbiz_tp_s_cd , 
+				    T.wbiz_clsf_nm AS wbiz_tp_s_nm
+			FROM T_CODE C,
+				(
+					SELECT
+						A.inds_tp_cd  
+						, A.wbiz_tp_l_cd  
+						, C.wbiz_tp_m_cd     
+						, B.wbiz_tp_s_cd 
+						, B.wbiz_clsf_nm 
+						, ifnull( B.cnt_l , 0 ) AS cnt_l
+                        , ifnull( B.cnt_m , 0 ) AS cnt_m
+                        , ifnull( B.cnt_s , 0 ) AS cnt_s						
+                    FROM
+                    (
+					SELECT
+						inds_tp_cd  
+		                , wbiz_tp_l_cd
+					FROM
+						T_WBIZ_CLSF
+			        WHERE 
+						del_yn = 'N'
+                        and wbiz_cd_tp = 'L'
+                    ) A
+                    LEFT JOIN
+                    (
+					SELECT
+						inds_tp_cd  
+		                , wbiz_tp_l_cd
+                        , wbiz_tp_m_cd
+					FROM
+						T_WBIZ_CLSF
+			        WHERE 
+						del_yn = 'N'
+                        and wbiz_cd_tp = 'M'
+                    ) C
+                    ON A.inds_tp_cd = C.inds_tp_cd AND A.wbiz_tp_l_cd = C.wbiz_tp_l_cd
+                    LEFT JOIN
+                    (
+			        SELECT 
+			                inds_tp_cd  
+			                , wbiz_tp_l_cd     
+			                , wbiz_tp_m_cd     
+			                , wbiz_tp_s_cd 
+			                , wbiz_clsf_nm_en AS wbiz_clsf_nm
+			                , (select sum(if(b.inds_tp_cd=a.inds_tp_cd,1, 0)) from T_WBIZ_CLSF b where b.del_yn = 'N' AND b.inds_tp_cd = a.inds_tp_cd and b.wbiz_tp_m_cd <>''  and b.wbiz_tp_s_cd <>'') as cnt_l
+			                , (select sum(if(b.wbiz_tp_l_cd=a.wbiz_tp_l_cd,1, 0)) from T_WBIZ_CLSF b where b.del_yn = 'N' AND b.inds_tp_cd = a.inds_tp_cd and b.wbiz_tp_m_cd <>''  and b.wbiz_tp_s_cd <>'') as cnt_m
+			                , (select sum(if(b.wbiz_tp_m_cd=a.wbiz_tp_m_cd,1, 0)) from T_WBIZ_CLSF b where b.del_yn = 'N' AND b.inds_tp_cd = a.inds_tp_cd and b.wbiz_tp_m_cd <>''  and b.wbiz_tp_s_cd <>'') as cnt_s
+			          FROM 
+			          T_WBIZ_CLSF a
+			          WHERE 
+						 wbiz_tp_m_cd <>'' and 
+                         wbiz_tp_s_cd <>'' and 
+                         del_yn = 'N'	
+                      ) B
+                      ON A.inds_tp_cd = B.inds_tp_cd AND A.wbiz_tp_l_cd = B.wbiz_tp_l_cd  AND C.wbiz_tp_m_cd = B.wbiz_tp_m_cd
+						
+			      ) T
+			WHERE
+			      T.inds_tp_cd = C.code 
+			  AND C.gubun = 'INDS_TP_CD' 
+			  AND C.use_yn = 'Y'
+			ORDER BY 
+				C.sort ASC , T.wbiz_tp_l_cd ASC , T.wbiz_tp_m_cd ASC , T.wbiz_tp_s_cd ASC   
+		]]>	
+	</select>
+	
+	<update id="categoryInsert" parameterType="Map" >
+		INSERT INTO T_WBIZ_CLSF (
+			wbix_clsf_sn
+			, inds_tp_cd 
+			, wbiz_tp_l_cd
+			, wbiz_tp_m_cd
+			, wbiz_tp_s_cd
+			, wbiz_cd_tp
+			, wbiz_clsf_nm
+			, wbiz_clsf_nm_en
+			, use_yn
+			, del_yn
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			( SELECT A.idx FROM ( SELECT IFNULL( MAX( wbix_clsf_sn ) , 0 ) + 1 AS idx FROM T_WBIZ_CLSF ) A )
+			 , #{inds_tp_cd}
+			,  IFNULL( #{wbiz_tp_l_cd} , '' )
+			,  IFNULL( #{wbiz_tp_m_cd} , '' )
+			,  IFNULL( #{wbiz_tp_s_cd} , '' )
+			, #{wbiz_cd_tp}
+			, #{wbiz_clsf_nm}
+			, #{wbiz_clsf_nm_en}
+			, 'Y'
+			, 'N'
+			, #{s_user_no}
+			, DATE_FORMAT( now() , '%Y%m%d%H%i%S' )
+			, #{s_user_no}
+			, DATE_FORMAT( now() , '%Y%m%d%H%i%S' )
+		)
+	</update>
+	
+	<select id="categoryLoad" parameterType="Map" resultMap="categoryMap">
+		SELECT 
+			wbix_clsf_sn
+	   		, inds_tp_cd 
+			, wbiz_tp_l_cd
+			, wbiz_tp_m_cd
+			, wbiz_tp_s_cd
+			, wbiz_cd_tp
+			, wbiz_clsf_nm
+			, wbiz_clsf_nm_en
+			, use_yn
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date			
+		FROM 
+			T_WBIZ_CLSF
+		WHERE			 
+			del_yn = 'N'			
+			<if test='wbiz_cd_tp != null and ! wbiz_cd_tp.equals( "" )' >
+			AND wbiz_cd_tp = #{wbiz_cd_tp}
+			</if>
+			<if test='inds_tp_cd != null and ! inds_tp_cd.equals( "" )' >
+			AND inds_tp_cd = #{inds_tp_cd}
+			</if>
+			<if test='wbiz_tp_l_cd != null and ! wbiz_tp_l_cd.equals( "" )' >
+			AND wbiz_tp_l_cd = #{wbiz_tp_l_cd}
+			</if>
+			<if test='wbiz_tp_m_cd != null and ! wbiz_tp_m_cd.equals( "" )' >
+			AND wbiz_tp_m_cd = #{wbiz_tp_m_cd}
+			</if>
+			<if test='wbiz_tp_s_cd != null and ! wbiz_tp_s_cd.equals( "" )' >
+			AND wbiz_tp_s_cd = #{wbiz_tp_s_cd}
+			</if>					
+			ORDER BY inds_tp_cd ASC , wbiz_tp_l_cd ASC , wbiz_tp_m_cd ASC , wbiz_tp_s_cd ASC			
+	</select>
+	
+	<select id="categorySelect" parameterType="Map" resultMap="categoryMap">
+		SELECT 
+			a.wbix_clsf_sn
+	   		, a.inds_tp_cd 
+			, a.wbiz_tp_l_cd
+			, ( SELECT wbiz_clsf_nm FROM T_WBIZ_CLSF WHERE wbiz_tp_l_cd = a.wbiz_tp_l_cd AND wbiz_cd_tp = 'L' ) AS wbiz_tp_l_nm
+			, a.wbiz_tp_m_cd
+			, ( SELECT wbiz_clsf_nm FROM T_WBIZ_CLSF WHERE wbiz_tp_m_cd = a.wbiz_tp_m_cd AND wbiz_cd_tp = 'M' ) AS wbiz_tp_m_nm
+			, a.wbiz_tp_s_cd
+			, ( SELECT wbiz_clsf_nm FROM T_WBIZ_CLSF WHERE wbiz_tp_s_cd = a.wbiz_tp_s_cd AND wbiz_cd_tp = 'S' ) AS wbiz_tp_s_nm
+			, a.wbiz_cd_tp
+			, a.wbiz_clsf_nm
+			, a.wbiz_clsf_nm_en
+			, a.use_yn
+			, a.reg_userno
+			, a.reg_date
+			, a.upd_userno
+			, a.upd_date			
+		FROM 
+			T_WBIZ_CLSF a
+		WHERE			 
+			a.del_yn = 'N'			
+			<if test='wbiz_cd_tp != null and ! wbiz_cd_tp.equals( "" )' >
+			AND a.wbiz_cd_tp = #{wbiz_cd_tp}
+			</if>
+			<if test='inds_tp_cd != null and ! inds_tp_cd.equals( "" )' >
+			AND a.inds_tp_cd = #{inds_tp_cd}
+			</if>
+			<if test='wbiz_tp_l_cd != null and ! wbiz_tp_l_cd.equals( "" )' >
+			AND a.wbiz_tp_l_cd = #{wbiz_tp_l_cd}
+			</if>
+			<if test='wbiz_tp_m_cd != null and ! wbiz_tp_m_cd.equals( "" )' >
+			AND a.wbiz_tp_m_cd = #{wbiz_tp_m_cd}
+			</if>
+			<if test='wbiz_tp_s_cd != null and ! wbiz_tp_s_cd.equals( "" )' >
+			AND a.wbiz_tp_s_cd = #{wbiz_tp_s_cd}
+			</if>		
+	</select>
+	
+	<update id="categoryUpdate" parameterType="Map" >
+		UPDATE T_WBIZ_CLSF SET
+			wbiz_clsf_nm = #{wbiz_clsf_nm}
+			, wbiz_clsf_nm_en = #{wbiz_clsf_nm_en}
+			, use_yn = #{use_yn}
+			, upd_userno =  #{s_user_no}
+			, upd_date = DATE_FORMAT( now() , '%Y%m%d%H%i%S' )
+		WHERE
+			wbix_clsf_sn = #{wbix_clsf_sn}
+	</update>
+	
+	<update id="categoryUpdateChild" parameterType="Map" >
+		UPDATE T_WBIZ_CLSF SET
+			use_yn = #{use_yn}
+			, upd_userno =  #{s_user_no}
+			, upd_date = DATE_FORMAT( now() , '%Y%m%d%H%i%S' )
+		WHERE
+		<if test='wbiz_cd_tp != null and wbiz_cd_tp.equals( "L" )'>
+			wbiz_tp_l_cd = #{wbiz_tp_l_cd} AND wbiz_cd_tp IN ( 'M' , 'S' )
+		</if>
+		<if test='wbiz_cd_tp != null and wbiz_cd_tp.equals( "M" )'>
+			wbiz_tp_m_cd = #{wbiz_tp_m_cd} AND wbiz_cd_tp IN ( 'S' )
+		</if>
+			
+	</update>
+	
+	<update id="categoryDelete" parameterType="Map" >
+		UPDATE T_WBIZ_CLSF SET
+			del_yn = 'Y'
+			, upd_userno =  #{s_user_no}
+			, upd_date = DATE_FORMAT( now() , '%Y%m%d%H%i%S' )
+		WHERE
+			wbix_clsf_sn = #{wbix_clsf_sn}
+	</update>
+	
+	<update id="categoryDeleteChild" parameterType="Map" >
+		UPDATE T_WBIZ_CLSF SET
+			del_yn = 'Y'
+			, upd_userno =  #{s_user_no}
+			, upd_date = DATE_FORMAT( now() , '%Y%m%d%H%i%S' )
+		WHERE
+		<if test='wbiz_cd_tp != null and wbiz_cd_tp.equals( "L" )'>
+			wbiz_tp_l_cd = #{wbiz_tp_l_cd} AND wbiz_cd_tp IN ( 'M' , 'S' )
+		</if>
+		<if test='wbiz_cd_tp != null and wbiz_cd_tp.equals( "M" )'>
+			wbiz_tp_m_cd = #{wbiz_tp_m_cd} AND wbiz_cd_tp IN ( 'S' )
+		</if>
+			
+	</update>
+	
+</mapper>

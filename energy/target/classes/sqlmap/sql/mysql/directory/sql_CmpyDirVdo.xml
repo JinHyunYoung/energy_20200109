@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+<PRE>
+T_기업디렉토리동영상 정보를 관리
+</PRE>
+
+-->
+<mapper namespace="CmpyDirVdoDao">
+    
+     <!--
+	 기업디렉토리 동영상 정보를 상세조회한다.
+    -->
+    <select id="selectCmpyDirVdoList" parameterType="Map" resultType="caseMap">
+   	
+    	SELECT
+    	    dir_sn    
+    	    , vdo_sn    
+    	    , vdo_title    
+    	    , vdo_title_en    
+    	    , vdo_path    
+    	    , reg_userno    
+    	    , reg_date    
+    	    , upd_userno    
+    	    , upd_date
+    	FROM T_CMPY_DIR_VDO
+    	<trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	</trim>
+    	ORDER BY vdo_sn
+    	<if test="limit != null and limit != '' ">
+   	        limit ${limit}
+   	    </if>
+    	
+    </select>
+    
+    <!--
+	기업디렉토리 동영상 정보를 등록한다. 
+    -->
+    <insert id="insertCmpyDirVdo" parameterType="Map">
+    	INSERT INTO T_CMPY_DIR_VDO (
+    	    dir_sn     
+    	    , vdo_sn    
+    	    , vdo_title    
+    	    , vdo_title_en    
+    	    , vdo_path    
+    	    , reg_userno    
+    	    , reg_date    
+    	    , upd_userno    
+    	    , upd_date    
+    	) VALUES (
+    	    #{dir_sn}    
+    	    , ( SELECT * FROM ( SELECT IFNULL(MAX(CAST(vdo_sn AS UNSIGNED)),0)+1 FROM T_CMPY_DIR_VDO WHERE dir_sn = #{dir_sn} ) AS t ) 
+    	    , #{vdo_title}    
+    	    , #{vdo_title_en}    
+    	    , #{vdo_path}    
+    	    , #{reg_userno}    
+			, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    , #{reg_userno}    
+    	    , DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	)
+    	
+    </insert>
+    
+    
+    <!--
+	기업디렉토리 동영상 정보를 수정한다.
+    -->
+    <update id="updateCmpyDirVdo" parameterType="Map">
+    	UPDATE T_CMPY_DIR_VDO 
+    	    <trim prefix="SET" prefixOverrides=", ">
+    	    , vdo_title = #{vdo_title}
+    	    , vdo_title_en = #{vdo_title_en}    
+    	    , vdo_path = #{vdo_path}    
+    	    , upd_userno = #{upd_userno}        
+    	    , upd_date = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+    	    </trim>
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	            <if test="dir_sn != null and dir_sn != '' ">
+    	                AND dir_sn = #{dir_sn}    
+    	            </if>
+		    	    <if test="vdo_sn != null and vdo_sn != '' ">
+		    	        AND vdo_sn = #{vdo_sn}    
+		    	    </if>
+    	    </trim>
+    	
+    </update>
+    
+    <!--
+	기업디렉토리 동영상 정보를 삭제한다. 
+    -->
+    <delete id="deleteCmpyDirVdo" parameterType="Map">
+    	DELETE FROM T_CMPY_DIR_VDO
+    	    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+    	    <if test="dir_sn != null and dir_sn != '' ">
+    	        AND dir_sn = #{dir_sn}    
+    	    </if>
+    	    </trim>
+    	
+    </delete>
+    
+    </mapper>
+    

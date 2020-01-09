@@ -1,0 +1,41 @@
+@charset "utf-8";
+@import "nanumgothic.css";
+@import "nanumsquare.css";
+
+
+#wrap {overflow: hidden;}
+
+/* hidden */
+.hidden {display: block; position: absolute; overflow: hidden; top: -999999px; left: -999999px; width: 1px; height: 1px; font-size: 0; text-indent: -999999px; line-height: 0;}
+
+/* button area */
+.btn {display: inline-block; text-decoration: none;}
+.btn img {border: 0; vertical-align: middle;}
+.btn:hover {text-decoration: none;}
+
+.btn.home {
+    height: 30px; padding: 0 38px 0 20px; border: 1px solid #005eb0; font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 13px; color: #ffffff; line-height: 30px; text-align: center; letter-spacing: -0.06em;
+    border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    background: url('/images/web/error/bg_arrow.png') no-repeat right 11px #005eb0;
+    }
+
+.error_area {overflow: hidden; padding: 100px 0 70px; border-bottom: 1px solid #d0d0d0; background-color: #f8f8f9;}
+		
+		.error_box {overflow: hidden; width: 800px; margin: 0 auto;}
+		h1.logo {overflow: hidden; margin-bottom: 65px;}
+		h1.logo span {display: block; width: 233px; height: 36px; background: url('..//images/web/front/error/logo.png') no-repeat 0 0; text-indent: -99999999px;}
+		
+		.error_box strong.title {display: block; margin-bottom: 20px; padding-left: 5px; font-family: 'Nanum Gothic', 'NanumGothic', '나눔고딕', Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-weight: bold; font-size: 20px; color: #373737; line-height: 1.5em;}
+		.error_box p.txt {padding-left: 5px; margin-bottom: 25px; font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 13px; color: #4d4d4d; line-height: 1.6em;}
+
+	.error_footer_area {overflow: hidden; width: 790px; margin: 23px auto 0; font-family: '돋움', Dotum, Helvetica, 'Apple SD Gothic Neo', Sans-serif; font-size: 12px; color: #828282;}
+		.error_footer_area strong.title {display: block; font-weight: bold; color: #4d4d4d;}
+		
+		.error_address {overflow: hidden; margin-top: 10px;}
+			.error_address ul {overflow: hidden; margin: 0; padding: 0;}
+			.error_address ul li {float: left; margin: 0; padding: 0 0 0 15px; font-style: normal; list-style: none; line-height: 1.5em; background: url('..//images/web/error/divider_error.png') no-repeat 0 3px;}
+			.error_address ul li:first-child {padding-left: 0; background-image: none;}
+			
+		p.error_copyright {margin: 5px 0 0; padding: 0; font-size: 11px; line-height: 1.4em;}

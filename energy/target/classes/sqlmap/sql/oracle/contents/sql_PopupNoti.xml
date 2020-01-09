@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="PopupNotiDao">
+
+	<resultMap id="popnotiMap" type="Map">
+		<result property="noti_id" column="noti_id" />
+		<result property="title" column="title" />
+		<result property="contents" column="contents" javaType="java.lang.String" jdbcType="CLOB"/>
+		<result property="use_yn" column="use_yn" />
+		<result property="noti_stadt" column="noti_stadt" />
+		<result property="noti_enddt" column="noti_enddt" />
+		<result property="width" column="width" />
+		<result property="height" column="height" />
+		<result property="top" column="top" />
+		<result property="left" column="left" />
+		<result property="file_id" column="file_id" />
+		<result property="file_nm" column="file_nm" />
+		<result property="reg_userno" column="reg_userno" />
+		<result property="reg_usernm" column="reg_usernm" />
+		<result property="reg_date" column="reg_date" />
+	</resultMap>
+	 
+	<select id="selectPopnotiPageList" parameterType="Map" resultType="caseMap">
+		<include refid="CommonSql.pageingTop"/>
+		
+		SELECT 
+	   		noti_id
+			, title
+			, use_yn
+			, GET_DATEFORMAT(noti_stadt) AS noti_stadt
+			, GET_DATEFORMAT(noti_enddt) AS noti_enddt
+			, width
+			, height
+			, top
+			, left
+			, file_id
+			, reg_userno
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, GET_DATEFORMAT(reg_date) AS reg_date
+		FROM t_popnoti a
+		WHERE 
+			1 = 1  			
+			<if test='searchtxt != null and !searchtxt.equals("")' >
+			   AND (UPPER(title) LIKE '%'||UPPER(#{searchtxt})||'%' OR INSTR(contents, UPPER(#{searchtxt})) > 0 OR INSTR(contents, LOWER(#{searchtxt})) > 0 )
+			</if>
+			<if test='use_yn != null and !use_yn.equals("")' >
+			   AND use_yn = #{use_yn}
+			</if>
+			
+		<include refid="CommonSql.pageingBottom"/>
+	</select>
+	
+	<select id="selectPopnotiList" parameterType="Map" resultType="caseMap">
+		SELECT 
+			ROWNUM AS RNUM
+			, noti_id
+			, title
+			, use_yn
+			, GET_DATEFORMAT(noti_stadt) AS noti_stadt
+			, GET_DATEFORMAT(noti_enddt) AS noti_enddt
+			, width
+			, height
+			, top
+			, left
+			, file_id
+			, reg_userno
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, GET_DATEFORMAT(reg_date) AS reg_date
+		FROM t_popnoti a
+		WHERE 
+			1=1
+			<if test='title != null and !title.equals("")' >
+			   AND title = #{title}
+			</if>
+			<if test='contents != null and !contents.equals("")' >
+			   AND contents = #{contents}
+			</if>
+			<if test='use_yn != null and !use_yn.equals("")' >
+			   AND use_yn = #{use_yn}
+			</if>
+	</select>
+	
+	<select id="selectMainPopnotiList" parameterType="Map" resultType="caseMap" resultMap="popnotiMap">
+		SELECT 
+			ROWNUM AS RNUM
+			, noti_id
+			, title
+			, contents
+			, width
+			, height
+			, top
+			, left
+			, file_id
+			, (SELECT origin_file_nm FROM T_COMMONFILE WHERE file_id = a.file_id) AS file_nm
+		FROM t_popnoti a
+		WHERE
+			use_yn = 'Y'
+			AND to_char(sysdate,'yyyymmddhh24miss') between noti_stadt and noti_enddt
+	</select>
+	
+	<select id="selectPopnoti" parameterType="Map" resultMap="popnotiMap">
+		SELECT 
+	  		noti_id
+			, title
+			, contents
+			, use_yn
+			, GET_DATEFORMAT(noti_stadt) AS noti_stadt
+			, GET_DATEFORMAT(noti_enddt) AS noti_enddt
+			, width
+			, height
+			, top
+			, left
+			, file_id
+			, (SELECT file_nm FROM T_COMMONFILE WHERE file_id = a.file_id) AS file_nm
+			, reg_userno
+			, (SELECT user_nm FROM T_USER WHERE user_no = a.reg_userno) AS reg_usernm
+			, GET_DATEFORMAT(reg_date) as reg_date
+		FROM t_popnoti a
+		WHERE  
+			noti_id = #{noti_id}
+	</select>
+	
+	<select id="selectPopnotiExist" parameterType="Map" resultType="integer">
+		SELECT 
+			  count(*)
+		FROM t_popnoti
+		WHERE 
+			noti_id = #{noti_id}
+	</select>
+	
+	<update id="insertPopnoti" parameterType="Map" >
+		INSERT INTO t_popnoti (
+			noti_id
+			, title
+			, contents
+			, use_yn
+			, noti_stadt
+			, noti_enddt
+			, width
+			, height
+			, top
+			, left
+			, file_id
+			, reg_userno
+			, reg_date
+			, upd_userno
+			, upd_date
+		) VALUES ( 
+			#{noti_id}
+			, #{title}
+			, #{contents}
+			, #{use_yn}
+			, REPLACE(#{noti_stadt},'-','')
+			, REPLACE(#{noti_enddt},'-','')
+			, #{width}
+			, #{height}
+			, #{top}
+			, #{left}
+			, #{file_id}
+			, #{s_user_no}
+			, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+			, #{s_user_no}
+			, TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
+		)
+	</update>
+	
+	<update id="updatePopnoti" parameterType="Map" >
+	    UPDATE t_popnoti
+		SET
+			title = #{title}
+			, contents = #{contents}
+			, use_yn = #{use_yn}
+			, noti_stadt = REPLACE(#{noti_stadt},'-','')
+			, noti_enddt = REPLACE(#{noti_enddt},'-','')
+			, width = #{width}
+			, height = #{height}
+			, top = #{top}
+			, left = #{left}
+			, file_id = #{file_id}
+			, upd_userno = #{s_user_no}
+			, upd_date = TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')	
+		WHERE 
+			noti_id = #{noti_id}
+	</update>
+	
+	<delete id="deletePopnoti" parameterType="Map" >
+	 	DELETE FROM  t_popnoti 
+		WHERE
+			noti_id = #{noti_id}
+	</delete>
+
+</mapper>
